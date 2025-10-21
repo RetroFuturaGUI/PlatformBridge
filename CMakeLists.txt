@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(PlatformBridge VERSION 0.1.0 LANGUAGES CXX)
+project("PlatformBridge" VERSION 0.1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -32,5 +32,5 @@ install(TARGETS "PlatformBridge"
 enable_testing()
 
 #run cmake:  & "C:\Program Files\CMake\bin\cmake.exe" .. CMakeLists.txt -DCMAKE_BUILD_TYPE=Release
-#build: & "C:\Program Files\CMake\bin\cmake.exe" --build . --config Release/Debug
+#build: & "C:\Program Files\CMake\bin\cmake.exe" --build . --config Release or Debug
 #copy .lib files from build/Debug or Release to the lib folder in PlatformBridge
