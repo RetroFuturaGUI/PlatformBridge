@@ -21,7 +21,7 @@ namespace PlatformBridge
     class Monitors
     {
     public:
-        static inline const std::vector<MonitorInfo>& GetMonitors();
+        static const std::vector<MonitorInfo>& GetMonitors();
 
     private:
         Monitors();
