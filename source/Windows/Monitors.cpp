@@ -56,5 +56,8 @@ BOOL CALLBACK PlatformBridge::Monitors::MonitorEnumProc(HMONITOR hMonitor, HDC h
 
 const std::vector<PlatformBridge::MonitorInfo>& PlatformBridge::Monitors::GetMonitors()
 {
+    if(_monitors.empty())
+        GetInstance().enumerateMonitors();
+
     return _monitors;
 }
