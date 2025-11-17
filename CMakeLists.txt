@@ -11,6 +11,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     
     add_library("PlatformBridge" STATIC
         "${CMAKE_CURRENT_SOURCE_DIR}/source/Windows/Monitors.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/source/Windows/Paths.cpp"
     )
 
     target_include_directories("PlatformBridge" PUBLIC
@@ -31,6 +32,6 @@ install(TARGETS "PlatformBridge"
 
 enable_testing()
 
-#run cmake:  & "C:\Program Files\CMake\bin\cmake.exe" .. CMakeLists.txt -DCMAKE_BUILD_TYPE=Release
+#run cmake:  & "C:\Program Files\CMake\bin\cmake.exe" .. CMakeLists.txt -DCMAKE_BUILD_TYPE=Release/Debug
 #build: & "C:\Program Files\CMake\bin\cmake.exe" --build . --config Release or Debug
 #copy .lib files from build/Debug or Release to the lib folder in PlatformBridge
