@@ -6,11 +6,19 @@ namespace PlatformBridge
     class Paths
     {
     public:
+        /// @brief Refreshes all paths.
+        static void Refresh();
+
+        /// @brief Returns the path of the executable.
+        /// @return An std::string representing the executable path.
         static std::string GetExecutablePath();
-        static const char* GetExecutablePathCStr();
+
+        /// @brief Returns all path data of the executable.
+        /// @return A std::filesystem::path representing the executable path.
+        static const std::filesystem::path GetExecutablePathFSPath();
 
     private:
-        Paths();
+        Paths() = default;
         ~Paths() = default;
         Paths(const Paths&) = delete;
         Paths(Paths&&) = delete;

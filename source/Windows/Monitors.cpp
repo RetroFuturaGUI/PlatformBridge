@@ -2,26 +2,17 @@
 #include <print>
 #include <codecvt>
 
-PlatformBridge::Monitors::Monitors()
-{
-    if (!enumerateMonitors())
-    {
-    #ifndef NDEBUG
-        std::println("Failed to enumerate monitors");
-    #endif
-    }
-}
-
 bool PlatformBridge::Monitors::enumerateMonitors()
 {
     HDC hdc = nullptr;
     LPCRECT lprcClip = nullptr;
     LPARAM dwData = 0;
-    return EnumDisplayMonitors(hdc, lprcClip, MonitorEnumProc, dwData);
+    return EnumDisplayMonitors(hdc, lprcClip, monitorEnumProc, dwData);
 }
 
-BOOL CALLBACK PlatformBridge::Monitors::MonitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData)
+BOOL CALLBACK PlatformBridge::Monitors::monitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData)
 {
+    _monitors.clear();
     MONITORINFOEX info;
     info.cbSize = sizeof(MONITORINFOEX);
     GetMonitorInfo(hMonitor, &info);
@@ -45,7 +36,7 @@ BOOL CALLBACK PlatformBridge::Monitors::MonitorEnumProc(HMONITOR hMonitor, HDC h
     auto horizontalScale = ((double) cxPhysical / (double) monitorInfo.resWidth);
     auto verticalScale = ((double) cyPhysical / (double) monitorInfo.resHeight);
     monitorInfo.scalingPercentage = static_cast<int32_t>(min(horizontalScale, verticalScale) * 100);
-     monitorInfo.scalingFactor = monitorInfo.scalingPercentage / 100.0f;
+    monitorInfo.scalingFactor = monitorInfo.scalingPercentage / 100.0f;
     _monitors.push_back(monitorInfo);
 
 #ifndef NDEBUG
@@ -54,10 +45,20 @@ BOOL CALLBACK PlatformBridge::Monitors::MonitorEnumProc(HMONITOR hMonitor, HDC h
     return TRUE;
 }
 
-const std::vector<PlatformBridge::MonitorInfo>& PlatformBridge::Monitors::GetMonitors()
+const void PlatformBridge::Monitors::Refresh()
 {
-    if(_monitors.empty())
-        GetInstance().enumerateMonitors();
+    if (!GetInstance().enumerateMonitors())
+    {
+    #ifndef NDEBUG
+        std::println("Failed to enumerate monitors");
+    #endif
+    }
+}
+
+const std::vector<PlatformBridge::MonitorInfo> &PlatformBridge::Monitors::GetMonitors()
+{
+    if(_monitors.empty() || _monitors.size() == 0)
+        Refresh();
 
     return _monitors;
 }

@@ -1,6 +1,6 @@
 #include "Paths.hpp"
 
-PlatformBridge::Paths::Paths()
+void PlatformBridge::Paths::Refresh()
 {
     setExecutablePath();
 }
@@ -8,17 +8,17 @@ PlatformBridge::Paths::Paths()
 std::string PlatformBridge::Paths::GetExecutablePath()
 {
     if(_exePath.empty())
-        setExecutablePath();
+        Refresh();
 
     return _exePath.string();
 }
 
-const char* PlatformBridge::Paths::GetExecutablePathCStr()
+const std::filesystem::path PlatformBridge::Paths::GetExecutablePathFSPath()
 {
     if(_exePath.empty())
-        setExecutablePath();
+        Refresh();
         
-    return _exePath.string().c_str();
+    return _exePath;
 }
 
 void PlatformBridge::Paths::setExecutablePath()

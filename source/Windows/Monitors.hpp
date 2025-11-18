@@ -21,10 +21,15 @@ namespace PlatformBridge
     class Monitors
     {
     public:
+        /// @brief Refreshes the monitor list.
+        static const void Refresh();
+
+        /// @brief Returns information about all connected monitors.
+        /// @return A constant reference to a vector of MonitorInfo structures.
         static const std::vector<MonitorInfo>& GetMonitors();
 
     private:
-        Monitors();
+        Monitors() = default;
         ~Monitors() = default;
         Monitors(const Monitors&) = delete;
         Monitors(Monitors&&) = delete;
@@ -36,7 +41,7 @@ namespace PlatformBridge
             return Instance;
         }
 
-        static BOOL CALLBACK MonitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData);
+        static BOOL CALLBACK monitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData);
         bool enumerateMonitors();
         static inline std::vector<MonitorInfo> _monitors;
         static inline std::vector<MONITORINFOEX> _monitorInfoEx;
