@@ -1,6 +1,7 @@
 #pragma once
 #include "Monitors.hpp"
 #include "Paths.hpp"
+#include "Fonts.hpp"
 
 namespace PlatformBridge
 {
@@ -9,5 +10,6 @@ namespace PlatformBridge
     {
         PlatformBridge::Monitors::Refresh();
         PlatformBridge::Paths::Refresh();
+        PlatformBridge::Fonts::Refresh();
     }
 }

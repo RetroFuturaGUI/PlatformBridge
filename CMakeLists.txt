@@ -10,6 +10,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     message(STATUS "Configuring for Windows platform")
     
     add_library("PlatformBridge" STATIC
+        "${CMAKE_CURRENT_SOURCE_DIR}/source/Windows/Fonts.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/source/Windows/Monitors.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/source/Windows/Paths.cpp"
     )
