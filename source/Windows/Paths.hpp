@@ -1,3 +1,4 @@
+#pragma once
 #include <filesystem>
 #include <Windows.h>
 
@@ -14,7 +15,7 @@ namespace PlatformBridge
         static std::string GetExecutablePath();
 
         /// @brief Returns all path data of the executable.
-        /// @return A std::filesystem::path representing the executable path.
+        /// @return An std::filesystem::path representing the executable path.
         static const std::filesystem::path GetExecutablePathFSPath();
 
     private:
@@ -30,10 +31,8 @@ namespace PlatformBridge
             return Instance;
         }
 
-
         static void setExecutablePath();
 
         static inline std::filesystem::path _exePath;
-
     };
 }
