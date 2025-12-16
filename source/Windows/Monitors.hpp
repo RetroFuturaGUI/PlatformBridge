@@ -10,12 +10,14 @@ namespace PlatformBridge
     struct MonitorInfo
     {
         std::string name;
-        int32_t resWidth;
-        int32_t resHeight;
-        int32_t scalingPercentage;
-        float scalingFactor;
-        float refreshRate;
         HMONITOR handle;
+        int32_t 
+            resWidth,
+            resHeight,
+            scalingPercentage;
+        float
+            scalingFactor,
+            refreshRate;
     };
 
     class Monitors
@@ -45,7 +47,8 @@ namespace PlatformBridge
         bool enumerateMonitors();
         static inline std::vector<MonitorInfo> _monitors;
         static inline std::vector<MONITORINFOEX> _monitorInfoEx;
-        int32_t _monitorCount = 0;
-        int32_t _currentMonitor = 0;
+        int32_t
+            _monitorCount { 0 },
+            _currentMonitor { 0 };
     };
 }
