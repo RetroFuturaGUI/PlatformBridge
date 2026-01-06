@@ -3,6 +3,7 @@
 void PlatformBridge::Paths::Refresh()
 {
     setExecutablePath();
+    setWorkingDir();
 }
 
 std::string PlatformBridge::Paths::GetExecutablePath()
@@ -21,6 +22,22 @@ const std::filesystem::path PlatformBridge::Paths::GetExecutablePathFSPath()
     return _exePath;
 }
 
+std::string PlatformBridge::Paths::GetWorkingDir()
+{
+    return _workingDir;
+}
+
+const char* PlatformBridge::Paths::GetWorkingDirCstr()
+{
+    return _workingDir.c_str();
+}
+
+void PlatformBridge::Paths::SetWorkingDir(const char* dir)
+{
+    _workingDir = dir;
+    SetCurrentDirectoryA(dir);
+}
+
 void PlatformBridge::Paths::setExecutablePath()
 {
     wchar_t buf[MAX_PATH];
@@ -30,4 +47,11 @@ void PlatformBridge::Paths::setExecutablePath()
         return;
         
     _exePath = std::filesystem::path(std::wstring(buf, buf + n));
+}
+
+void PlatformBridge::Paths::setWorkingDir()
+{
+    char buffer[MAX_PATH];
+    GetCurrentDirectoryA(MAX_PATH, buffer);
+    _workingDir = buffer;
 }

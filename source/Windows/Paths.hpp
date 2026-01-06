@@ -18,7 +18,21 @@ namespace PlatformBridge
         /// @return An std::filesystem::path representing the executable path.
         static const std::filesystem::path GetExecutablePathFSPath();
 
+        /// @brief Returns the working directory
+        /// @return An std::string representing the working directory.
+        static std::string GetWorkingDir();
+
+        /// @brief Returns the working directory as C-String
+        /// @return A char* representing the working directory.
+        static const char* GetWorkingDirCstr();
+
+        /// @brief Sets the Working Directory
+        static void SetWorkingDir(const char* dir);
+
     private:
+        static inline std::filesystem::path _exePath;
+        static inline std::string _workingDir;
+
         Paths() = default;
         ~Paths() = default;
         Paths(const Paths&) = delete;
@@ -32,7 +46,6 @@ namespace PlatformBridge
         }
 
         static void setExecutablePath();
-
-        static inline std::filesystem::path _exePath;
+        static void setWorkingDir();
     };
 }
