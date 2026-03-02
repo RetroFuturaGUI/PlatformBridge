@@ -8,8 +8,8 @@ message(STATUS "-- PlatformBridge: Host Processor: ${CMAKE_SYSTEM_PROCESSOR}")
 message(STATUS "-- PlatformBridge: Configuring for ${CMAKE_SYSTEM_NAME} platform")
 
 if(TARGET_TYPE STREQUAL "executable")
-message(STATUS "-- PlatformBridge: Building as an executable")
-    add_library("PlatformBridge" STATIC
+    message(STATUS "-- PlatformBridge: Building as an executable")
+    add_executable("PlatformBridge"
         "${CMAKE_CURRENT_SOURCE_DIR}/source/${CMAKE_SYSTEM_NAME}/Fonts.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/source/${CMAKE_SYSTEM_NAME}/Monitors.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/source/${CMAKE_SYSTEM_NAME}/Paths.cpp"
@@ -21,7 +21,7 @@ message(STATUS "-- PlatformBridge: Building as an executable")
         "${CMAKE_CURRENT_SOURCE_DIR}/source/${CMAKE_SYSTEM_NAME}"
     )
 elseif(TARGET_TYPE STREQUAL "static")
-message(STATUS "-- PlatformBridge: Building as a static library")
+    message(STATUS "-- PlatformBridge: Building as a static library")
     add_library("PlatformBridge" STATIC
         "${CMAKE_CURRENT_SOURCE_DIR}/source/${CMAKE_SYSTEM_NAME}/Fonts.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/source/${CMAKE_SYSTEM_NAME}/Monitors.cpp"
@@ -39,7 +39,7 @@ message(STATUS "-- PlatformBridge: Building as a static library")
         PUBLIC_HEADER DESTINATION include/PlatformBridge
     )
 elseif(TARGET_TYPE STREQUAL "dynamic")
-message(STATUS "-- PlatformBridge: Building as a dynamic library")
+    message(STATUS "-- PlatformBridge: Building as a dynamic library")
     add_library("PlatformBridge" SHARED
         "${CMAKE_CURRENT_SOURCE_DIR}/source/${CMAKE_SYSTEM_NAME}/Fonts.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/source/${CMAKE_SYSTEM_NAME}/Monitors.cpp"
@@ -51,7 +51,7 @@ message(STATUS "-- PlatformBridge: Building as a dynamic library")
         "${CMAKE_CURRENT_SOURCE_DIR}/source/${CMAKE_SYSTEM_NAME}"
     )
 else() #Target_TYPE not defined or unrecognized
-message(STATUS "-- PlatformBridge: Using pre-built static library")
+    message(STATUS "-- PlatformBridge: Using pre-built static library")
     string(TOLOWER "${CMAKE_BUILD_TYPE}" BUILD_TYPE_LOWER)
     set(LIB_PATH "${CMAKE_CURRENT_SOURCE_DIR}/libs/${TARGETPLATFORM}/${BUILD_TYPE_LOWER}/PlatformBridge.lib")
     
