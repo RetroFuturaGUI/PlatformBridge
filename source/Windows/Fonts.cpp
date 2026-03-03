@@ -1,4 +1,5 @@
 #include "Fonts.hpp"
+#include <Windows.h>
 
 void PlatformBridge::Fonts::Refresh()
 {

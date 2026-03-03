@@ -10,27 +10,27 @@ message(STATUS "-- PlatformBridge: Configuring for ${CMAKE_SYSTEM_NAME} platform
 if(TARGET_TYPE STREQUAL "executable")
     message(STATUS "-- PlatformBridge: Building as an executable")
     add_executable("PlatformBridge"
-        "${CMAKE_CURRENT_SOURCE_DIR}/source/${CMAKE_SYSTEM_NAME}/Fonts.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/source/${CMAKE_SYSTEM_NAME}/Monitors.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/source/${CMAKE_SYSTEM_NAME}/Paths.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}/Fonts.cpp"
+        #"${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}/Monitors.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}/Paths.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/source/main.cpp"
     )
     
     target_include_directories("PlatformBridge" PUBLIC
         "${CMAKE_CURRENT_SOURCE_DIR}/source"
-        "${CMAKE_CURRENT_SOURCE_DIR}/source/${CMAKE_SYSTEM_NAME}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}"
     )
 elseif(TARGET_TYPE STREQUAL "static")
     message(STATUS "-- PlatformBridge: Building as a static library")
     add_library("PlatformBridge" STATIC
-        "${CMAKE_CURRENT_SOURCE_DIR}/source/${CMAKE_SYSTEM_NAME}/Fonts.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/source/${CMAKE_SYSTEM_NAME}/Monitors.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/source/${CMAKE_SYSTEM_NAME}/Paths.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}/Fonts.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}/Monitors.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}/Paths.cpp"
     )
     
     target_include_directories("PlatformBridge" PUBLIC
         "${CMAKE_CURRENT_SOURCE_DIR}/source"
-        "${CMAKE_CURRENT_SOURCE_DIR}/source/${CMAKE_SYSTEM_NAME}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}"
     )
     
     install(TARGETS "PlatformBridge"
@@ -41,14 +41,14 @@ elseif(TARGET_TYPE STREQUAL "static")
 elseif(TARGET_TYPE STREQUAL "dynamic")
     message(STATUS "-- PlatformBridge: Building as a dynamic library")
     add_library("PlatformBridge" SHARED
-        "${CMAKE_CURRENT_SOURCE_DIR}/source/${CMAKE_SYSTEM_NAME}/Fonts.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/source/${CMAKE_SYSTEM_NAME}/Monitors.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/source/${CMAKE_SYSTEM_NAME}/Paths.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}/Fonts.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}/Monitors.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}/Paths.cpp"
     )
     
     target_include_directories("PlatformBridge" PUBLIC
         "${CMAKE_CURRENT_SOURCE_DIR}/source"
-        "${CMAKE_CURRENT_SOURCE_DIR}/source/${CMAKE_SYSTEM_NAME}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}"
     )
 else() #Target_TYPE not defined or unrecognized
     message(STATUS "-- PlatformBridge: Using pre-built static library")

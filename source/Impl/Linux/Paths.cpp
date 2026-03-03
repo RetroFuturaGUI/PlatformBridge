@@ -1,4 +1,5 @@
 #include "Paths.hpp"
+#include "LinuxHeaders.hpp"
 
 void PlatformBridge::Paths::Refresh()
 {

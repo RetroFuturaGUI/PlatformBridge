@@ -1,4 +1,5 @@
 #include "Paths.hpp"
+#include <Windows.h>
 
 void PlatformBridge::Paths::Refresh()
 {
