@@ -11,7 +11,7 @@ if(TARGET_TYPE STREQUAL "executable")
     message(STATUS "-- PlatformBridge: Building as an executable")
     add_executable("PlatformBridge"
         "${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}/Fonts.cpp"
-        #"${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}/Monitors.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}/Monitors.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}/Paths.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/source/main.cpp"
     )
