@@ -66,7 +66,7 @@ else() #Target_TYPE not defined or unrecognized
     add_library("PlatformBridge" STATIC IMPORTED GLOBAL)
     set_target_properties("PlatformBridge" PROPERTIES
         IMPORTED_LOCATION "${LIB_PATH}"
-        INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/source;${CMAKE_CURRENT_SOURCE_DIR}/source/${CMAKE_SYSTEM_NAME}"
+        INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/source;${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}"
     )
 
     if(NOT EXISTS "${LIB_PATH}")
