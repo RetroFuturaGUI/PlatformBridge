@@ -53,7 +53,14 @@ elseif(TARGET_TYPE STREQUAL "dynamic")
 else() #Target_TYPE not defined or unrecognized
     message(STATUS "-- PlatformBridge: Using pre-built static library")
     string(TOLOWER "${CMAKE_BUILD_TYPE}" BUILD_TYPE_LOWER)
-    set(LIB_PATH "${CMAKE_CURRENT_SOURCE_DIR}/libs/${TARGETPLATFORM}/${BUILD_TYPE_LOWER}/PlatformBridge.lib")
+
+    if(TARGETPLATFORM STREQUAL "x64-Linux")
+        set(LIB_NAME "libPlatformBridge.a")
+    else() #x64-windows
+        set(LIB_NAME "PlatformBridge.lib")
+    endif()
+
+    set(LIB_PATH "${CMAKE_CURRENT_SOURCE_DIR}/libs/${TARGETPLATFORM}/${BUILD_TYPE_LOWER}/${LIB_NAME}")
     
     # Create an imported library target for the pre-built static library
     add_library("PlatformBridge" STATIC IMPORTED GLOBAL)
