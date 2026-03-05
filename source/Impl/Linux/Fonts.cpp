@@ -31,12 +31,19 @@ void PlatformBridge::Fonts::setFontsInformation()
     while(fgets(buffer, sizeof(buffer), pipe) != nullptr)
     {
         std::string line(buffer);
-        size_t separatorPos = line.find_first_of(": ");
+        size_t tempPos = line.find('\n');
 
-        if(separatorPos == -1uz)
+        if(tempPos == std::string::npos)
             continue;
 
-        _fontInformation.emplace_back(std::string(line.begin() + separatorPos + 2, line.end() - 1), std::string(line.begin(), line.begin() + separatorPos));
+        tempPos = line.find_first_of(": ");
+        if(tempPos == std::string::npos)
+            continue;
+
+        if(line.find(".ttf") == std::string::npos && line.find(".otf") == std::string::npos)
+            continue;
+
+        _fontInformation.emplace_back(std::string(line.begin() + tempPos + 2, line.end() - 1), std::string(line.begin(), line.begin() + tempPos));
     }
 
     pclose(pipe);
