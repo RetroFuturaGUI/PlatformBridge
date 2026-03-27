@@ -40,7 +40,9 @@ void PlatformBridge::Fonts::setFontsInformation()
         if(tempPos == std::string::npos)
             continue;
 
-        if(line.find(".ttf") == std::string::npos && line.find(".otf") == std::string::npos)
+        if(line.find(".ttf") == std::string::npos 
+            && line.find(".ttc") == std::string::npos
+            && line.find(".otf") == std::string::npos)
             continue;
 
         _fontInformation.emplace_back(std::string(line.begin() + tempPos + 2, line.end() - 1), std::string(line.begin(), line.begin() + tempPos));
