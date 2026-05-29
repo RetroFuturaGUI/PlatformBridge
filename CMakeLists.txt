@@ -7,6 +7,16 @@ message(STATUS "-- PlatformBridge: Host OS: ${CMAKE_SYSTEM_NAME}")
 message(STATUS "-- PlatformBridge: Host Processor: ${CMAKE_SYSTEM_PROCESSOR}")
 message(STATUS "-- PlatformBridge: Configuring for ${CMAKE_SYSTEM_NAME} platform")
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON) 
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    message(STATUS "-- PlatformBridge: Configuring for Debug build")
+endif()
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    find_package(Fontconfig REQUIRED)
+endif()
+
 if(TARGET_TYPE STREQUAL "executable")
     message(STATUS "-- PlatformBridge: Building as an executable")
     add_executable("PlatformBridge"
