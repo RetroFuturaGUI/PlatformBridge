@@ -86,8 +86,18 @@ else() #Target_TYPE not defined or unrecognized
     message(STATUS "-- PlatformBridge: Successfully using pre-built PlatformBridge library from: ${LIB_PATH}")
 endif()
 
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    if(TARGET_TYPE STREQUAL "executable")
+        target_link_libraries("PlatformBridge" PRIVATE
+            Fontconfig::Fontconfig)
+    else()
+        target_link_libraries("PlatformBridge" INTERFACE
+            Fontconfig::Fontconfig)
+    endif()
+endif()
+
 enable_testing()
 
-#run cmake:  & "C:\Program Files\CMake\bin\cmake.exe" .. CMakeLists.txt -DTARGET_TYPE=static/dynamic/executable
+#run cmake:  & "C:\Program Files\CMake\bin\cmake.exe" .. CMakeLists.txt -DTARGET_TYPE=static/dynamic/executable -DCMAKE_BUILD_TYPE=Release/Debug
 #build: & "C:\Program Files\CMake\bin\cmake.exe" --build . --config Release or Debug
 #copy .lib files from build/Debug or Release to the lib folder in PlatformBridge
