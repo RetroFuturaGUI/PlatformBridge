@@ -15,12 +15,14 @@ endif()
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     find_package(Fontconfig REQUIRED)
+    find_package(X11 REQUIRED)
 endif()
 
 if(TARGET_TYPE STREQUAL "executable")
     message(STATUS "-- PlatformBridge: Building as an executable")
     add_executable("PlatformBridge"
         "${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}/Fonts.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}/Keyboard.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}/Monitors.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}/Paths.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/source/main.cpp"
@@ -34,6 +36,7 @@ elseif(TARGET_TYPE STREQUAL "static")
     message(STATUS "-- PlatformBridge: Building as a static library")
     add_library("PlatformBridge" STATIC
         "${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}/Fonts.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}/Keyboard.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}/Monitors.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}/Paths.cpp"
     )
@@ -52,6 +55,7 @@ elseif(TARGET_TYPE STREQUAL "dynamic")
     message(STATUS "-- PlatformBridge: Building as a dynamic library")
     add_library("PlatformBridge" SHARED
         "${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}/Fonts.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}/Keyboard.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}/Monitors.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}/Paths.cpp"
     )
@@ -89,10 +93,31 @@ endif()
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     if(TARGET_TYPE STREQUAL "executable")
         target_link_libraries("PlatformBridge" PRIVATE
-            Fontconfig::Fontconfig)
+            Fontconfig::Fontconfig
+            ${X11_LIBRARIES} Xtst Xi)
+
+
+            target_include_directories("PlatformBridge" PRIVATE ${X11_INCLUDE_DIR})
     else()
         target_link_libraries("PlatformBridge" INTERFACE
-            Fontconfig::Fontconfig)
+            Fontconfig::Fontconfig
+            ${X11_LIBRARIES} Xtst Xi)
+
+        target_include_directories("PlatformBridge" INTERFACE ${X11_INCLUDE_DIR})
+    endif()
+endif()
+
+if((TARGET_TYPE STREQUAL "executable") OR (TARGET_TYPE STREQUAL "static") OR (TARGET_TYPE STREQUAL "dynamic"))
+    if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+        target_compile_definitions("PlatformBridge" PUBLIC TARGET_PLATFORM_LINUX)
+    elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+        target_compile_definitions("PlatformBridge" PUBLIC TARGET_PLATFORM_WINDOWS)
+    endif()
+else()
+    if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+        target_compile_definitions("PlatformBridge" INTERFACE TARGET_PLATFORM_LINUX)
+    elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+        target_compile_definitions("PlatformBridge" INTERFACE TARGET_PLATFORM_WINDOWS)
     endif()
 endif()
 

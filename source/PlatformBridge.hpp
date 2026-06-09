@@ -1,11 +1,12 @@
 #pragma once
-
+#include "Definitions.hpp"
 #ifdef _WIN32
 #include "Monitors.hpp" // implement for Linux once needed
 #endif
 
 #include "Paths.hpp"
 #include "Fonts.hpp"
+#include "Keyboard.hpp"
 
 namespace PlatformBridge
 {
@@ -17,5 +18,6 @@ namespace PlatformBridge
     #endif
         PlatformBridge::Paths::Refresh();
         PlatformBridge::Fonts::Refresh();
+        PlatformBridge::Keyboard::Refresh();
     }
 }
