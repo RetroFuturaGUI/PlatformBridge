@@ -19,9 +19,9 @@ void PlatformBridge::Fonts::setFontsInformation()
     _fontProperties.clear();
 
     FcInit();
-    FcConfig* fcConfig = FcInitLoadConfigAndFonts();
-    FcPattern* fcPattern = FcPatternCreate();
-    FcObjectSet* objectSet = FcObjectSetBuild(FC_FILE, 
+    FcConfig* fcConfig { FcInitLoadConfigAndFonts() };
+    FcPattern* fcPattern { FcPatternCreate() };
+    FcObjectSet* objectSet { FcObjectSetBuild(FC_FILE, 
         FC_FAMILY, 
         FC_SLANT,
         FC_WEIGHT,
@@ -33,9 +33,9 @@ void PlatformBridge::Fonts::setFontsInformation()
         //FC_FAMILYLANG,
         //FC_LANG,
         nullptr
-    );
+    )};
     
-    FcFontSet* fcFontList = FcFontList(fcConfig, fcPattern, objectSet);
+    FcFontSet* fcFontList { FcFontList(fcConfig, fcPattern, objectSet) };
     //FcLangSet* langs = FcLangSetCreate();
 
     for (int i = 0; fcFontList && i < fcFontList->nfont; ++i)
@@ -50,7 +50,8 @@ void PlatformBridge::Fonts::setFontsInformation()
             //*variations { nullptr },
             //*postscriptname;
         FcCharSet* fcCharset { nullptr };
-        int32_t slant { 0 }, 
+        int32_t
+            slant { 0 }, 
             weight { 0 };
 
         if(FcPatternGetString(font, FC_FILE, 0, &file) != FcResultMatch)
@@ -154,12 +155,15 @@ PlatformBridge::Fonts::Weight PlatformBridge::Fonts::getCssWeightValue(const int
 std::vector<std::pair<uint32_t, uint32_t>> PlatformBridge::Fonts::getUnicodeRanges(void* charset)
 {
     FcCharSet* fcCharset = reinterpret_cast<FcCharSet*>(charset);
-    uint32_t codepointfirst { 0 },
+    uint32_t 
+        codepointfirst { 0 },
         codepointlast { 0 };
     std::vector<std::pair<uint32_t, uint32_t>> ranges {};
-    FcChar32 fcNextChar { 0 },
+    FcChar32 
+        fcNextChar { 0 },
         fcMap[FC_CHARSET_MAP_SIZE],
         fcPage { FcCharSetFirstPage(fcCharset, fcMap, &fcNextChar) };
+
     codepointfirst = fcPage;
     
     while(fcPage != FC_CHARSET_DONE)

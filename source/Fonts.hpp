@@ -33,7 +33,8 @@ namespace PlatformBridge
         
         struct FontProperty
         {
-            std::string _Name {}, //aka Family
+            std::string 
+                _Name {}, //aka Family
                 _Path {},
                 _Style {};
             Weight _Weight { Weight::Normal };

@@ -1,5 +1,6 @@
 #include "PlatformBridge.hpp"
 #include <print>
+#include <format>
 
 int main()
 {
@@ -19,9 +20,9 @@ int main()
 
         std::println();*/
 
-        if(font._Name == "Noto Sans")
-        {
-            std::println("Name: {}\n    Path: {},\n    Style: {},\n    Weight: {},\n    Slant: {}",
+        if(font._Name.find("CJK JP") != std::string::npos)
+        {// "\033[38;2;255;127;0mThis is orange text\033[0m\n";
+            std::println("\033[127;40;255;127;0mName:\033[0m {}\n    Path: {},\n    Style: {},\n    Weight: {},\n    Slant: {}",
             font._Name, font._Path, font._Style, static_cast<int32_t>(font._Weight), static_cast<int32_t>(font._Slant));
 
             std::println("    Unicode Ranges:");
