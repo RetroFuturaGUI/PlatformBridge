@@ -155,20 +155,16 @@ PlatformBridge::Fonts::Weight PlatformBridge::Fonts::getCssWeightValue(const int
 std::vector<std::pair<uint32_t, uint32_t>> PlatformBridge::Fonts::getUnicodeRanges(void* charset)
 {
     FcCharSet* fcCharset = reinterpret_cast<FcCharSet*>(charset);
-    uint32_t 
-        codepointfirst { 0 },
-        codepointlast { 0 };
+    uint32_t codepointlast { 0 };
     std::vector<std::pair<uint32_t, uint32_t>> ranges {};
     FcChar32 
         fcNextChar { 0 },
         fcMap[FC_CHARSET_MAP_SIZE],
         fcPage { FcCharSetFirstPage(fcCharset, fcMap, &fcNextChar) };
 
-    codepointfirst = fcPage;
-    
     while(fcPage != FC_CHARSET_DONE)
     {
-        for (size_t w = FC_CHARSET_MAP_SIZE - 1; w >= 0; --w) 
+        for (size_t w = FC_CHARSET_MAP_SIZE; w-- > 0;) 
         {
             if (!fcMap[w])
                 continue;

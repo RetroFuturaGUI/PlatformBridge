@@ -298,19 +298,19 @@
 
     /*dead vowels for universal syllable entry */ 
     #define PB_KEY_DEAD_A XK_dead_a
-    #define PB_KEY_DEAD_A XK_dead_A
+    #define PB_KEY_DEAD_CAPITAL_A XK_dead_A
     #define PB_KEY_DEAD_E XK_dead_e
-    #define PB_KEY_DEAD_E XK_dead_E
+    #define PB_KEY_DEAD_CAPITAL_E XK_dead_E
     #define PB_KEY_DEAD_I XK_dead_i
-    #define PB_KEY_DEAD_I XK_dead_I
+    #define PB_KEY_DEAD_CAPITAL_I XK_dead_I
     #define PB_KEY_DEAD_O XK_dead_o
-    #define PB_KEY_DEAD_O XK_dead_O
+    #define PB_KEY_DEAD_CAPITAL_O XK_dead_O
     #define PB_KEY_DEAD_U XK_dead_u
-    #define PB_KEY_DEAD_U XK_dead_U
+    #define PB_KEY_DEAD_CAPITAL_U XK_dead_U
     #define PB_KEY_DEAD_SMALL_SCHWA XK_dead_small_schwa
     #define PB_KEY_DEAD_SCHWA XK_dead_schwa
     #define PB_KEY_DEAD_CAPITAL_SCHWA XK_dead_capital_schwa
-    #define PB_KEY_DEAD_SCHWA XK_dead_SCHWA
+    //#define PB_KEY_DEAD_SCHWA XK_dead_SCHWA
 
     #define PB_KEY_DEAD_GREEK XK_dead_greek
     #define PB_KEY_DEAD_HAMZA XK_dead_hamza
@@ -368,11 +368,11 @@
     /*Single-Stroke Multiple-Character N-Graph Keysyms For The X Input Method */ 
 
     #define PB_KEY_CH XK_ch
-    #define PB_KEY_CH XK_Ch
-    #define PB_KEY_CH XK_CH
+    #define PB_KEY_SMALL_CH XK_Ch
+    #define PB_KEY_CAPITAL_CH XK_CH
     #define PB_KEY_C_H XK_c_h
-    #define PB_KEY_C_H XK_C_h
-    #define PB_KEY_C_H XK_C_H
+    #define PB_KEY_SMALL_C_H XK_C_h
+    #define PB_KEY_CAPITAL_C_H XK_C_H
     #endif
 
     /* XKB_KEYS */        /*       * 3270 Terminal Keys   * Byte 3 = 0xfd  */     
@@ -454,32 +454,32 @@
     #define PB_KEY_GREATER XK_greater
     #define PB_KEY_QUESTION XK_question
     #define PB_KEY_AT XK_at
-    #define PB_KEY_A XK_A
-    #define PB_KEY_B XK_B
-    #define PB_KEY_C XK_C
-    #define PB_KEY_D XK_D
-    #define PB_KEY_E XK_E
-    #define PB_KEY_F XK_F
-    #define PB_KEY_G XK_G
-    #define PB_KEY_H XK_H
-    #define PB_KEY_I XK_I
-    #define PB_KEY_J XK_J
-    #define PB_KEY_K XK_K
-    #define PB_KEY_L XK_L
-    #define PB_KEY_M XK_M
-    #define PB_KEY_N XK_N
-    #define PB_KEY_O XK_O
-    #define PB_KEY_P XK_P
-    #define PB_KEY_Q XK_Q
-    #define PB_KEY_R XK_R
-    #define PB_KEY_S XK_S
-    #define PB_KEY_T XK_T
-    #define PB_KEY_U XK_U
-    #define PB_KEY_V XK_V
-    #define PB_KEY_W XK_W
-    #define PB_KEY_X XK_X
-    #define PB_KEY_Y XK_Y
-    #define PB_KEY_Z XK_Z
+    #define PB_KEY_CAPITAL_A XK_A
+    #define PB_KEY_CAPITAL_B XK_B
+    #define PB_KEY_CAPITAL_C XK_C
+    #define PB_KEY_CAPITAL_D XK_D
+    #define PB_KEY_CAPITAL_E XK_E
+    #define PB_KEY_CAPITAL_F XK_F
+    #define PB_KEY_CAPITAL_G XK_G
+    #define PB_KEY_CAPITAL_H XK_H
+    #define PB_KEY_CAPITAL_I XK_I
+    #define PB_KEY_CAPITAL_J XK_J
+    #define PB_KEY_CAPITAL_K XK_K
+    #define PB_KEY_CAPITAL_L XK_L
+    #define PB_KEY_CAPITAL_M XK_M
+    #define PB_KEY_CAPITAL_N XK_N
+    #define PB_KEY_CAPITAL_O XK_O
+    #define PB_KEY_CAPITAL_P XK_P
+    #define PB_KEY_CAPITAL_Q XK_Q
+    #define PB_KEY_CAPITAL_R XK_R
+    #define PB_KEY_CAPITAL_S XK_S
+    #define PB_KEY_CAPITAL_T XK_T
+    #define PB_KEY_CAPITAL_U XK_U
+    #define PB_KEY_CAPITAL_V XK_V
+    #define PB_KEY_CAPITAL_W XK_W
+    #define PB_KEY_CAPITAL_X XK_X
+    #define PB_KEY_CAPITAL_Y XK_Y
+    #define PB_KEY_CAPITAL_Z XK_Z
     #define PB_KEY_BRACKETLEFT XK_bracketleft
     #define PB_KEY_BACKSLASH XK_backslash
     #define PB_KEY_BRACKETRIGHT XK_bracketright
@@ -553,40 +553,40 @@
     #define PB_KEY_ONEHALF XK_onehalf
     #define PB_KEY_THREEQUARTERS XK_threequarters
     #define PB_KEY_QUESTIONDOWN XK_questiondown
-    #define PB_KEY_AGRAVE XK_Agrave
-    #define PB_KEY_AACUTE XK_Aacute
-    #define PB_KEY_ACIRCUMFLEX XK_Acircumflex
-    #define PB_KEY_ATILDE XK_Atilde
-    #define PB_KEY_ADIAERESIS XK_Adiaeresis
-    #define PB_KEY_ARING XK_Aring
-    #define PB_KEY_AE XK_AE
-    #define PB_KEY_CCEDILLA XK_Ccedilla
-    #define PB_KEY_EGRAVE XK_Egrave
-    #define PB_KEY_EACUTE XK_Eacute
-    #define PB_KEY_ECIRCUMFLEX XK_Ecircumflex
-    #define PB_KEY_EDIAERESIS XK_Ediaeresis
-    #define PB_KEY_IGRAVE XK_Igrave
-    #define PB_KEY_IACUTE XK_Iacute
-    #define PB_KEY_ICIRCUMFLEX XK_Icircumflex
-    #define PB_KEY_IDIAERESIS XK_Idiaeresis
-    #define PB_KEY_ETH XK_ETH
-    #define PB_KEY_ETH XK_Eth
-    #define PB_KEY_NTILDE XK_Ntilde
-    #define PB_KEY_OGRAVE XK_Ograve
-    #define PB_KEY_OACUTE XK_Oacute
-    #define PB_KEY_OCIRCUMFLEX XK_Ocircumflex
-    #define PB_KEY_OTILDE XK_Otilde
-    #define PB_KEY_ODIAERESIS XK_Odiaeresis
+    #define PB_KEY_CAPITAL_AGRAVE XK_Agrave
+    #define PB_KEY_CAPITAL_AACUTE XK_Aacute
+    #define PB_KEY_CAPITAL_ACIRCUMFLEX XK_Acircumflex
+    #define PB_KEY_CAPITAL_ATILDE XK_Atilde
+    #define PB_KEY_CAPITAL_ADIAERESIS XK_Adiaeresis
+    #define PB_KEY_CAPITAL_ARING XK_Aring
+    #define PB_KEY_CAPITAL_AE XK_AE
+    #define PB_KEY_CAPITAL_CCEDILLA XK_Ccedilla
+    #define PB_KEY_CAPITAL_EGRAVE XK_Egrave
+    #define PB_KEY_CAPITAL_EACUTE XK_Eacute
+    #define PB_KEY_CAPITAL_ECIRCUMFLEX XK_Ecircumflex
+    #define PB_KEY_CAPITAL_EDIAERESIS XK_Ediaeresis
+    #define PB_KEY_CAPITAL_IGRAVE XK_Igrave
+    #define PB_KEY_CAPITAL_IACUTE XK_Iacute
+    #define PB_KEY_CAPITAL_ICIRCUMFLEX XK_Icircumflex
+    #define PB_KEY_CAPITAL_IDIAERESIS XK_Idiaeresis
+    #define PB_KEY_CAPITAL_ETH XK_ETH
+    //#define PB_KEY_ETH XK_Eth
+    #define PB_KEY_CAPITAL_NTILDE XK_Ntilde
+    #define PB_KEY_CAPITAL_OGRAVE XK_Ograve
+    #define PB_KEY_CAPITAL_OACUTE XK_Oacute
+    #define PB_KEY_CAPITAL_OCIRCUMFLEX XK_Ocircumflex
+    #define PB_KEY_CAPITAL_OTILDE XK_Otilde
+    #define PB_KEY_CAPITAL_ODIAERESIS XK_Odiaeresis
     #define PB_KEY_MULTIPLY XK_multiply
-    #define PB_KEY_OSLASH XK_Oslash
-    #define PB_KEY_OOBLIQUE XK_Ooblique
-    #define PB_KEY_UGRAVE XK_Ugrave
-    #define PB_KEY_UACUTE XK_Uacute
-    #define PB_KEY_UCIRCUMFLEX XK_Ucircumflex
-    #define PB_KEY_UDIAERESIS XK_Udiaeresis
-    #define PB_KEY_YACUTE XK_Yacute
-    #define PB_KEY_THORN XK_THORN
-    #define PB_KEY_THORN XK_Thorn
+    #define PB_KEY_CAPITAL_OSLASH XK_Oslash
+    #define PB_KEY_CAPITAL_OOBLIQUE XK_Ooblique
+    #define PB_KEY_CAPITAL_UGRAVE XK_Ugrave
+    #define PB_KEY_CAPITAL_UACUTE XK_Uacute
+    #define PB_KEY_CAPITAL_UCIRCUMFLEX XK_Ucircumflex
+    #define PB_KEY_CAPITAL_UDIAERESIS XK_Udiaeresis
+    #define PB_KEY_CAPITAL_YACUTE XK_Yacute
+    #define PB_KEY_CAPITAL_THORN XK_THORN
+    //#define PB_KEY_THORN XK_Thorn
     #define PB_KEY_SSHARP XK_ssharp
     #define PB_KEY_AGRAVE XK_agrave
     #define PB_KEY_AACUTE XK_aacute
@@ -629,17 +629,17 @@
     */
 
     #ifdef XK_LATIN2
-    #define PB_KEY_AOGONEK XK_Aogonek
+    #define PB_KEY_CAPITAL_AOGONEK XK_Aogonek
     #define PB_KEY_BREVE XK_breve
-    #define PB_KEY_LSTROKE XK_Lstroke
-    #define PB_KEY_LCARON XK_Lcaron
-    #define PB_KEY_SACUTE XK_Sacute
-    #define PB_KEY_SCARON XK_Scaron
-    #define PB_KEY_SCEDILLA XK_Scedilla
-    #define PB_KEY_TCARON XK_Tcaron
-    #define PB_KEY_ZACUTE XK_Zacute
-    #define PB_KEY_ZCARON XK_Zcaron
-    #define PB_KEY_ZABOVEDOT XK_Zabovedot
+    #define PB_KEY_CAPITAL_LSTROKE XK_Lstroke
+    #define PB_KEY_CAPITAL_LCARON XK_Lcaron
+    #define PB_KEY_CAPITAL_SACUTE XK_Sacute
+    #define PB_KEY_CAPITAL_SCARON XK_Scaron
+    #define PB_KEY_CAPITAL_SCEDILLA XK_Scedilla
+    #define PB_KEY_CAPITAL_TCARON XK_Tcaron
+    #define PB_KEY_CAPITAL_ZACUTE XK_Zacute
+    #define PB_KEY_CAPITAL_ZCARON XK_Zcaron
+    #define PB_KEY_CAPITAL_ZABOVEDOT XK_Zabovedot
     #define PB_KEY_AOGONEK XK_aogonek
     #define PB_KEY_OGONEK XK_ogonek
     #define PB_KEY_LSTROKE XK_lstroke
@@ -653,22 +653,22 @@
     #define PB_KEY_DOUBLEACUTE XK_doubleacute
     #define PB_KEY_ZCARON XK_zcaron
     #define PB_KEY_ZABOVEDOT XK_zabovedot
-    #define PB_KEY_RACUTE XK_Racute
-    #define PB_KEY_ABREVE XK_Abreve
-    #define PB_KEY_LACUTE XK_Lacute
-    #define PB_KEY_CACUTE XK_Cacute
-    #define PB_KEY_CCARON XK_Ccaron
-    #define PB_KEY_EOGONEK XK_Eogonek
-    #define PB_KEY_ECARON XK_Ecaron
-    #define PB_KEY_DCARON XK_Dcaron
-    #define PB_KEY_DSTROKE XK_Dstroke
-    #define PB_KEY_NACUTE XK_Nacute
-    #define PB_KEY_NCARON XK_Ncaron
-    #define PB_KEY_ODOUBLEACUTE XK_Odoubleacute
-    #define PB_KEY_RCARON XK_Rcaron
-    #define PB_KEY_URING XK_Uring
-    #define PB_KEY_UDOUBLEACUTE XK_Udoubleacute
-    #define PB_KEY_TCEDILLA XK_Tcedilla
+    #define PB_KEY_CAPITAL_RACUTE XK_Racute
+    #define PB_KEY_CAPITAL_ABREVE XK_Abreve
+    #define PB_KEY_CAPITAL_LACUTE XK_Lacute
+    #define PB_KEY_CAPITAL_CACUTE XK_Cacute
+    #define PB_KEY_CAPITAL_CCARON XK_Ccaron
+    #define PB_KEY_CAPITAL_EOGONEK XK_Eogonek
+    #define PB_KEY_CAPITAL_ECARON XK_Ecaron
+    #define PB_KEY_CAPITAL_DCARON XK_Dcaron
+    #define PB_KEY_CAPITAL_DSTROKE XK_Dstroke
+    #define PB_KEY_CAPITAL_NACUTE XK_Nacute
+    #define PB_KEY_CAPITAL_NCARON XK_Ncaron
+    #define PB_KEY_CAPITAL_ODOUBLEACUTE XK_Odoubleacute
+    #define PB_KEY_CAPITAL_RCARON XK_Rcaron
+    #define PB_KEY_CAPITAL_URING XK_Uring
+    #define PB_KEY_CAPITAL_CAPITAL_UDOUBLEACUTE XK_Udoubleacute
+    #define PB_KEY_CAPITAL_CAPITAL_TCEDILLA XK_Tcedilla
     #define PB_KEY_RACUTE XK_racute
     #define PB_KEY_ABREVE XK_abreve
     #define PB_KEY_LACUTE XK_lacute
@@ -694,22 +694,22 @@
     */
 
     #ifdef XK_LATIN3
-    #define PB_KEY_HSTROKE XK_Hstroke
-    #define PB_KEY_HCIRCUMFLEX XK_Hcircumflex
-    #define PB_KEY_IABOVEDOT XK_Iabovedot
-    #define PB_KEY_GBREVE XK_Gbreve
-    #define PB_KEY_JCIRCUMFLEX XK_Jcircumflex
+    #define PB_KEY_CAPITAL_HSTROKE XK_Hstroke
+    #define PB_KEY_CAPITAL_HCIRCUMFLEX XK_Hcircumflex
+    #define PB_KEY_CAPITAL_IABOVEDOT XK_Iabovedot
+    #define PB_KEY_CAPITAL_GBREVE XK_Gbreve
+    #define PB_KEY_CAPITAL_JCIRCUMFLEX XK_Jcircumflex
     #define PB_KEY_HSTROKE XK_hstroke
     #define PB_KEY_HCIRCUMFLEX XK_hcircumflex
     #define PB_KEY_IDOTLESS XK_idotless
     #define PB_KEY_GBREVE XK_gbreve
     #define PB_KEY_JCIRCUMFLEX XK_jcircumflex
-    #define PB_KEY_CABOVEDOT XK_Cabovedot
-    #define PB_KEY_CCIRCUMFLEX XK_Ccircumflex
-    #define PB_KEY_GABOVEDOT XK_Gabovedot
-    #define PB_KEY_GCIRCUMFLEX XK_Gcircumflex
-    #define PB_KEY_UBREVE XK_Ubreve
-    #define PB_KEY_SCIRCUMFLEX XK_Scircumflex
+    #define PB_KEY_CAPITAL_CABOVEDOT XK_Cabovedot
+    #define PB_KEY_CAPITAL_CCIRCUMFLEX XK_Ccircumflex
+    #define PB_KEY_CAPITAL_GABOVEDOT XK_Gabovedot
+    #define PB_KEY_CAPITAL_GCIRCUMFLEX XK_Gcircumflex
+    #define PB_KEY_CAPITAL_UBREVE XK_Ubreve
+    #define PB_KEY_CAPITAL_CAPITAL_SCIRCUMFLEX XK_Scircumflex
     #define PB_KEY_CABOVEDOT XK_cabovedot
     #define PB_KEY_CCIRCUMFLEX XK_ccircumflex
     #define PB_KEY_GABOVEDOT XK_gabovedot
@@ -727,30 +727,30 @@
     #ifdef XK_LATIN4
     #define PB_KEY_KRA XK_kra
     #define PB_KEY_KAPPA XK_kappa
-    #define PB_KEY_RCEDILLA XK_Rcedilla
-    #define PB_KEY_ITILDE XK_Itilde
-    #define PB_KEY_LCEDILLA XK_Lcedilla
-    #define PB_KEY_EMACRON XK_Emacron
-    #define PB_KEY_GCEDILLA XK_Gcedilla
-    #define PB_KEY_TSLASH XK_Tslash
+    #define PB_KEY_CAPITAL_RCEDILLA XK_Rcedilla
+    #define PB_KEY_CAPITAL_ITILDE XK_Itilde
+    #define PB_KEY_CAPITAL_LCEDILLA XK_Lcedilla
+    #define PB_KEY_CAPITAL_EMACRON XK_Emacron
+    #define PB_KEY_CAPITAL_GCEDILLA XK_Gcedilla
+    #define PB_KEY_CAPITAL_TSLASH XK_Tslash
     #define PB_KEY_RCEDILLA XK_rcedilla
     #define PB_KEY_ITILDE XK_itilde
     #define PB_KEY_LCEDILLA XK_lcedilla
     #define PB_KEY_EMACRON XK_emacron
     #define PB_KEY_GCEDILLA XK_gcedilla
     #define PB_KEY_TSLASH XK_tslash
-    #define PB_KEY_ENG XK_ENG
+    #define PB_KEY_CAPITAL_ENG XK_ENG
     #define PB_KEY_ENG XK_eng
-    #define PB_KEY_AMACRON XK_Amacron
-    #define PB_KEY_IOGONEK XK_Iogonek
-    #define PB_KEY_EABOVEDOT XK_Eabovedot
-    #define PB_KEY_IMACRON XK_Imacron
-    #define PB_KEY_NCEDILLA XK_Ncedilla
-    #define PB_KEY_OMACRON XK_Omacron
-    #define PB_KEY_KCEDILLA XK_Kcedilla
-    #define PB_KEY_UOGONEK XK_Uogonek
-    #define PB_KEY_UTILDE XK_Utilde
-    #define PB_KEY_UMACRON XK_Umacron
+    #define PB_KEY_CAPITAL_AMACRON XK_Amacron
+    #define PB_KEY_CAPITAL_IOGONEK XK_Iogonek
+    #define PB_KEY_CAPITAL_EABOVEDOT XK_Eabovedot
+    #define PB_KEY_CAPITAL_IMACRON XK_Imacron
+    #define PB_KEY_CAPITAL_NCEDILLA XK_Ncedilla
+    #define PB_KEY_CAPITAL_OMACRON XK_Omacron
+    #define PB_KEY_CAPITAL_KCEDILLA XK_Kcedilla
+    #define PB_KEY_CAPITAL_UOGONEK XK_Uogonek
+    #define PB_KEY_CAPITAL_UTILDE XK_Utilde
+    #define PB_KEY_CAPITAL_UMACRON XK_Umacron
     #define PB_KEY_AMACRON XK_amacron
     #define PB_KEY_IOGONEK XK_iogonek
     #define PB_KEY_EABOVEDOT XK_eabovedot
@@ -767,31 +767,31 @@
     *LATINLatin
     */
     #ifdef XK_LATIN8
-    #define PB_KEY_WCIRCUMFLEX XK_Wcircumflex
+    #define PB_KEY_CAPITAL_WCIRCUMFLEX XK_Wcircumflex
     #define PB_KEY_WCIRCUMFLEX XK_wcircumflex
-    #define PB_KEY_YCIRCUMFLEX XK_Ycircumflex
+    #define PB_KEY_CAPITAL_YCIRCUMFLEX XK_Ycircumflex
     #define PB_KEY_YCIRCUMFLEX XK_ycircumflex
-    #define PB_KEY_BABOVEDOT XK_Babovedot
+    #define PB_KEY_CAPITAL_BABOVEDOT XK_Babovedot
     #define PB_KEY_BABOVEDOT XK_babovedot
-    #define PB_KEY_DABOVEDOT XK_Dabovedot
+    #define PB_KEY_CAPITAL_DABOVEDOT XK_Dabovedot
     #define PB_KEY_DABOVEDOT XK_dabovedot
-    #define PB_KEY_FABOVEDOT XK_Fabovedot
+    #define PB_KEY_CAPITAL_FABOVEDOT XK_Fabovedot
     #define PB_KEY_FABOVEDOT XK_fabovedot
-    #define PB_KEY_MABOVEDOT XK_Mabovedot
+    #define PB_KEY_CAPITAL_MABOVEDOT XK_Mabovedot
     #define PB_KEY_MABOVEDOT XK_mabovedot
-    #define PB_KEY_PABOVEDOT XK_Pabovedot
+    #define PB_KEY_CAPITAL_PABOVEDOT XK_Pabovedot
     #define PB_KEY_PABOVEDOT XK_pabovedot
-    #define PB_KEY_SABOVEDOT XK_Sabovedot
+    #define PB_KEY_CAPITAL_SABOVEDOT XK_Sabovedot
     #define PB_KEY_SABOVEDOT XK_sabovedot
-    #define PB_KEY_TABOVEDOT XK_Tabovedot
+    #define PB_KEY_CAPITAL_TABOVEDOT XK_Tabovedot
     #define PB_KEY_TABOVEDOT XK_tabovedot
-    #define PB_KEY_WGRAVE XK_Wgrave
+    #define PB_KEY_CAPITAL_WGRAVE XK_Wgrave
     #define PB_KEY_WGRAVE XK_wgrave
-    #define PB_KEY_WACUTE XK_Wacute
+    #define PB_KEY_CAPITAL_WACUTE XK_Wacute
     #define PB_KEY_WACUTE XK_wacute
-    #define PB_KEY_WDIAERESIS XK_Wdiaeresis
+    #define PB_KEY_CAPITAL_WDIAERESIS XK_Wdiaeresis
     #define PB_KEY_WDIAERESIS XK_wdiaeresis
-    #define PB_KEY_YGRAVE XK_Ygrave
+    #define PB_KEY_CAPITAL_YGRAVE XK_Ygrave
     #define PB_KEY_YGRAVE XK_ygrave
     #endif
 
@@ -801,9 +801,9 @@
     */
 
     #ifdef XK_LATIN9
-    #define PB_KEY_OE XK_OE
+    #define PB_KEY_CAPITAL_OE XK_OE
     #define PB_KEY_OE XK_oe
-    #define PB_KEY_YDIAERESIS XK_Ydiaeresis
+    #define PB_KEY_CAPITAL_YDIAERESIS XK_Ydiaeresis
     #endif
 
     /*
@@ -820,16 +820,16 @@
     #define PB_KEY_KANA_CONJUNCTIVE XK_kana_conjunctive
     #define PB_KEY_KANA_MIDDLEDOT XK_kana_middledot
     #define PB_KEY_KANA_WO XK_kana_WO
-    #define PB_KEY_KANA_A XK_kana_a
-    #define PB_KEY_KANA_I XK_kana_i
-    #define PB_KEY_KANA_U XK_kana_u
-    #define PB_KEY_KANA_E XK_kana_e
-    #define PB_KEY_KANA_O XK_kana_o
-    #define PB_KEY_KANA_YA XK_kana_ya
-    #define PB_KEY_KANA_YU XK_kana_yu
-    #define PB_KEY_KANA_YO XK_kana_yo
-    #define PB_KEY_KANA_TSU XK_kana_tsu
-    #define PB_KEY_KANA_TU XK_kana_tu
+    #define PB_KEY_SMALL_KANA_A XK_kana_a
+    #define PB_KEY_SMALL_KANA_I XK_kana_i
+    #define PB_KEY_SMALL_KANA_U XK_kana_u
+    #define PB_KEY_SMALL_KANA_E XK_kana_e
+    #define PB_KEY_SMALL_KANA_O XK_kana_o
+    #define PB_KEY_SMALL_KANA_YA XK_kana_ya
+    #define PB_KEY_SMALL_KANA_YU XK_kana_yu
+    #define PB_KEY_SMALL_KANA_YO XK_kana_yo
+    #define PB_KEY_SMALL_KANA_TSU XK_kana_tsu
+    #define PB_KEY_SMALL_KANA_TU XK_kana_tu
     #define PB_KEY_PROLONGEDSOUND XK_prolongedsound
     #define PB_KEY_KANA_A XK_kana_A
     #define PB_KEY_KANA_I XK_kana_I
@@ -988,36 +988,36 @@
     *BYTEByte
     */
     #ifdef XK_CYRILLIC
-    #define PB_KEY_CYRILLIC_GHE_BAR XK_Cyrillic_GHE_bar
+    #define PB_KEY_CAPITAL_CYRILLIC_GHE_BAR XK_Cyrillic_GHE_bar
     #define PB_KEY_CYRILLIC_GHE_BAR XK_Cyrillic_ghe_bar
-    #define PB_KEY_CYRILLIC_ZHE_DESCENDER XK_Cyrillic_ZHE_descender
+    #define PB_KEY_CAPITAL_CYRILLIC_ZHE_DESCENDER XK_Cyrillic_ZHE_descender
     #define PB_KEY_CYRILLIC_ZHE_DESCENDER XK_Cyrillic_zhe_descender
-    #define PB_KEY_CYRILLIC_KA_DESCENDER XK_Cyrillic_KA_descender
+    #define PB_KEY_CAPITAL_CYRILLIC_KA_DESCENDER XK_Cyrillic_KA_descender
     #define PB_KEY_CYRILLIC_KA_DESCENDER XK_Cyrillic_ka_descender
-    #define PB_KEY_CYRILLIC_KA_VERTSTROKE XK_Cyrillic_KA_vertstroke
+    #define PB_KEY_CAPITAL_CYRILLIC_KA_VERTSTROKE XK_Cyrillic_KA_vertstroke
     #define PB_KEY_CYRILLIC_KA_VERTSTROKE XK_Cyrillic_ka_vertstroke
-    #define PB_KEY_CYRILLIC_EN_DESCENDER XK_Cyrillic_EN_descender
+    #define PB_KEY_CAPITAL_CYRILLIC_EN_DESCENDER XK_Cyrillic_EN_descender
     #define PB_KEY_CYRILLIC_EN_DESCENDER XK_Cyrillic_en_descender
-    #define PB_KEY_CYRILLIC_U_STRAIGHT XK_Cyrillic_U_straight
+    #define PB_KEY_CAPITAL_CYRILLIC_U_STRAIGHT XK_Cyrillic_U_straight
     #define PB_KEY_CYRILLIC_U_STRAIGHT XK_Cyrillic_u_straight
-    #define PB_KEY_CYRILLIC_U_STRAIGHT_BAR XK_Cyrillic_U_straight_bar
+    #define PB_KEY_CAPITAL_CYRILLIC_U_STRAIGHT_BAR XK_Cyrillic_U_straight_bar
     #define PB_KEY_CYRILLIC_U_STRAIGHT_BAR XK_Cyrillic_u_straight_bar
-    #define PB_KEY_CYRILLIC_HA_DESCENDER XK_Cyrillic_HA_descender
+    #define PB_KEY_CAPITAL_CYRILLIC_HA_DESCENDER XK_Cyrillic_HA_descender
     #define PB_KEY_CYRILLIC_HA_DESCENDER XK_Cyrillic_ha_descender
-    #define PB_KEY_CYRILLIC_CHE_DESCENDER XK_Cyrillic_CHE_descender
+    #define PB_KEY_CAPITAL_CYRILLIC_CHE_DESCENDER XK_Cyrillic_CHE_descender
     #define PB_KEY_CYRILLIC_CHE_DESCENDER XK_Cyrillic_che_descender
-    #define PB_KEY_CYRILLIC_CHE_VERTSTROKE XK_Cyrillic_CHE_vertstroke
+    #define PB_KEY_CAPITAL_CYRILLIC_CHE_VERTSTROKE XK_Cyrillic_CHE_vertstroke
     #define PB_KEY_CYRILLIC_CHE_VERTSTROKE XK_Cyrillic_che_vertstroke
-    #define PB_KEY_CYRILLIC_SHHA XK_Cyrillic_SHHA
+    #define PB_KEY_CAPITAL_CYRILLIC_SHHA XK_Cyrillic_SHHA
     #define PB_KEY_CYRILLIC_SHHA XK_Cyrillic_shha
 
-    #define PB_KEY_CYRILLIC_SCHWA XK_Cyrillic_SCHWA
+    #define PB_KEY_CAPITAL_CYRILLIC_SCHWA XK_Cyrillic_SCHWA
     #define PB_KEY_CYRILLIC_SCHWA XK_Cyrillic_schwa
-    #define PB_KEY_CYRILLIC_I_MACRON XK_Cyrillic_I_macron
+    #define PB_KEY_CAPITAL_CYRILLIC_I_MACRON XK_Cyrillic_I_macron
     #define PB_KEY_CYRILLIC_I_MACRON XK_Cyrillic_i_macron
-    #define PB_KEY_CYRILLIC_O_BAR XK_Cyrillic_O_bar
+    #define PB_KEY_CAPITAL_CYRILLIC_O_BAR XK_Cyrillic_O_bar
     #define PB_KEY_CYRILLIC_O_BAR XK_Cyrillic_o_bar
-    #define PB_KEY_CYRILLIC_U_MACRON XK_Cyrillic_U_macron
+    #define PB_KEY_CAPITAL_CYRILLIC_U_MACRON XK_Cyrillic_U_macron
     #define PB_KEY_CYRILLIC_U_MACRON XK_Cyrillic_u_macron
 
     #define PB_KEY_SERBIAN_DJE XK_Serbian_dje
@@ -1043,28 +1043,28 @@
     #define PB_KEY_CYRILLIC_DZHE XK_Cyrillic_dzhe
     #define PB_KEY_SERBIAN_DZE XK_Serbian_dze
     #define PB_KEY_NUMEROSIGN XK_numerosign
-    #define PB_KEY_SERBIAN_DJE XK_Serbian_DJE
-    #define PB_KEY_MACEDONIA_GJE XK_Macedonia_GJE
-    #define PB_KEY_CYRILLIC_IO XK_Cyrillic_IO
-    #define PB_KEY_UKRAINIAN_IE XK_Ukrainian_IE
-    #define PB_KEY_UKRANIAN_JE XK_Ukranian_JE
-    #define PB_KEY_MACEDONIA_DSE XK_Macedonia_DSE
-    #define PB_KEY_UKRAINIAN_I XK_Ukrainian_I
-    #define PB_KEY_UKRANIAN_I XK_Ukranian_I
-    #define PB_KEY_UKRAINIAN_YI XK_Ukrainian_YI
-    #define PB_KEY_UKRANIAN_YI XK_Ukranian_YI
-    #define PB_KEY_CYRILLIC_JE XK_Cyrillic_JE
-    #define PB_KEY_SERBIAN_JE XK_Serbian_JE
-    #define PB_KEY_CYRILLIC_LJE XK_Cyrillic_LJE
-    #define PB_KEY_SERBIAN_LJE XK_Serbian_LJE
-    #define PB_KEY_CYRILLIC_NJE XK_Cyrillic_NJE
-    #define PB_KEY_SERBIAN_NJE XK_Serbian_NJE
-    #define PB_KEY_SERBIAN_TSHE XK_Serbian_TSHE
-    #define PB_KEY_MACEDONIA_KJE XK_Macedonia_KJE
-    #define PB_KEY_UKRAINIAN_GHE_WITH_UPTURN XK_Ukrainian_GHE_WITH_UPTURN
-    #define PB_KEY_BYELORUSSIAN_SHORTU XK_Byelorussian_SHORTU
-    #define PB_KEY_CYRILLIC_DZHE XK_Cyrillic_DZHE
-    #define PB_KEY_SERBIAN_DZE XK_Serbian_DZE
+    #define PB_KEY_CAPITAL_SERBIAN_DJE XK_Serbian_DJE
+    #define PB_KEY_CAPITAL_MACEDONIA_GJE XK_Macedonia_GJE
+    #define PB_KEY_CAPITAL_CYRILLIC_IO XK_Cyrillic_IO
+    #define PB_KEY_CAPITAL_UKRAINIAN_IE XK_Ukrainian_IE
+    #define PB_KEY_CAPITAL_UKRANIAN_JE XK_Ukranian_JE
+    #define PB_KEY_CAPITAL_MACEDONIA_DSE XK_Macedonia_DSE
+    #define PB_KEY_CAPITAL_UKRAINIAN_I XK_Ukrainian_I
+    #define PB_KEY_CAPITAL_UKRANIAN_I XK_Ukranian_I
+    #define PB_KEY_CAPITAL_UKRAINIAN_YI XK_Ukrainian_YI
+    #define PB_KEY_CAPITAL_UKRANIAN_YI XK_Ukranian_YI
+    #define PB_KEY_CAPITAL_CYRILLIC_JE XK_Cyrillic_JE
+    #define PB_KEY_CAPITAL_SERBIAN_JE XK_Serbian_JE
+    #define PB_KEY_CAPITAL_CYRILLIC_LJE XK_Cyrillic_LJE
+    #define PB_KEY_CAPITAL_SERBIAN_LJE XK_Serbian_LJE
+    #define PB_KEY_CAPITAL_CYRILLIC_NJE XK_Cyrillic_NJE
+    #define PB_KEY_CAPITAL_SERBIAN_NJE XK_Serbian_NJE
+    #define PB_KEY_CAPITAL_SERBIAN_TSHE XK_Serbian_TSHE
+    #define PB_KEY_CAPITAL_MACEDONIA_KJE XK_Macedonia_KJE
+    #define PB_KEY_CAPITAL_UKRAINIAN_GHE_WITH_UPTURN XK_Ukrainian_GHE_WITH_UPTURN
+    #define PB_KEY_CAPITAL_BYELORUSSIAN_SHORTU XK_Byelorussian_SHORTU
+    #define PB_KEY_CAPITAL_CYRILLIC_DZHE XK_Cyrillic_DZHE
+    #define PB_KEY_CAPITAL_SERBIAN_DZE XK_Serbian_DZE
     #define PB_KEY_CYRILLIC_YU XK_Cyrillic_yu
     #define PB_KEY_CYRILLIC_A XK_Cyrillic_a
     #define PB_KEY_CYRILLIC_BE XK_Cyrillic_be
@@ -1097,38 +1097,38 @@
     #define PB_KEY_CYRILLIC_SHCHA XK_Cyrillic_shcha
     #define PB_KEY_CYRILLIC_CHE XK_Cyrillic_che
     #define PB_KEY_CYRILLIC_HARDSIGN XK_Cyrillic_hardsign
-    #define PB_KEY_CYRILLIC_YU XK_Cyrillic_YU
-    #define PB_KEY_CYRILLIC_A XK_Cyrillic_A
-    #define PB_KEY_CYRILLIC_BE XK_Cyrillic_BE
-    #define PB_KEY_CYRILLIC_TSE XK_Cyrillic_TSE
-    #define PB_KEY_CYRILLIC_DE XK_Cyrillic_DE
-    #define PB_KEY_CYRILLIC_IE XK_Cyrillic_IE
-    #define PB_KEY_CYRILLIC_EF XK_Cyrillic_EF
-    #define PB_KEY_CYRILLIC_GHE XK_Cyrillic_GHE
-    #define PB_KEY_CYRILLIC_HA XK_Cyrillic_HA
-    #define PB_KEY_CYRILLIC_I XK_Cyrillic_I
-    #define PB_KEY_CYRILLIC_SHORTI XK_Cyrillic_SHORTI
-    #define PB_KEY_CYRILLIC_KA XK_Cyrillic_KA
-    #define PB_KEY_CYRILLIC_EL XK_Cyrillic_EL
-    #define PB_KEY_CYRILLIC_EM XK_Cyrillic_EM
-    #define PB_KEY_CYRILLIC_EN XK_Cyrillic_EN
-    #define PB_KEY_CYRILLIC_O XK_Cyrillic_O
-    #define PB_KEY_CYRILLIC_PE XK_Cyrillic_PE
-    #define PB_KEY_CYRILLIC_YA XK_Cyrillic_YA
-    #define PB_KEY_CYRILLIC_ER XK_Cyrillic_ER
-    #define PB_KEY_CYRILLIC_ES XK_Cyrillic_ES
-    #define PB_KEY_CYRILLIC_TE XK_Cyrillic_TE
-    #define PB_KEY_CYRILLIC_U XK_Cyrillic_U
-    #define PB_KEY_CYRILLIC_ZHE XK_Cyrillic_ZHE
-    #define PB_KEY_CYRILLIC_VE XK_Cyrillic_VE
-    #define PB_KEY_CYRILLIC_SOFTSIGN XK_Cyrillic_SOFTSIGN
-    #define PB_KEY_CYRILLIC_YERU XK_Cyrillic_YERU
-    #define PB_KEY_CYRILLIC_ZE XK_Cyrillic_ZE
-    #define PB_KEY_CYRILLIC_SHA XK_Cyrillic_SHA
-    #define PB_KEY_CYRILLIC_E XK_Cyrillic_E
-    #define PB_KEY_CYRILLIC_SHCHA XK_Cyrillic_SHCHA
-    #define PB_KEY_CYRILLIC_CHE XK_Cyrillic_CHE
-    #define PB_KEY_CYRILLIC_HARDSIGN XK_Cyrillic_HARDSIGN
+    #define PB_KEY_CAPITAL_CYRILLIC_YU XK_Cyrillic_YU
+    #define PB_KEY_CAPITAL_CYRILLIC_A XK_Cyrillic_A
+    #define PB_KEY_CAPITAL_CYRILLIC_BE XK_Cyrillic_BE
+    #define PB_KEY_CAPITAL_CYRILLIC_TSE XK_Cyrillic_TSE
+    #define PB_KEY_CAPITAL_CYRILLIC_DE XK_Cyrillic_DE
+    #define PB_KEY_CAPITAL_CYRILLIC_IE XK_Cyrillic_IE
+    #define PB_KEY_CAPITAL_CYRILLIC_EF XK_Cyrillic_EF
+    #define PB_KEY_CAPITAL_CYRILLIC_GHE XK_Cyrillic_GHE
+    #define PB_KEY_CAPITAL_CYRILLIC_HA XK_Cyrillic_HA
+    #define PB_KEY_CAPITAL_CYRILLIC_I XK_Cyrillic_I
+    #define PB_KEY_CAPITAL_CYRILLIC_SHORTI XK_Cyrillic_SHORTI
+    #define PB_KEY_CAPITAL_CYRILLIC_KA XK_Cyrillic_KA
+    #define PB_KEY_CAPITAL_CYRILLIC_EL XK_Cyrillic_EL
+    #define PB_KEY_CAPITAL_CYRILLIC_EM XK_Cyrillic_EM
+    #define PB_KEY_CAPITAL_CYRILLIC_EN XK_Cyrillic_EN
+    #define PB_KEY_CAPITAL_CYRILLIC_O XK_Cyrillic_O
+    #define PB_KEY_CAPITAL_CYRILLIC_PE XK_Cyrillic_PE
+    #define PB_KEY_CAPITAL_CYRILLIC_YA XK_Cyrillic_YA
+    #define PB_KEY_CAPITAL_CYRILLIC_ER XK_Cyrillic_ER
+    #define PB_KEY_CAPITAL_CYRILLIC_ES XK_Cyrillic_ES
+    #define PB_KEY_CAPITAL_CYRILLIC_TE XK_Cyrillic_TE
+    #define PB_KEY_CAPITAL_CYRILLIC_U XK_Cyrillic_U
+    #define PB_KEY_CAPITAL_CYRILLIC_ZHE XK_Cyrillic_ZHE
+    #define PB_KEY_CAPITAL_CYRILLIC_VE XK_Cyrillic_VE
+    #define PB_KEY_CAPITAL_CYRILLIC_SOFTSIGN XK_Cyrillic_SOFTSIGN
+    #define PB_KEY_CAPITAL_CYRILLIC_YERU XK_Cyrillic_YERU
+    #define PB_KEY_CAPITAL_CYRILLIC_ZE XK_Cyrillic_ZE
+    #define PB_KEY_CAPITAL_CYRILLIC_SHA XK_Cyrillic_SHA
+    #define PB_KEY_CAPITAL_CYRILLIC_E XK_Cyrillic_E
+    #define PB_KEY_CAPITAL_CYRILLIC_SHCHA XK_Cyrillic_SHCHA
+    #define PB_KEY_CAPITAL_CYRILLIC_CHE XK_Cyrillic_CHE
+    #define PB_KEY_CAPITAL_CYRILLIC_HARDSIGN XK_Cyrillic_HARDSIGN
     #endif
 
     /* * Greek * (based on an early draft of, and not quite identical to, ISO/IEC 8859-7) * Byte 3 = 7          */              
@@ -1138,16 +1138,16 @@
 
 
     #ifdef XK_GREEK
-    #define PB_KEY_GREEK_ALPHAACCENT XK_Greek_ALPHAaccent
-    #define PB_KEY_GREEK_EPSILONACCENT XK_Greek_EPSILONaccent
-    #define PB_KEY_GREEK_ETAACCENT XK_Greek_ETAaccent
-    #define PB_KEY_GREEK_IOTAACCENT XK_Greek_IOTAaccent
-    #define PB_KEY_GREEK_IOTADIERESIS XK_Greek_IOTAdieresis
-    #define PB_KEY_GREEK_IOTADIAERESIS XK_Greek_IOTAdiaeresis
-    #define PB_KEY_GREEK_OMICRONACCENT XK_Greek_OMICRONaccent
-    #define PB_KEY_GREEK_UPSILONACCENT XK_Greek_UPSILONaccent
-    #define PB_KEY_GREEK_UPSILONDIERESIS XK_Greek_UPSILONdieresis
-    #define PB_KEY_GREEK_OMEGAACCENT XK_Greek_OMEGAaccent
+    #define PB_KEY_CAPITAL_GREEK_ALPHAACCENT XK_Greek_ALPHAaccent
+    #define PB_KEY_CAPITAL_GREEK_EPSILONACCENT XK_Greek_EPSILONaccent
+    #define PB_KEY_CAPITAL_GREEK_ETAACCENT XK_Greek_ETAaccent
+    #define PB_KEY_CAPITAL_GREEK_IOTAACCENT XK_Greek_IOTAaccent
+    #define PB_KEY_CAPITAL_GREEK_IOTADIERESIS XK_Greek_IOTAdieresis
+    #define PB_KEY_CAPITAL_GREEK_IOTADIAERESIS XK_Greek_IOTAdiaeresis
+    #define PB_KEY_CAPITAL_GREEK_OMICRONACCENT XK_Greek_OMICRONaccent
+    #define PB_KEY_CAPITAL_GREEK_UPSILONACCENT XK_Greek_UPSILONaccent
+    #define PB_KEY_CAPITAL_GREEK_UPSILONDIERESIS XK_Greek_UPSILONdieresis
+    #define PB_KEY_CAPITAL_GREEK_OMEGAACCENT XK_Greek_OMEGAaccent
     #define PB_KEY_GREEK_ACCENTDIERESIS XK_Greek_accentdieresis
     #define PB_KEY_GREEK_HORIZBAR XK_Greek_horizbar
     #define PB_KEY_GREEK_ALPHAACCENT XK_Greek_alphaaccent
@@ -1161,31 +1161,31 @@
     #define PB_KEY_GREEK_UPSILONDIERESIS XK_Greek_upsilondieresis
     #define PB_KEY_GREEK_UPSILONACCENTDIERESIS XK_Greek_upsilonaccentdieresis
     #define PB_KEY_GREEK_OMEGAACCENT XK_Greek_omegaaccent
-    #define PB_KEY_GREEK_ALPHA XK_Greek_ALPHA
-    #define PB_KEY_GREEK_BETA XK_Greek_BETA
-    #define PB_KEY_GREEK_GAMMA XK_Greek_GAMMA
-    #define PB_KEY_GREEK_DELTA XK_Greek_DELTA
-    #define PB_KEY_GREEK_EPSILON XK_Greek_EPSILON
-    #define PB_KEY_GREEK_ZETA XK_Greek_ZETA
-    #define PB_KEY_GREEK_ETA XK_Greek_ETA
-    #define PB_KEY_GREEK_THETA XK_Greek_THETA
-    #define PB_KEY_GREEK_IOTA XK_Greek_IOTA
-    #define PB_KEY_GREEK_KAPPA XK_Greek_KAPPA
-    #define PB_KEY_GREEK_LAMDA XK_Greek_LAMDA
-    #define PB_KEY_GREEK_LAMBDA XK_Greek_LAMBDA
-    #define PB_KEY_GREEK_MU XK_Greek_MU
-    #define PB_KEY_GREEK_NU XK_Greek_NU
-    #define PB_KEY_GREEK_XI XK_Greek_XI
-    #define PB_KEY_GREEK_OMICRON XK_Greek_OMICRON
-    #define PB_KEY_GREEK_PI XK_Greek_PI
-    #define PB_KEY_GREEK_RHO XK_Greek_RHO
-    #define PB_KEY_GREEK_SIGMA XK_Greek_SIGMA
-    #define PB_KEY_GREEK_TAU XK_Greek_TAU
-    #define PB_KEY_GREEK_UPSILON XK_Greek_UPSILON
-    #define PB_KEY_GREEK_PHI XK_Greek_PHI
-    #define PB_KEY_GREEK_CHI XK_Greek_CHI
-    #define PB_KEY_GREEK_PSI XK_Greek_PSI
-    #define PB_KEY_GREEK_OMEGA XK_Greek_OMEGA
+    #define PB_KEY_CAPITAL_GREEK_ALPHA XK_Greek_ALPHA
+    #define PB_KEY_CAPITAL_GREEK_BETA XK_Greek_BETA
+    #define PB_KEY_CAPITAL_GREEK_GAMMA XK_Greek_GAMMA
+    #define PB_KEY_CAPITAL_GREEK_DELTA XK_Greek_DELTA
+    #define PB_KEY_CAPITAL_GREEK_EPSILON XK_Greek_EPSILON
+    #define PB_KEY_CAPITAL_GREEK_ZETA XK_Greek_ZETA
+    #define PB_KEY_CAPITAL_GREEK_ETA XK_Greek_ETA
+    #define PB_KEY_CAPITAL_GREEK_THETA XK_Greek_THETA
+    #define PB_KEY_CAPITAL_GREEK_IOTA XK_Greek_IOTA
+    #define PB_KEY_CAPITAL_GREEK_KAPPA XK_Greek_KAPPA
+    #define PB_KEY_CAPITAL_GREEK_LAMDA XK_Greek_LAMDA
+    #define PB_KEY_CAPITAL_GREEK_LAMBDA XK_Greek_LAMBDA
+    #define PB_KEY_CAPITAL_GREEK_MU XK_Greek_MU
+    #define PB_KEY_CAPITAL_GREEK_NU XK_Greek_NU
+    #define PB_KEY_CAPITAL_GREEK_XI XK_Greek_XI
+    #define PB_KEY_CAPITAL_GREEK_OMICRON XK_Greek_OMICRON
+    #define PB_KEY_CAPITAL_GREEK_PI XK_Greek_PI
+    #define PB_KEY_CAPITAL_GREEK_RHO XK_Greek_RHO
+    #define PB_KEY_CAPITAL_GREEK_SIGMA XK_Greek_SIGMA
+    #define PB_KEY_CAPITAL_GREEK_TAU XK_Greek_TAU
+    #define PB_KEY_CAPITAL_GREEK_UPSILON XK_Greek_UPSILON
+    #define PB_KEY_CAPITAL_GREEK_PHI XK_Greek_PHI
+    #define PB_KEY_CAPITAL_GREEK_CHI XK_Greek_CHI
+    #define PB_KEY_CAPITAL_GREEK_PSI XK_Greek_PSI
+    #define PB_KEY_CAPITAL_GREEK_OMEGA XK_Greek_OMEGA
     #define PB_KEY_GREEK_ALPHA XK_Greek_alpha
     #define PB_KEY_GREEK_BETA XK_Greek_beta
     #define PB_KEY_GREEK_GAMMA XK_Greek_gamma
@@ -1715,81 +1715,81 @@
     #define PB_KEY_ARMENIAN_SHESHT XK_Armenian_shesht
     #define PB_KEY_ARMENIAN_QUESTION XK_Armenian_question
     #define PB_KEY_ARMENIAN_PARUYK XK_Armenian_paruyk
-    #define PB_KEY_ARMENIAN_AYB XK_Armenian_AYB
+    #define PB_KEY_CAPITAL_ARMENIAN_AYB XK_Armenian_AYB
     #define PB_KEY_ARMENIAN_AYB XK_Armenian_ayb
-    #define PB_KEY_ARMENIAN_BEN XK_Armenian_BEN
+    #define PB_KEY_CAPITAL_ARMENIAN_BEN XK_Armenian_BEN
     #define PB_KEY_ARMENIAN_BEN XK_Armenian_ben
-    #define PB_KEY_ARMENIAN_GIM XK_Armenian_GIM
+    #define PB_KEY_CAPITAL_ARMENIAN_GIM XK_Armenian_GIM
     #define PB_KEY_ARMENIAN_GIM XK_Armenian_gim
-    #define PB_KEY_ARMENIAN_DA XK_Armenian_DA
+    #define PB_KEY_CAPITAL_ARMENIAN_DA XK_Armenian_DA
     #define PB_KEY_ARMENIAN_DA XK_Armenian_da
-    #define PB_KEY_ARMENIAN_YECH XK_Armenian_YECH
+    #define PB_KEY_CAPITAL_ARMENIAN_YECH XK_Armenian_YECH
     #define PB_KEY_ARMENIAN_YECH XK_Armenian_yech
-    #define PB_KEY_ARMENIAN_ZA XK_Armenian_ZA
+    #define PB_KEY_CAPITAL_ARMENIAN_ZA XK_Armenian_ZA
     #define PB_KEY_ARMENIAN_ZA XK_Armenian_za
-    #define PB_KEY_ARMENIAN_E XK_Armenian_E
+    #define PB_KEY_CAPITAL_ARMENIAN_E XK_Armenian_E
     #define PB_KEY_ARMENIAN_E XK_Armenian_e
-    #define PB_KEY_ARMENIAN_AT XK_Armenian_AT
+    #define PB_KEY_CAPITAL_ARMENIAN_AT XK_Armenian_AT
     #define PB_KEY_ARMENIAN_AT XK_Armenian_at
-    #define PB_KEY_ARMENIAN_TO XK_Armenian_TO
+    #define PB_KEY_CAPITAL_ARMENIAN_TO XK_Armenian_TO
     #define PB_KEY_ARMENIAN_TO XK_Armenian_to
-    #define PB_KEY_ARMENIAN_ZHE XK_Armenian_ZHE
+    #define PB_KEY_CAPITAL_ARMENIAN_ZHE XK_Armenian_ZHE
     #define PB_KEY_ARMENIAN_ZHE XK_Armenian_zhe
-    #define PB_KEY_ARMENIAN_INI XK_Armenian_INI
+    #define PB_KEY_CAPITAL_ARMENIAN_INI XK_Armenian_INI
     #define PB_KEY_ARMENIAN_INI XK_Armenian_ini
-    #define PB_KEY_ARMENIAN_LYUN XK_Armenian_LYUN
+    #define PB_KEY_CAPITAL_ARMENIAN_LYUN XK_Armenian_LYUN
     #define PB_KEY_ARMENIAN_LYUN XK_Armenian_lyun
-    #define PB_KEY_ARMENIAN_KHE XK_Armenian_KHE
+    #define PB_KEY_CAPITAL_ARMENIAN_KHE XK_Armenian_KHE
     #define PB_KEY_ARMENIAN_KHE XK_Armenian_khe
-    #define PB_KEY_ARMENIAN_TSA XK_Armenian_TSA
+    #define PB_KEY_CAPITAL_ARMENIAN_TSA XK_Armenian_TSA
     #define PB_KEY_ARMENIAN_TSA XK_Armenian_tsa
-    #define PB_KEY_ARMENIAN_KEN XK_Armenian_KEN
+    #define PB_KEY_CAPITAL_ARMENIAN_KEN XK_Armenian_KEN
     #define PB_KEY_ARMENIAN_KEN XK_Armenian_ken
-    #define PB_KEY_ARMENIAN_HO XK_Armenian_HO
+    #define PB_KEY_CAPITAL_ARMENIAN_HO XK_Armenian_HO
     #define PB_KEY_ARMENIAN_HO XK_Armenian_ho
-    #define PB_KEY_ARMENIAN_DZA XK_Armenian_DZA
+    #define PB_KEY_CAPITAL_ARMENIAN_DZA XK_Armenian_DZA
     #define PB_KEY_ARMENIAN_DZA XK_Armenian_dza
-    #define PB_KEY_ARMENIAN_GHAT XK_Armenian_GHAT
+    #define PB_KEY_CAPITAL_ARMENIAN_GHAT XK_Armenian_GHAT
     #define PB_KEY_ARMENIAN_GHAT XK_Armenian_ghat
-    #define PB_KEY_ARMENIAN_TCHE XK_Armenian_TCHE
+    #define PB_KEY_CAPITAL_ARMENIAN_TCHE XK_Armenian_TCHE
     #define PB_KEY_ARMENIAN_TCHE XK_Armenian_tche
-    #define PB_KEY_ARMENIAN_MEN XK_Armenian_MEN
+    #define PB_KEY_CAPITAL_ARMENIAN_MEN XK_Armenian_MEN
     #define PB_KEY_ARMENIAN_MEN XK_Armenian_men
-    #define PB_KEY_ARMENIAN_HI XK_Armenian_HI
+    #define PB_KEY_CAPITAL_ARMENIAN_HI XK_Armenian_HI
     #define PB_KEY_ARMENIAN_HI XK_Armenian_hi
-    #define PB_KEY_ARMENIAN_NU XK_Armenian_NU
+    #define PB_KEY_CAPITAL_ARMENIAN_NU XK_Armenian_NU
     #define PB_KEY_ARMENIAN_NU XK_Armenian_nu
-    #define PB_KEY_ARMENIAN_SHA XK_Armenian_SHA
+    #define PB_KEY_CAPITAL_ARMENIAN_SHA XK_Armenian_SHA
     #define PB_KEY_ARMENIAN_SHA XK_Armenian_sha
-    #define PB_KEY_ARMENIAN_VO XK_Armenian_VO
+    #define PB_KEY_CAPITAL_ARMENIAN_VO XK_Armenian_VO
     #define PB_KEY_ARMENIAN_VO XK_Armenian_vo
-    #define PB_KEY_ARMENIAN_CHA XK_Armenian_CHA
+    #define PB_KEY_CAPITAL_ARMENIAN_CHA XK_Armenian_CHA
     #define PB_KEY_ARMENIAN_CHA XK_Armenian_cha
-    #define PB_KEY_ARMENIAN_PE XK_Armenian_PE
+    #define PB_KEY_CAPITAL_ARMENIAN_PE XK_Armenian_PE
     #define PB_KEY_ARMENIAN_PE XK_Armenian_pe
-    #define PB_KEY_ARMENIAN_JE XK_Armenian_JE
+    #define PB_KEY_CAPITAL_ARMENIAN_JE XK_Armenian_JE
     #define PB_KEY_ARMENIAN_JE XK_Armenian_je
-    #define PB_KEY_ARMENIAN_RA XK_Armenian_RA
+    #define PB_KEY_CAPITAL_ARMENIAN_RA XK_Armenian_RA
     #define PB_KEY_ARMENIAN_RA XK_Armenian_ra
-    #define PB_KEY_ARMENIAN_SE XK_Armenian_SE
+    #define PB_KEY_CAPITAL_ARMENIAN_SE XK_Armenian_SE
     #define PB_KEY_ARMENIAN_SE XK_Armenian_se
-    #define PB_KEY_ARMENIAN_VEV XK_Armenian_VEV
+    #define PB_KEY_CAPITAL_ARMENIAN_VEV XK_Armenian_VEV
     #define PB_KEY_ARMENIAN_VEV XK_Armenian_vev
-    #define PB_KEY_ARMENIAN_TYUN XK_Armenian_TYUN
+    #define PB_KEY_CAPITAL_ARMENIAN_TYUN XK_Armenian_TYUN
     #define PB_KEY_ARMENIAN_TYUN XK_Armenian_tyun
-    #define PB_KEY_ARMENIAN_RE XK_Armenian_RE
+    #define PB_KEY_CAPITAL_ARMENIAN_RE XK_Armenian_RE
     #define PB_KEY_ARMENIAN_RE XK_Armenian_re
-    #define PB_KEY_ARMENIAN_TSO XK_Armenian_TSO
+    #define PB_KEY_CAPITAL_ARMENIAN_TSO XK_Armenian_TSO
     #define PB_KEY_ARMENIAN_TSO XK_Armenian_tso
-    #define PB_KEY_ARMENIAN_VYUN XK_Armenian_VYUN
+    #define PB_KEY_CAPITAL_ARMENIAN_VYUN XK_Armenian_VYUN
     #define PB_KEY_ARMENIAN_VYUN XK_Armenian_vyun
-    #define PB_KEY_ARMENIAN_PYUR XK_Armenian_PYUR
+    #define PB_KEY_CAPITAL_ARMENIAN_PYUR XK_Armenian_PYUR
     #define PB_KEY_ARMENIAN_PYUR XK_Armenian_pyur
-    #define PB_KEY_ARMENIAN_KE XK_Armenian_KE
+    #define PB_KEY_CAPITAL_ARMENIAN_KE XK_Armenian_KE
     #define PB_KEY_ARMENIAN_KE XK_Armenian_ke
-    #define PB_KEY_ARMENIAN_O XK_Armenian_O
+    #define PB_KEY_CAPITAL_ARMENIAN_O XK_Armenian_O
     #define PB_KEY_ARMENIAN_O XK_Armenian_o
-    #define PB_KEY_ARMENIAN_FE XK_Armenian_FE
+    #define PB_KEY_CAPITAL_ARMENIAN_FE XK_Armenian_FE
     #define PB_KEY_ARMENIAN_FE XK_Armenian_fe
     #define PB_KEY_ARMENIAN_APOSTROPHE XK_Armenian_apostrophe
     #endif
@@ -1846,24 +1846,24 @@
 
     #ifdef XK_CAUCASUS
     /*latin*/
-    #define PB_KEY_XABOVEDOT XK_Xabovedot
-    #define PB_KEY_IBREVE XK_Ibreve
-    #define PB_KEY_ZSTROKE XK_Zstroke
-    #define PB_KEY_GCARON XK_Gcaron
-    #define PB_KEY_OCARON XK_Ocaron
-    #define PB_KEY_OBARRED XK_Obarred
+    #define PB_KEY_CAPITAL_XABOVEDOT XK_Xabovedot
+    #define PB_KEY_CAPITAL_IBREVE XK_Ibreve
+    #define PB_KEY_CAPITAL_ZSTROKE XK_Zstroke
+    #define PB_KEY_CAPITAL_GCARON XK_Gcaron
+    #define PB_KEY_CAPITAL_OCARON XK_Ocaron
+    #define PB_KEY_CAPITAL_OBARRED XK_Obarred
     #define PB_KEY_XABOVEDOT XK_xabovedot
     #define PB_KEY_IBREVE XK_ibreve
     #define PB_KEY_ZSTROKE XK_zstroke
     #define PB_KEY_GCARON XK_gcaron
     #define PB_KEY_OCARON XK_ocaron
     #define PB_KEY_OBARRED XK_obarred
-    #define PB_KEY_SCHWA XK_SCHWA
+    #define PB_KEY_CAPITAL_SCHWA XK_SCHWA
     #define PB_KEY_SCHWA XK_schwa
-    #define PB_KEY_EZH XK_EZH
+    #define PB_KEY_CAPITAL_EZH XK_EZH
     #define PB_KEY_EZH XK_ezh
     //Inupiak
-    #define PB_KEY_LBELOWDOT XK_Lbelowdot
+    #define PB_KEY_CAPITAL_LBELOWDOT XK_Lbelowdot
     #define PB_KEY_LBELOWDOT XK_lbelowdot
     #endif
 
@@ -1872,97 +1872,97 @@
     */
 
     #ifdef XK_VIETNAMESE
-    #define PB_KEY_ABELOWDOT XK_Abelowdot
+    #define PB_KEY_CAPITAL_ABELOWDOT XK_Abelowdot
     #define PB_KEY_ABELOWDOT XK_abelowdot
-    #define PB_KEY_AHOOK XK_Ahook
+    #define PB_KEY_CAPITAL_AHOOK XK_Ahook
     #define PB_KEY_AHOOK XK_ahook
-    #define PB_KEY_ACIRCUMFLEXACUTE XK_Acircumflexacute
+    #define PB_KEY_CAPITAL_ACIRCUMFLEXACUTE XK_Acircumflexacute
     #define PB_KEY_ACIRCUMFLEXACUTE XK_acircumflexacute
-    #define PB_KEY_ACIRCUMFLEXGRAVE XK_Acircumflexgrave
+    #define PB_KEY_CAPITAL_ACIRCUMFLEXGRAVE XK_Acircumflexgrave
     #define PB_KEY_ACIRCUMFLEXGRAVE XK_acircumflexgrave
-    #define PB_KEY_ACIRCUMFLEXHOOK XK_Acircumflexhook
+    #define PB_KEY_CAPITAL_ACIRCUMFLEXHOOK XK_Acircumflexhook
     #define PB_KEY_ACIRCUMFLEXHOOK XK_acircumflexhook
-    #define PB_KEY_ACIRCUMFLEXTILDE XK_Acircumflextilde
+    #define PB_KEY_CAPITAL_ACIRCUMFLEXTILDE XK_Acircumflextilde
     #define PB_KEY_ACIRCUMFLEXTILDE XK_acircumflextilde
-    #define PB_KEY_ACIRCUMFLEXBELOWDOT XK_Acircumflexbelowdot
+    #define PB_KEY_CAPITAL_ACIRCUMFLEXBELOWDOT XK_Acircumflexbelowdot
     #define PB_KEY_ACIRCUMFLEXBELOWDOT XK_acircumflexbelowdot
-    #define PB_KEY_ABREVEACUTE XK_Abreveacute
+    #define PB_KEY_CAPITAL_ABREVEACUTE XK_Abreveacute
     #define PB_KEY_ABREVEACUTE XK_abreveacute
-    #define PB_KEY_ABREVEGRAVE XK_Abrevegrave
+    #define PB_KEY_CAPITAL_ABREVEGRAVE XK_Abrevegrave
     #define PB_KEY_ABREVEGRAVE XK_abrevegrave
-    #define PB_KEY_ABREVEHOOK XK_Abrevehook
+    #define PB_KEY_CAPITAL_ABREVEHOOK XK_Abrevehook
     #define PB_KEY_ABREVEHOOK XK_abrevehook
-    #define PB_KEY_ABREVETILDE XK_Abrevetilde
+    #define PB_KEY_CAPITAL_ABREVETILDE XK_Abrevetilde
     #define PB_KEY_ABREVETILDE XK_abrevetilde
-    #define PB_KEY_ABREVEBELOWDOT XK_Abrevebelowdot
+    #define PB_KEY_CAPITAL_ABREVEBELOWDOT XK_Abrevebelowdot
     #define PB_KEY_ABREVEBELOWDOT XK_abrevebelowdot
-    #define PB_KEY_EBELOWDOT XK_Ebelowdot
+    #define PB_KEY_CAPITAL_EBELOWDOT XK_Ebelowdot
     #define PB_KEY_EBELOWDOT XK_ebelowdot
-    #define PB_KEY_EHOOK XK_Ehook
+    #define PB_KEY_CAPITAL_EHOOK XK_Ehook
     #define PB_KEY_EHOOK XK_ehook
-    #define PB_KEY_ETILDE XK_Etilde
+    #define PB_KEY_CAPITAL_ETILDE XK_Etilde
     #define PB_KEY_ETILDE XK_etilde
-    #define PB_KEY_ECIRCUMFLEXACUTE XK_Ecircumflexacute
+    #define PB_KEY_CAPITAL_ECIRCUMFLEXACUTE XK_Ecircumflexacute
     #define PB_KEY_ECIRCUMFLEXACUTE XK_ecircumflexacute
-    #define PB_KEY_ECIRCUMFLEXGRAVE XK_Ecircumflexgrave
+    #define PB_KEY_CAPITAL_ECIRCUMFLEXGRAVE XK_Ecircumflexgrave
     #define PB_KEY_ECIRCUMFLEXGRAVE XK_ecircumflexgrave
-    #define PB_KEY_ECIRCUMFLEXHOOK XK_Ecircumflexhook
+    #define PB_KEY_CAPITAL_ECIRCUMFLEXHOOK XK_Ecircumflexhook
     #define PB_KEY_ECIRCUMFLEXHOOK XK_ecircumflexhook
-    #define PB_KEY_ECIRCUMFLEXTILDE XK_Ecircumflextilde
+    #define PB_KEY_CAPITAL_ECIRCUMFLEXTILDE XK_Ecircumflextilde
     #define PB_KEY_ECIRCUMFLEXTILDE XK_ecircumflextilde
-    #define PB_KEY_ECIRCUMFLEXBELOWDOT XK_Ecircumflexbelowdot
+    #define PB_KEY_CAPITAL_ECIRCUMFLEXBELOWDOT XK_Ecircumflexbelowdot
     #define PB_KEY_ECIRCUMFLEXBELOWDOT XK_ecircumflexbelowdot
-    #define PB_KEY_IHOOK XK_Ihook
+    #define PB_KEY_CAPITAL_IHOOK XK_Ihook
     #define PB_KEY_IHOOK XK_ihook
-    #define PB_KEY_IBELOWDOT XK_Ibelowdot
+    #define PB_KEY_CAPITAL_IBELOWDOT XK_Ibelowdot
     #define PB_KEY_IBELOWDOT XK_ibelowdot
-    #define PB_KEY_OBELOWDOT XK_Obelowdot
+    #define PB_KEY_CAPITAL_OBELOWDOT XK_Obelowdot
     #define PB_KEY_OBELOWDOT XK_obelowdot
-    #define PB_KEY_OHOOK XK_Ohook
+    #define PB_KEY_CAPITAL_OHOOK XK_Ohook
     #define PB_KEY_OHOOK XK_ohook
-    #define PB_KEY_OCIRCUMFLEXACUTE XK_Ocircumflexacute
+    #define PB_KEY_CAPITAL_OCIRCUMFLEXACUTE XK_Ocircumflexacute
     #define PB_KEY_OCIRCUMFLEXACUTE XK_ocircumflexacute
-    #define PB_KEY_OCIRCUMFLEXGRAVE XK_Ocircumflexgrave
+    #define PB_KEY_CAPITAL_OCIRCUMFLEXGRAVE XK_Ocircumflexgrave
     #define PB_KEY_OCIRCUMFLEXGRAVE XK_ocircumflexgrave
-    #define PB_KEY_OCIRCUMFLEXHOOK XK_Ocircumflexhook
+    #define PB_KEY_CAPITAL_OCIRCUMFLEXHOOK XK_Ocircumflexhook
     #define PB_KEY_OCIRCUMFLEXHOOK XK_ocircumflexhook
-    #define PB_KEY_OCIRCUMFLEXTILDE XK_Ocircumflextilde
+    #define PB_KEY_CAPITAL_OCIRCUMFLEXTILDE XK_Ocircumflextilde
     #define PB_KEY_OCIRCUMFLEXTILDE XK_ocircumflextilde
-    #define PB_KEY_OCIRCUMFLEXBELOWDOT XK_Ocircumflexbelowdot
+    #define PB_KEY_CAPITAL_OCIRCUMFLEXBELOWDOT XK_Ocircumflexbelowdot
     #define PB_KEY_OCIRCUMFLEXBELOWDOT XK_ocircumflexbelowdot
-    #define PB_KEY_OHORNACUTE XK_Ohornacute
+    #define PB_KEY_CAPITAL_OHORNACUTE XK_Ohornacute
     #define PB_KEY_OHORNACUTE XK_ohornacute
-    #define PB_KEY_OHORNGRAVE XK_Ohorngrave
+    #define PB_KEY_CAPITAL_OHORNGRAVE XK_Ohorngrave
     #define PB_KEY_OHORNGRAVE XK_ohorngrave
-    #define PB_KEY_OHORNHOOK XK_Ohornhook
+    #define PB_KEY_CAPITAL_OHORNHOOK XK_Ohornhook
     #define PB_KEY_OHORNHOOK XK_ohornhook
-    #define PB_KEY_OHORNTILDE XK_Ohorntilde
+    #define PB_KEY_CAPITAL_OHORNTILDE XK_Ohorntilde
     #define PB_KEY_OHORNTILDE XK_ohorntilde
-    #define PB_KEY_OHORNBELOWDOT XK_Ohornbelowdot
+    #define PB_KEY_CAPITAL_OHORNBELOWDOT XK_Ohornbelowdot
     #define PB_KEY_OHORNBELOWDOT XK_ohornbelowdot
-    #define PB_KEY_UBELOWDOT XK_Ubelowdot
+    #define PB_KEY_CAPITAL_UBELOWDOT XK_Ubelowdot
     #define PB_KEY_UBELOWDOT XK_ubelowdot
-    #define PB_KEY_UHOOK XK_Uhook
+    #define PB_KEY_CAPITAL_UHOOK XK_Uhook
     #define PB_KEY_UHOOK XK_uhook
-    #define PB_KEY_UHORNACUTE XK_Uhornacute
+    #define PB_KEY_CAPITAL_UHORNACUTE XK_Uhornacute
     #define PB_KEY_UHORNACUTE XK_uhornacute
-    #define PB_KEY_UHORNGRAVE XK_Uhorngrave
+    #define PB_KEY_CAPITAL_UHORNGRAVE XK_Uhorngrave
     #define PB_KEY_UHORNGRAVE XK_uhorngrave
-    #define PB_KEY_UHORNHOOK XK_Uhornhook
+    #define PB_KEY_CAPITAL_UHORNHOOK XK_Uhornhook
     #define PB_KEY_UHORNHOOK XK_uhornhook
-    #define PB_KEY_UHORNTILDE XK_Uhorntilde
+    #define PB_KEY_CAPITAL_UHORNTILDE XK_Uhorntilde
     #define PB_KEY_UHORNTILDE XK_uhorntilde
-    #define PB_KEY_UHORNBELOWDOT XK_Uhornbelowdot
+    #define PB_KEY_CAPITAL_UHORNBELOWDOT XK_Uhornbelowdot
     #define PB_KEY_UHORNBELOWDOT XK_uhornbelowdot
-    #define PB_KEY_YBELOWDOT XK_Ybelowdot
+    #define PB_KEY_CAPITAL_YBELOWDOT XK_Ybelowdot
     #define PB_KEY_YBELOWDOT XK_ybelowdot
-    #define PB_KEY_YHOOK XK_Yhook
+    #define PB_KEY_CAPITAL_YHOOK XK_Yhook
     #define PB_KEY_YHOOK XK_yhook
-    #define PB_KEY_YTILDE XK_Ytilde
+    #define PB_KEY_CAPITAL_YTILDE XK_Ytilde
     #define PB_KEY_YTILDE XK_ytilde
-    #define PB_KEY_OHORN XK_Ohorn
+    #define PB_KEY_CAPITAL_OHORN XK_Ohorn
     #define PB_KEY_OHORN XK_ohorn
-    #define PB_KEY_UHORN XK_Uhorn
+    #define PB_KEY_CAPITAL_UHORN XK_Uhorn
     #define PB_KEY_UHORN XK_uhorn
     #define PB_KEY_COMBINING_TILDE XK_combining_tilde
     #define PB_KEY_COMBINING_GRAVE XK_combining_grave

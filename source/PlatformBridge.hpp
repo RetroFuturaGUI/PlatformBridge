@@ -6,7 +6,7 @@
 
 #include "Paths.hpp"
 #include "Fonts.hpp"
-#include "Keyboard.hpp"
+#include "Input.hpp"
 
 namespace PlatformBridge
 {
@@ -18,6 +18,6 @@ namespace PlatformBridge
     #endif
         PlatformBridge::Paths::Refresh();
         PlatformBridge::Fonts::Refresh();
-        PlatformBridge::Keyboard::Refresh();
+        PlatformBridge::Input::Refresh();
     }
 }

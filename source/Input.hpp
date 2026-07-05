@@ -10,6 +10,7 @@
 #include <cstdint>
 #include <thread>
 #include <atomic>
+#include <mutex>
 
 namespace PlatformBridge
 {
@@ -63,7 +64,7 @@ namespace PlatformBridge
         NumpadEnter = 1 << 26
     };*/
 
-    class Keyboard
+    class Input
     {
     public:
         /// @brief Refreshes the Keyboard module.
@@ -81,7 +82,10 @@ namespace PlatformBridge
         //static int32_t GetInputLanguage();
 
         /// @brief Sets the current window to capture key strokes from..
-        static void SetActiveWindow(const uint32_t window);
+        static void SetActiveWindow(const uint64_t window, const uint64_t rawWindow = 0);
+
+        /// @brief Sets the current display to capture key strokes from..
+        static void SetActiveDisplay(void* display);
 
         /// @brief Get KeyPressState of passed key symbol.
         /// @return Returns a KeyPressState (Release, Press, Repeat).
@@ -91,16 +95,24 @@ namespace PlatformBridge
         /// @return Returns a KeyboardUseState (KeyReleased, KeyPressed, KeyRepeated).
         static KeyboardUseState GetKeyboardUseState();
 
+        /// @brief Get the active display.
+        /// @return Returns the void pointer of the active display.
+        static void* GetActiveDisplay();
+
+        /// @brief Get the active window ID.
+        /// @return Returns the active window ID as a pointer-sized integer.
+        static uint64_t GetActiveWindowID();
+
     private:
-        Keyboard() = default;
-        Keyboard(const Keyboard&) = delete;
-        Keyboard& operator=(const Keyboard&) = delete;
-        Keyboard(const Keyboard&&) = delete;
-        Keyboard& operator=(const Keyboard&&) = delete;
-        ~Keyboard();
-        static Keyboard& GetInstance()
+        Input() = default;
+        Input(const Input&) = delete;
+        Input& operator=(const Input&) = delete;
+        Input(const Input&&) = delete;
+        Input& operator=(const Input&&) = delete;
+        ~Input();
+        static Input& GetInstance()
         {
-            static Keyboard Instance;
+            static Input Instance;
             return Instance;
         }
         static void initThread();
@@ -108,13 +120,18 @@ namespace PlatformBridge
 
         static inline std::string _inputStringBuffer;
         //static inline int32_t _inputLanguage;
-        static inline uint32_t
-            _rootWindow,
-            _currentWindow,
-            _lastKeySym;
-        static inline void* _display;
+        static inline uint64_t
+            _rootWindow { 0 },
+            _currentWindow { 0 },
+            _rawWindow { 0 };
+        static inline uint32_t _lastKeySym { 0 };
+        static inline void
+            * _display { nullptr },
+            * _rawDisplay { nullptr };
+        static inline bool _ownsDisplay { false };
         static inline std::thread _inputThread;
         static inline std::atomic<bool> _running { false };
+        static inline std::mutex _inputMutex;
         static inline KeyPressState _commonKeyState;
         static inline KeyboardUseState _keyboardUseState;
         //static inline ModifierKey _modifierKeyState;
