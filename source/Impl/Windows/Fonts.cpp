@@ -23,7 +23,7 @@ namespace
         return lowered;
     }
 
-    std::string decodeNameString(const std::vector<std::uint8_t>& bytes, std::size_t offset, std::uint16_t length, std::uint16_t platformId, std::uint16_t encodingId)
+    std::string decodeNameString(const std::vector<uint8_t>& bytes, const size_t offset, const size_t length, const uint16_t platformId, const uint16_t encodingId)
     {
         if (offset + length > bytes.size())
             return {};
@@ -33,11 +33,13 @@ namespace
             std::string decoded;
             decoded.reserve(length / 2);
 
-            for (std::size_t i = 0; i + 1 < length; i += 2)
+            for (size_t i = 0; i + 1 < length; i += 2)
             {
-                const std::uint16_t codeUnit = static_cast<std::uint16_t>((bytes[offset + i] << 8) | bytes[offset + i + 1]);
+                const uint16_t codeUnit = static_cast<uint16_t>((bytes[offset + i] << 8) | bytes[offset + i + 1]);
+                
                 if (codeUnit == 0)
                     break;
+
                 if (codeUnit <= 0x7F)
                     decoded.push_back(static_cast<char>(codeUnit));
             }
@@ -51,61 +53,78 @@ namespace
     std::optional<std::string> getFontSubfamilyName(const std::filesystem::path& fontPath)
     {
         std::ifstream input(fontPath, std::ios::binary);
+
         if (!input)
             return std::nullopt;
 
-        std::vector<std::uint8_t> header(12);
+        std::vector<uint8_t> header(12);
+
         if (!input.read(reinterpret_cast<char*>(header.data()), static_cast<std::streamsize>(header.size())))
             return std::nullopt;
 
-        const auto readU16Be = [&](const std::vector<std::uint8_t>& bytes, std::size_t offset) -> std::uint16_t
+        const auto readU16Be = [&](const std::vector<uint8_t>& bytes, size_t offset) -> uint16_t
         {
-            return static_cast<std::uint16_t>((bytes[offset] << 8) | bytes[offset + 1]);
+            return static_cast<uint16_t>((bytes[offset] << 8) | bytes[offset + 1]);
         };
 
-        const std::uint16_t numTables = static_cast<std::uint16_t>((header[4] << 8) | header[5]);
+        const size_t numTables { static_cast<uint16_t>((header[4] << 8) | header[5]) };
 
-        for (std::uint16_t tableIndex = 0; tableIndex < numTables; ++tableIndex)
+        for (size_t tableIndex { 0 }; tableIndex < numTables; ++tableIndex)
         {
-            std::vector<std::uint8_t> tableEntry(16);
+            std::vector<uint8_t> tableEntry(16);
+
             if (!input.read(reinterpret_cast<char*>(tableEntry.data()), static_cast<std::streamsize>(tableEntry.size())))
                 return std::nullopt;
 
             const std::string tag(reinterpret_cast<const char*>(tableEntry.data()), 4);
+
             if (tag != "name")
                 continue;
 
-            const std::uint32_t tableOffset = static_cast<std::uint32_t>((tableEntry[8] << 24) | (tableEntry[9] << 16) |
-                (tableEntry[10] << 8) | tableEntry[11]);
-            const std::uint32_t tableLength = static_cast<std::uint32_t>((tableEntry[12] << 24) | (tableEntry[13] << 16) |
-                (tableEntry[14] << 8) | tableEntry[15]);
+            const uint32_t tableOffset { static_cast<uint32_t>(
+                  (tableEntry[8] << 24) 
+                | (tableEntry[9] << 16) 
+                | (tableEntry[10] << 8) 
+                | tableEntry[11]
+            )};
+            
+            const uint32_t tableLength { static_cast<uint32_t>(
+                  (tableEntry[12] << 24) 
+                | (tableEntry[13] << 16) 
+                | (tableEntry[14] << 8) 
+                | tableEntry[15]
+            )};
 
-            std::vector<std::uint8_t> nameTableBytes(tableLength);
+            std::vector<uint8_t> nameTableBytes(tableLength);
             input.clear();
             input.seekg(tableOffset, std::ios::beg);
+
             if (!input.read(reinterpret_cast<char*>(nameTableBytes.data()), nameTableBytes.size()))
                 return std::nullopt;
 
-            const std::uint16_t format = readU16Be(nameTableBytes, 0);
-            const std::uint16_t count = readU16Be(nameTableBytes, 2);
-            const std::uint16_t stringOffset = readU16Be(nameTableBytes, 4);
+            const uint16_t format { readU16Be(nameTableBytes, 0) };
+            const size_t 
+                count { readU16Be(nameTableBytes, 2) },
+                stringOffset { readU16Be(nameTableBytes, 4) };
 
-            for (std::uint16_t recordIndex = 0; recordIndex < count; ++recordIndex)
+            for (size_t recordIndex { 0 }; recordIndex < count; ++recordIndex)
             {
-                const std::size_t recordOffset = 6 + recordIndex * 12;
-                const std::uint16_t platformId = readU16Be(nameTableBytes, recordOffset);
-                const std::uint16_t encodingId = readU16Be(nameTableBytes, recordOffset + 2);
-                const std::uint16_t languageId = readU16Be(nameTableBytes, recordOffset + 4);
-                const std::uint16_t nameId = readU16Be(nameTableBytes, recordOffset + 6);
-                const std::uint16_t length = readU16Be(nameTableBytes, recordOffset + 8);
-                const std::uint16_t offset = readU16Be(nameTableBytes, recordOffset + 10);
+                const size_t
+                    recordOffset { 6 + recordIndex * 12 },
+                    length { readU16Be(nameTableBytes, recordOffset + 8) };
+                const uint16_t 
+                    platformId { readU16Be(nameTableBytes, recordOffset) },
+                    encodingId { readU16Be(nameTableBytes, recordOffset + 2) },
+                    //languageId { readU16Be(nameTableBytes, recordOffset + 4) },
+                    nameId { readU16Be(nameTableBytes, recordOffset + 6) },
+                    offset { readU16Be(nameTableBytes, recordOffset + 10) };
 
-                (void)languageId;
                 if (nameId != 2)
                     continue;
 
-                const std::size_t stringOffsetValue = stringOffset + offset;
-                const std::string decoded = decodeNameString(nameTableBytes, stringOffsetValue, length, platformId, encodingId);
+                const size_t stringOffsetValue { stringOffset + (size_t)offset };
+                const std::string decoded { decodeNameString(nameTableBytes, stringOffsetValue, length, platformId, encodingId) };
+                
                 if (!decoded.empty())
                     return decoded;
             }
@@ -138,17 +157,12 @@ namespace
 
 void PlatformBridge::Fonts::setFontsInformation()
 {
-    ULONG_PTR gdiplusToken;
-    Gdiplus::GdiplusStartupInput gdiplusStartupInput;
-    GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
-
-
-
-
-
     _fontProperties.clear();
+    ULONG_PTR gdiplusToken { 0 };
+    Gdiplus::GdiplusStartupInput gdiplusStartupInput {};
+    GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
+    HKEY hKey { nullptr };
 
-    HKEY hKey;
     if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"Software\\Microsoft\\Windows NT\\CurrentVersion\\Fonts", 0, KEY_READ, &hKey) != ERROR_SUCCESS)
     {
         std::println("ERROR: Could not open Fonts registry key");
@@ -157,23 +171,19 @@ void PlatformBridge::Fonts::setFontsInformation()
 
     wchar_t valueName[256];
     wchar_t fontPath[MAX_PATH];
-    DWORD valueNameSize = 0;
-    DWORD fontPathSize = 0;
-    DWORD index = 0;
+    DWORD valueNameSize { 0 };
+    DWORD fontPathSize { 0 };
+    DWORD index { 0 };
     std::filesystem::path fullPath;
     const std::wstring fontFolderPath = L"C:\\Windows\\Fonts\\";
     
     while (RegEnumValueW(hKey, index, valueName, &(valueNameSize = sizeof(valueName) / sizeof(wchar_t)), NULL, NULL, (LPBYTE)fontPath, &(fontPathSize = sizeof(fontPath))) == ERROR_SUCCESS)
     {
-        //std::wstring fontFile(fontPath);
         std::wstring test(fontPath);
-        std::wstring fontFile = fontFolderPath + test;
+        std::wstring fontFile { fontFolderPath + test };
         fullPath = fontFile;
-
-
-
-
         Gdiplus::PrivateFontCollection fontCollection;
+
         if (fontCollection.AddFontFile(fontFile.c_str()) != Gdiplus::Ok)
         {
             ++index;
@@ -198,12 +208,6 @@ void PlatformBridge::Fonts::setFontsInformation()
         //std::println("Bold: {}", (isBold ? "Yes" : "No"));
 
         std::println("--------------------------------------------------");
-
-
-
-
-
-
 
         const auto slant = getSlantValueFromFontFile(fullPath);
 
