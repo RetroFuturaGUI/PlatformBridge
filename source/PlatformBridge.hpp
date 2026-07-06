@@ -15,9 +15,10 @@ namespace PlatformBridge
     {
     #ifdef _WIN32
         PlatformBridge::Monitors::Refresh();
+    #else
+        PlatformBridge::Input::Refresh();
     #endif
         PlatformBridge::Paths::Refresh();
         PlatformBridge::Fonts::Refresh();
-        PlatformBridge::Input::Refresh();
     }
 }

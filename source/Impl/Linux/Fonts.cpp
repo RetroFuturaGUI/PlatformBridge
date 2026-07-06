@@ -1,19 +1,6 @@
 #include "Fonts.hpp"
 #include <fontconfig/fontconfig.h>
 
-void PlatformBridge::Fonts::Refresh()
-{
-    setFontsInformation();
-}
-
-const std::vector<PlatformBridge::Fonts::FontProperty>& PlatformBridge::Fonts::GetFontProperties()
-{
-    if(_fontProperties.empty() || _fontProperties.size() == 0)
-        Refresh();
-        
-    return _fontProperties;
-}
-
 void PlatformBridge::Fonts::setFontsInformation()
 {
     _fontProperties.clear();
@@ -107,9 +94,20 @@ void PlatformBridge::Fonts::setFontsInformation()
             
     }
     
-
     if (fcFontList) 
         FcFontSetDestroy(fcFontList);
+
+    if (fcPattern) 
+        FcPatternDestroy(fcPattern);
+
+    if (objectSet) 
+        FcObjectSetDestroy(objectSet);
+
+    if (fcConfig) 
+        FcConfigDestroy(fcConfig);
+
+    if (fcCharset) 
+        FcCharSetDestroy(fcCharset);
 
     FcFini();
 }

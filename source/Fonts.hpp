@@ -43,11 +43,20 @@ namespace PlatformBridge
         };
 
         /// @brief Refreshes all data of installed fonts.
-        static void Refresh();
+        static void Refresh()
+        {
+            setFontsInformation();
+        }
 
         /// @brief Refreshes all data of installed fonts.
         /// @return Returns an std::vector<FontProperty> containing information of all installed fonts 
-        static const std::vector<FontProperty>& GetFontProperties();
+        static const std::vector<FontProperty>& GetFontProperties()
+        {
+            if(_fontProperties.empty() || _fontProperties.size() == 0)
+                Refresh();
+                
+            return _fontProperties;
+        }
 
     private:
         Fonts() = default;
