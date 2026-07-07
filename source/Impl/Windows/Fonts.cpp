@@ -35,8 +35,8 @@ namespace
 
             for (size_t i = 0; i + 1 < length; i += 2)
             {
-                const uint16_t codeUnit = static_cast<uint16_t>((bytes[offset + i] << 8) | bytes[offset + i + 1]);
-                
+                const uint16_t codeUnit { static_cast<uint16_t>((bytes[offset + i] << 8) | bytes[offset + i + 1]) };
+
                 if (codeUnit == 0)
                     break;
 
@@ -50,7 +50,50 @@ namespace
         return std::string(reinterpret_cast<const char*>(bytes.data() + offset), length);
     }
 
-    std::optional<std::string> getFontSubfamilyName(const std::filesystem::path& fontPath)
+    struct FontMetadata
+    {
+        std::string subfamily;
+        PlatformBridge::Fonts::Slant slant { PlatformBridge::Fonts::Slant::Roman };
+        PlatformBridge::Fonts::Weight weight { PlatformBridge::Fonts::Weight::Normal };
+    };
+
+    PlatformBridge::Fonts::Slant getSlantFromSubfamily(std::string_view subfamily)
+    {
+        const std::string lowered = toLowerAscii(subfamily);
+        if (lowered.find("oblique") != std::string::npos)
+            return PlatformBridge::Fonts::Slant::Oblique;
+
+        if (lowered.find("italic") != std::string::npos)
+            return PlatformBridge::Fonts::Slant::Italic;
+
+        return PlatformBridge::Fonts::Slant::Roman;
+    }
+
+    PlatformBridge::Fonts::Weight getWeightFromSubfamily(std::string_view subfamily)
+    {
+        const std::string lowered = toLowerAscii(subfamily);
+
+        if (lowered.find("thin") != std::string::npos)
+            return PlatformBridge::Fonts::Weight::Thin;
+        if (lowered.find("extra light") != std::string::npos || lowered.find("ultralight") != std::string::npos)
+            return PlatformBridge::Fonts::Weight::ExtraLight;
+        if (lowered.find("light") != std::string::npos)
+            return PlatformBridge::Fonts::Weight::Light;
+        if (lowered.find("medium") != std::string::npos)
+            return PlatformBridge::Fonts::Weight::Medium;
+        if (lowered.find("semibold") != std::string::npos || lowered.find("demibold") != std::string::npos)
+            return PlatformBridge::Fonts::Weight::SemiBold;
+        if (lowered.find("bold") != std::string::npos)
+            return PlatformBridge::Fonts::Weight::Bold;
+        if (lowered.find("extrabold") != std::string::npos || lowered.find("ultrabold") != std::string::npos)
+            return PlatformBridge::Fonts::Weight::ExtraBold;
+        if (lowered.find("black") != std::string::npos || lowered.find("heavy") != std::string::npos)
+            return PlatformBridge::Fonts::Weight::Black;
+
+        return PlatformBridge::Fonts::Weight::Normal;
+    }
+
+    std::optional<FontMetadata> getFontMetadata(const std::filesystem::path& fontPath)
     {
         std::ifstream input(fontPath, std::ios::binary);
 
@@ -68,31 +111,31 @@ namespace
         };
 
         const size_t numTables { static_cast<uint16_t>((header[4] << 8) | header[5]) };
+        std::vector<uint8_t> tableDirectory(numTables * 16);
+
+        if (!input.read(reinterpret_cast<char*>(tableDirectory.data()), static_cast<std::streamsize>(tableDirectory.size())))
+            return std::nullopt;
 
         for (size_t tableIndex { 0 }; tableIndex < numTables; ++tableIndex)
         {
-            std::vector<uint8_t> tableEntry(16);
-
-            if (!input.read(reinterpret_cast<char*>(tableEntry.data()), static_cast<std::streamsize>(tableEntry.size())))
-                return std::nullopt;
-
-            const std::string tag(reinterpret_cast<const char*>(tableEntry.data()), 4);
+            const size_t tableEntryOffset { tableIndex * 16 };
+            const std::string tag(reinterpret_cast<const char*>(tableDirectory.data() + tableEntryOffset), 4);
 
             if (tag != "name")
                 continue;
 
             const uint32_t tableOffset { static_cast<uint32_t>(
-                  (tableEntry[8] << 24) 
-                | (tableEntry[9] << 16) 
-                | (tableEntry[10] << 8) 
-                | tableEntry[11]
+                  (tableDirectory[tableEntryOffset + 8] << 24)
+                | (tableDirectory[tableEntryOffset + 9] << 16)
+                | (tableDirectory[tableEntryOffset + 10] << 8)
+                | tableDirectory[tableEntryOffset + 11]
             )};
-            
+
             const uint32_t tableLength { static_cast<uint32_t>(
-                  (tableEntry[12] << 24) 
-                | (tableEntry[13] << 16) 
-                | (tableEntry[14] << 8) 
-                | tableEntry[15]
+                  (tableDirectory[tableEntryOffset + 12] << 24)
+                | (tableDirectory[tableEntryOffset + 13] << 16)
+                | (tableDirectory[tableEntryOffset + 14] << 8)
+                | tableDirectory[tableEntryOffset + 15]
             )};
 
             std::vector<uint8_t> nameTableBytes(tableLength);
@@ -112,21 +155,27 @@ namespace
                 const size_t
                     recordOffset { 6 + recordIndex * 12 },
                     length { readU16Be(nameTableBytes, recordOffset + 8) };
-                const uint16_t 
+                const uint16_t
                     platformId { readU16Be(nameTableBytes, recordOffset) },
                     encodingId { readU16Be(nameTableBytes, recordOffset + 2) },
-                    //languageId { readU16Be(nameTableBytes, recordOffset + 4) },
+                    //languageId { readU16Be(nameTableBytes, recordOffset + 4) };
                     nameId { readU16Be(nameTableBytes, recordOffset + 6) },
                     offset { readU16Be(nameTableBytes, recordOffset + 10) };
 
                 if (nameId != 2)
                     continue;
 
-                const size_t stringOffsetValue { stringOffset + (size_t)offset };
+                const size_t stringOffsetValue { stringOffset + static_cast<size_t>(offset) };
                 const std::string decoded { decodeNameString(nameTableBytes, stringOffsetValue, length, platformId, encodingId) };
-                
+
                 if (!decoded.empty())
-                    return decoded;
+                {
+                    FontMetadata metadata;
+                    metadata.subfamily = decoded;
+                    metadata.slant = getSlantFromSubfamily(metadata.subfamily);
+                    metadata.weight = getWeightFromSubfamily(metadata.subfamily);
+                    return metadata;
+                }
             }
 
             if (format == 1)
@@ -136,22 +185,6 @@ namespace
         }
 
         return std::nullopt;
-    }
-
-    PlatformBridge::Fonts::Slant getSlantValueFromFontFile(const std::filesystem::path& fontPath)
-    {
-        const auto subfamily = getFontSubfamilyName(fontPath);
-        if (!subfamily)
-            return PlatformBridge::Fonts::Slant::Roman;
-
-        const std::string lowered = toLowerAscii(*subfamily);
-        if (lowered.find("oblique") != std::string::npos)
-            return PlatformBridge::Fonts::Slant::Oblique;
-
-        if (lowered.find("italic") != std::string::npos)
-            return PlatformBridge::Fonts::Slant::Italic;
-
-        return PlatformBridge::Fonts::Slant::Roman;
     }
 }
 
@@ -197,27 +230,28 @@ void PlatformBridge::Fonts::setFontsInformation()
             continue;
         }
 
+        auto metadata = getFontMetadata(fullPath);
+        const auto slant = metadata ? metadata->slant : PlatformBridge::Fonts::Slant::Roman;
+        const auto weight = metadata ? metadata->weight : PlatformBridge::Fonts::Weight::Normal;
+
         std::wstring familyNameW(valueName, valueNameSize);
         std::string familyNameA(familyNameW.begin(), familyNameW.end());
         familyNameA.resize(familyNameA.find_last_of(" (")); // cut off "(TrueType)" or similar suffixes
         // Print results
         std::println("Font: {}", familyNameA);
         std::println("Path: {}", fullPath.string());
-        //std::println("Weight: {}", weight);
-        //std::println("Italic: {}", (isItalic ? "Yes" : "No"));
-        //std::println("Bold: {}", (isBold ? "Yes" : "No"));
-
+        std::println("Weight: {}", (uint32_t)weight);
+        std::println("Slant: {}", (uint32_t)slant);
+        std::println("Subfamily: {}", metadata ? metadata->subfamily : "Unknown");
         std::println("--------------------------------------------------");
-
-        const auto slant = getSlantValueFromFontFile(fullPath);
 
         if (std::filesystem::exists(fullPath))
             _fontProperties.push_back(
                 {
                     ._Name = familyNameA,
                     ._Path = fullPath.string(),
-                    ._Style = "",
-                    ._Weight = Weight::Normal,
+                    ._Style = metadata ? metadata->subfamily : "Unknown",
+                    ._Weight = weight,
                     ._Slant = slant,
                     ._UnicodeRanges = {}
                 }

@@ -1,9 +1,11 @@
 #include "PlatformBridge.hpp"
+#include <chrono>
 #include <print>
 #include <format>
 
 int main()
 {
+    const auto startTime = std::chrono::steady_clock::now();
     PlatformBridge::RefreshPlatformBridge();
 
     std::println("Installed Fonts:");
@@ -35,6 +37,9 @@ int main()
         }
     }
 
+    const auto endTime = std::chrono::steady_clock::now();
+    const auto elapsedMs = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
+    std::println("Benchmark: {} ms", elapsedMs);
 
     return 0;
 }
