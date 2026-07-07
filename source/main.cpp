@@ -22,7 +22,7 @@ int main()
 
         std::println();*/
 
-        if(font._Name.find("Arial") != std::string::npos)
+        if(font._Name.find("Bahnschrift") != std::string::npos /*|| font._Name.find("Comic") != std::string::npos || font._Name.find("Myanmar") != std::string::npos*/)
         {// "\033[38;2;255;127;0mThis is orange text\033[0m\n";
             std::println("\033[127;40;255;127;0mName:\033[0m {}\n    Path: {},\n    Style: {},\n    Weight: {},\n    Slant: {}",
             font._Name, font._Path, font._Style, static_cast<int32_t>(font._Weight), static_cast<int32_t>(font._Slant));
