@@ -342,7 +342,10 @@ void PlatformBridge::Fonts::setFontsInformation()
         const auto weight { metadata ? metadata->weight : PlatformBridge::Fonts::Weight::Normal };
 
         std::wstring familyNameW(valueName, valueNameSize);
+__pragma(warning(push)) \
+__pragma(warning(disable: 4244)) \
         std::string familyNameA(familyNameW.begin(), familyNameW.end());
+__pragma(warning(pop))
         familyNameA.resize(familyNameA.find_last_of(" (")); // cut off "(TrueType)" or similar suffixes
         // Print results
        /* std::println("Font: {}", familyNameA);

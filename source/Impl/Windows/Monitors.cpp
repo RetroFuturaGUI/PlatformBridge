@@ -10,7 +10,7 @@ bool PlatformBridge::Monitors::enumerateMonitors()
     return EnumDisplayMonitors(hdc, lprcClip, monitorEnumProc, dwData);
 }
 
-BOOL CALLBACK PlatformBridge::Monitors::monitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData)
+BOOL CALLBACK PlatformBridge::Monitors::monitorEnumProc(HMONITOR hMonitor, [[maybe_unused]] HDC hdcMonitor, [[maybe_unused]] LPRECT lprcMonitor, [[maybe_unused]] LPARAM dwData)
 {
     _monitors.clear();
     MONITORINFOEX info;
@@ -26,7 +26,7 @@ BOOL CALLBACK PlatformBridge::Monitors::monitorEnumProc(HMONITOR hMonitor, HDC h
     devMode.dmSize = sizeof(DEVMODE);
 
     if (EnumDisplaySettings(info.szDevice, ENUM_CURRENT_SETTINGS, &devMode))
-        monitorInfo.refreshRate = devMode.dmDisplayFrequency;
+        monitorInfo.refreshRate = static_cast<float>(devMode.dmDisplayFrequency);
 
     devMode.dmSize = sizeof(devMode);
     devMode.dmDriverExtra = 0;
