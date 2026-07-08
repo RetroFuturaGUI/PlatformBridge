@@ -23,6 +23,19 @@ namespace
         return lowered;
     }
 
+    std::string normalizeFontFamilyName(std::string_view familyName)
+    {
+        std::string trimmed { familyName };
+        const auto openParentheses = trimmed.find_first_of("(");
+        if (openParentheses != std::string::npos)
+            trimmed.resize(openParentheses);
+
+        while (!trimmed.empty() && std::isspace(static_cast<unsigned char>(trimmed.back())))
+            trimmed.pop_back();
+
+        return trimmed;
+    }
+
     std::string decodeNameString(const std::vector<uint8_t>& bytes, const size_t offset, const size_t length, const uint16_t platformId, const uint16_t encodingId)
     {
         if (offset + length > bytes.size())
@@ -346,7 +359,7 @@ __pragma(warning(push)) \
 __pragma(warning(disable: 4244)) \
         std::string familyNameA(familyNameW.begin(), familyNameW.end());
 __pragma(warning(pop))
-        familyNameA.resize(familyNameA.find_last_of(" (")); // cut off "(TrueType)" or similar suffixes
+        familyNameA = normalizeFontFamilyName(familyNameA);
         // Print results
        /* std::println("Font: {}", familyNameA);
         std::println("Path: {}", fullPath.string());
