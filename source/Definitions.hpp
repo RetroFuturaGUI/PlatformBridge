@@ -13,6 +13,7 @@
     #define PB_KEY_LINEFEED XK_Linefeed
     #define PB_KEY_CLEAR XK_Clear
     #define PB_KEY_RETURN XK_Return
+    #define PB_KEY_ENTER XK_Return
     #define PB_KEY_PAUSE XK_Pause
     #define PB_KEY_SCROLL_LOCK XK_Scroll_Lock
     #define PB_KEY_SYS_REQ XK_Sys_Req
@@ -82,7 +83,7 @@
     #define PB_KEY_BREAK XK_Break
     #define PB_KEY_MODE_SWITCH XK_Mode_switch
     #define PB_KEY_SCRIPT_SWITCH XK_script_switch
-    #define PB_KEY_NUM_LOCK XK_Num_Lock
+    #define PB_KEY_NUMLOCK XK_Num_Lock
 
     /* Keypad functions, keypad numbers cleverly chosen to map to ASCII */
 
@@ -2379,8 +2380,269 @@
     #define PB_KEY_SINH_RUU2 XK_Sinh_ruu2
     #define PB_KEY_SINH_LUU2 XK_Sinh_luu2
     #define PB_KEY_SINH_KUNDDALIYA XK_Sinh_kunddaliya
-    #endif
-
+#endif
 #elif defined(TARGET_PLATFORM_WINDOWS)
+    #include <Windows.h>
+    #define PB_KEY_BACKSPACE VK_BACK
+    #define PB_KEY_TAB VK_TAB
+    #define PB_KEY_ENTER VK_RETURN
+    #define PB_KEY_RETURN VK_RETURN
+    #define PB_KEY_KP_RETURN VK_RETURN
+    #define PB_KEY_KP_ENTER VK_RETURN
+    #define PB_KEY_ISO_RETURN VK_RETURN
+    #define PB_KEY_ISO_ENTER VK_RETURN
+    #define PB_KEY_CLEAR VK_CLEAR
+    #define PB_KEY_SHIFT_L VK_LSHIFT
+    #define PB_KEY_SHIFT_R VK_RSHIFT
+    #define PB_KEY_CONTROL_L VK_LCONTROL
+    #define PB_KEY_CONTROL_R VK_RCONTROL
+    #define PB_KEY_ALT VK_MENU
+    #define PB_KEY_PAUSE VK_PAUSE
+    #define PB_KEY_CAPSLOCK VK_CAPITAL
+    #define PB_KEY_ESCAPE VK_ESCAPE
+    #define PB_KEY_SPACE VK_SPACE
+    #define PB_KEY_PAGEUP VK_PRIOR
+    #define PB_KEY_PAGEDOWN VK_NEXT
+    #define PB_KEY_END VK_END
+    #define PB_KEY_HOME VK_HOME
+    #define PB_KEY_LEFT VK_LEFT
+    #define PB_KEY_UP VK_UP
+    #define PB_KEY_RIGHT VK_RIGHT
+    #define PB_KEY_DOWN VK_DOWN
+    #define PB_KEY_PRINT VK_SNAPSHOT
+    #define PB_KEY_INSERT VK_INSERT
+    #define PB_KEY_DELETE VK_DELETE
+    #define PB_KEY_0 0x30
+    #define PB_KEY_1 0x31
+    #define PB_KEY_2 0x32
+    #define PB_KEY_3 0x33
+    #define PB_KEY_4 0x34
+    #define PB_KEY_5 0x35
+    #define PB_KEY_6 0x36
+    #define PB_KEY_7 0x37
+    #define PB_KEY_8 0x38
+    #define PB_KEY_9 0x39
+    #define PB_KEY_A 0x41
+    #define PB_KEY_B 0x42
+    #define PB_KEY_C 0x43
+    #define PB_KEY_D 0x44
+    #define PB_KEY_E 0x45
+    #define PB_KEY_F 0x46
+    #define PB_KEY_G 0x47
+    #define PB_KEY_H 0x48
+    #define PB_KEY_I 0x49
+    #define PB_KEY_J 0x4A
+    #define PB_KEY_K 0x4B
+    #define PB_KEY_L 0x4C
+    #define PB_KEY_M 0x4D
+    #define PB_KEY_N 0x4E
+    #define PB_KEY_O 0x4F
+    #define PB_KEY_P 0x50
+    #define PB_KEY_Q 0x51
+    #define PB_KEY_R 0x52
+    #define PB_KEY_S 0x53
+    #define PB_KEY_T 0x54
+    #define PB_KEY_U 0x55
+    #define PB_KEY_V 0x56
+    #define PB_KEY_W 0x57
+    #define PB_KEY_X 0x58
+    #define PB_KEY_Y 0x59
+    #define PB_KEY_Z 0x5A
+    #define PB_KEY_HANGUL VK_HANGUL
+    #define PB_KEY_HANGUL_HANJA VK_HANJA
+    #define PB_KEY_KANA VK_KANA
+    #define PB_KEY_KANJI VK_KANJI
+    #define PB_KEY_JUNJA VK_JUNJA
+    #define PB_KEY_FINAL VK_FINAL
+    #define PB_KEY_SUPER_L VK_LWIN
+    #define PB_KEY_SUPER_R VK_RWIN
+    #define PB_KEY_NUMPAD0 VK_NUMPAD0
+    #define PB_KEY_KP_0 VK_NUMPAD0
+    #define PB_KEY_KP_1 VK_NUMPAD1
+    #define PB_KEY_KP_2 VK_NUMPAD2
+    #define PB_KEY_KP_3 VK_NUMPAD3
+    #define PB_KEY_KP_4 VK_NUMPAD4
+    #define PB_KEY_KP_5 VK_NUMPAD5
+    #define PB_KEY_KP_6 VK_NUMPAD6
+    #define PB_KEY_KP_7 VK_NUMPAD7
+    #define PB_KEY_KP_8 VK_NUMPAD8
+    #define PB_KEY_KP_9 VK_NUMPAD9
+    #define PB_KEY_MULTIPLY VK_MULTIPLY
+    #define PB_KEY_KP_ADD VK_ADD
+    #define PB_KEY_KP_SEPARATOR VK_SEPARATOR
+    #define PB_KEY_KP_SUBTRACT VK_SUBTRACT
+    #define PB_KEY_KP_DECIMALPOINT VK_DECIMAL
+    #define PB_KEY_KP_DIVIDE VK_DIVIDE
+    #define PB_KEY_F1 VK_F1
+    #define PB_KEY_F2 VK_F2
+    #define PB_KEY_F3 VK_F3
+    #define PB_KEY_F4 VK_F4
+    #define PB_KEY_F5 VK_F5
+    #define PB_KEY_F6 VK_F6
+    #define PB_KEY_F7 VK_F7
+    #define PB_KEY_F8 VK_F8
+    #define PB_KEY_F9 VK_F9
+    #define PB_KEY_F10 VK_F10
+    #define PB_KEY_F11 VK_F11
+    #define PB_KEY_F12 VK_F12
+    #define PB_KEY_F13 VK_F13
+    #define PB_KEY_F14 VK_F14
+    #define PB_KEY_F15 VK_F15
+    #define PB_KEY_F16 VK_F16
+    #define PB_KEY_F17 VK_F17
+    #define PB_KEY_F18 VK_F18
+    #define PB_KEY_F19 VK_F19
+    #define PB_KEY_F20 VK_F20
+    #define PB_KEY_F21 VK_F21
+    #define PB_KEY_F22 VK_F22
+    #define PB_KEY_F23 VK_F23
+    #define PB_KEY_F24 VK_F24
+    #define PB_KEY_MODE_SWITCH VK_MODECHANGE
+    #define PB_KEY_SELECT VK_SELECT
+    #define PB_KEY_EXECUTE VK_EXECUTE
+    #define PB_KEY_HELP VK_HELP
+    #define PB_KEY_NUMLOCK VK_NUMLOCK
+    #define PB_KEY_SCROLL VK_SCROLL
+
+
+    //Windows exclusives
+    #define PB_KEY_IME_ON VK_IME_ON
+    #define PB_KEY_IME_OFF VK_IME_OFF
+    //#define PB_KEY_SHIFT VK_SHIFT
+    //#define PB_KEY_CONTROL VK_CONTROL
+    #define PB_KEY_APPS VK_APPS
+    #define PB_KEY_CONVERT VK_CONVERT
+    #define PB_KEY_NONCONVERT VK_NONCONVERT
+    #define PB_KEY_ACCEPT VK_ACCEPT
+    #define PB_KEY_SLEEP VK_SLEEP
+    #if(_WIN32_WINNT >= 0x0604) //reserved
+        #define PB_KEY_NAVIGATION_VIEW VK_NAVIGATION_VIEW
+        #define PB_KEY_NAVIGATION_MENU VK_NAVIGATION_MENU
+        #define PB_KEY_NAVIGATION_UP VK_NAVIGATION_UP
+        #define PB_KEY_NAVIGATION_DOWN VK_NAVIGATION_DOWN
+        #define PB_KEY_NAVIGATION_LEFT VK_NAVIGATION_LEFT
+        #define PB_KEY_NAVIGATION_RIGHT VK_NAVIGATION_RIGHT
+        #define PB_KEY_NAVIGATION_ACCEPT VK_NAVIGATION_ACCEPT
+        #define PB_KEY_NAVIGATION_CANCEL VK_NAVIGATION_CANCEL
+    #endif // _WIN32_WINNT >= 0x0604
+    #if(_WIN32_WINNT >= 0x0500)
+        #define PB_KEY_BROWSER_BACK VK_BROWSER_BACK
+        #define PB_KEY_BROWSER_FORWARD VK_BROWSER_FORWARD
+        #define PB_KEY_BROWSER_REFRESH VK_BROWSER_REFRESH
+        #define PB_KEY_BROWSER_STOP VK_BROWSER_STOP
+        #define PB_KEY_BROWSER_SEARCH VK_BROWSER_SEARCH
+        #define PB_KEY_BROWSER_FAVORITES VK_BROWSER_FAVORITES
+        #define PB_KEY_BROWSER_HOME VK_BROWSER_HOME
+        #define PB_KEY_VOLUME_MUTE VK_VOLUME_MUTE
+        #define PB_KEY_VOLUME_DOWN VK_VOLUME_DOWN
+        #define PB_KEY_VOLUME_UP VK_VOLUME_UP
+        #define PB_KEY_MEDIA_NEXT_TRACK VK_MEDIA_NEXT_TRACK
+        #define PB_KEY_MEDIA_PREV_TRACK VK_MEDIA_PREV_TRACK
+        #define PB_KEY_MEDIA_STOP VK_MEDIA_STOP
+        #define PB_KEY_MEDIA_PLAY_PAUSE VK_MEDIA_PLAY_PAUSE
+        #define PB_KEY_LAUNCH_MAIL VK_LAUNCH_MAIL
+        #define PB_KEY_LAUNCH_MEDIA_SELECT VK_LAUNCH_MEDIA_SELECT
+        #define PB_KEY_LAUNCH_APP1 VK_LAUNCH_APP1
+        #define PB_KEY_LAUNCH_APP2 VK_LAUNCH_APP2
+    #endif // _WIN32_WINNT >= 0x0500
+    #define PB_KEY_LMENU VK_LMENU
+    #define PB_KEY_RMENU VK_RMENU
+    #define PB_KEY_OEM_NEC_EQUAL VK_OEM_NEC_EQUAL
+    #define PB_KEY_OEM_FJ_JISHO VK_OEM_FJ_JISHO
+    #define PB_KEY_OEM_FJ_MASSHOU VK_OEM_FJ_MASSHOU
+    #define PB_KEY_OEM_FJ_TOUROKU VK_OEM_FJ_TOUROKU
+    #define PB_KEY_OEM_FJ_LOYA VK_OEM_FJ_LOYA
+    #define PB_KEY_OEM_FJ_ROYA VK_OEM_FJ_ROYA
+    #define PB_KEY_OEM_1 VK_OEM_1           // ';:' for US
+    #define PB_KEY_OEM_PLUS VK_OEM_PLUS     // '+' any country
+    #define PB_KEY_OEM_COMMA VK_OEM_COMMA   // ',' any country
+    #define PB_KEY_OEM_MINUS VK_OEM_MINUS   // '-' any country
+    #define PB_KEY_OEM_PERIOD VK_OEM_PERIOD // '.' any country
+    #define PB_KEY_OEM_2 VK_OEM_2           // '/?' for US
+    #define PB_KEY_OEM_3 VK_OEM_3           // '`~' for US
+    #define PB_KEY_OEM_4 VK_OEM_4           // '[{' for US
+    #define PB_KEY_OEM_5 VK_OEM_5           // '\|' for US
+    #define PB_KEY_OEM_6 VK_OEM_6           // ']}' for US
+    #define PB_KEY_OEM_7 VK_OEM_7           // ''"' for US
+    #define PB_KEY_OEM_8 VK_OEM_8           // ']' for US
+    #define PB_KEY_OEM_AX VK_OEM_AX         // 'AX' key on Japanese AX kbd
+    #define PB_KEY_OEM_102 VK_OEM_102       // "<>" or "\|" on RT 102-key kbd.
+    #define PB_KEY_ICO_HELP VK_ICO_HELP     // Help key on ICO
+    #define PB_KEY_ICO_00 VK_ICO_00         // 00 key on ICO
+    #if(WINVER >= 0x0400)
+        #define PB_KEY_PROCESSKEY VK_PROCESSKEY
+    #endif // WINVER >= 0x0400
+    #define PB_KEY_ICO_CLEAR VK_ICO_CLEAR
+    #if(_WIN32_WINNT >= 0x0500)
+        #define PB_KEY_PACKET VK_PACKET
+    #endif // _WIN32_WINNT >= 0x0500
+    #define PB_KEY_OEM_RESET VK_OEM_RESET
+    #define PB_KEY_OEM_JUMP VK_OEM_JUMP
+    #define PB_KEY_OEM_PA1 VK_OEM_PA1
+    #define PB_KEY_OEM_PA2 VK_OEM_PA2
+    #define PB_KEY_OEM_PA3 VK_OEM_PA3
+    #define PB_KEY_OEM_WSCTRL VK_OEM_WSCTRL
+    #define PB_KEY_OEM_CUSEL VK_OEM_CUSEL
+    #define PB_KEY_OEM_ATTN VK_OEM_ATTN
+    #define PB_KEY_OEM_FINISH VK_OEM_FINISH
+    #define PB_KEY_OEM_COPY VK_OEM_COPY
+    #define PB_KEY_OEM_AUTO VK_OEM_AUTO
+    #define PB_KEY_OEM_ENLW VK_OEM_ENLW
+    #define PB_KEY_OEM_BACKTAB VK_OEM_BACKTAB
+    #define PB_KEY_ATTN VK_ATTN
+    #define PB_KEY_CRSEL VK_CRSEL
+    #define PB_KEY_EXSEL VK_EXSEL
+    #define PB_KEY_EREOF VK_EREOF
+    #define PB_KEY_PLAY VK_PLAY
+    #define PB_KEY_ZOOM VK_ZOOM
+    #define PB_KEY_NONAME VK_NONAME
+    #define PB_KEY_PA1 VK_PA1
+    #define PB_KEY_OEM_CLEAR VK_OEM_CLEAR
+
+/*
+
+
+#define VK_LBUTTON        0x01
+#define VK_RBUTTON        0x02
+#define VK_CANCEL         0x03
+#define VK_MBUTTON        0x04    // NOT contiguous with L & RBUTTON 
+
+#if(_WIN32_WINNT >= 0x0500)
+#define VK_XBUTTON1       0x05    // NOT contiguous with L & RBUTTON
+#define VK_XBUTTON2       0x06    // NOT contiguous with L & RBUTTON
+#endif // _WIN32_WINNT >= 0x0500
+
+
+
+ // 0xC3 - 0xDA : Gamepad input
+#if(_WIN32_WINNT >= 0x0604)
+#define VK_GAMEPAD_A                         0xC3 // reserved
+#define VK_GAMEPAD_B                         0xC4 // reserved
+#define VK_GAMEPAD_X                         0xC5 // reserved
+#define VK_GAMEPAD_Y                         0xC6 // reserved
+#define VK_GAMEPAD_RIGHT_SHOULDER            0xC7 // reserved
+#define VK_GAMEPAD_LEFT_SHOULDER             0xC8 // reserved
+#define VK_GAMEPAD_LEFT_TRIGGER              0xC9 // reserved
+#define VK_GAMEPAD_RIGHT_TRIGGER             0xCA // reserved
+#define VK_GAMEPAD_DPAD_UP                   0xCB // reserved
+#define VK_GAMEPAD_DPAD_DOWN                 0xCC // reserved
+#define VK_GAMEPAD_DPAD_LEFT                 0xCD // reserved
+#define VK_GAMEPAD_DPAD_RIGHT                0xCE // reserved
+#define VK_GAMEPAD_MENU                      0xCF // reserved
+#define VK_GAMEPAD_VIEW                      0xD0 // reserved
+#define VK_GAMEPAD_LEFT_THUMBSTICK_BUTTON    0xD1 // reserved
+#define VK_GAMEPAD_RIGHT_THUMBSTICK_BUTTON   0xD2 // reserved
+#define VK_GAMEPAD_LEFT_THUMBSTICK_UP        0xD3 // reserved
+#define VK_GAMEPAD_LEFT_THUMBSTICK_DOWN      0xD4 // reserved
+#define VK_GAMEPAD_LEFT_THUMBSTICK_RIGHT     0xD5 // reserved
+#define VK_GAMEPAD_LEFT_THUMBSTICK_LEFT      0xD6 // reserved
+#define VK_GAMEPAD_RIGHT_THUMBSTICK_UP       0xD7 // reserved
+#define VK_GAMEPAD_RIGHT_THUMBSTICK_DOWN     0xD8 // reserved
+#define VK_GAMEPAD_RIGHT_THUMBSTICK_RIGHT    0xD9 // reserved
+#define VK_GAMEPAD_RIGHT_THUMBSTICK_LEFT     0xDA // reserved
+
+#endif // _WIN32_WINNT >= 0x0604 
+
+*/
 
 #endif

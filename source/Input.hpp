@@ -11,6 +11,9 @@
 #include <thread>
 #include <atomic>
 #include <mutex>
+#ifdef _WIN32
+    #include <Windows.h>
+#endif
 
 namespace PlatformBridge
 {
@@ -82,7 +85,11 @@ namespace PlatformBridge
         //static int32_t GetInputLanguage();
 
         /// @brief Sets the current window to capture key strokes from..
+#ifdef __linux__
         static void SetActiveWindow(const uint64_t window, const uint64_t rawWindow = 0);
+#elif _WIN32
+        static void SetActiveWindow(HWND window);
+#endif
 
         /// @brief Sets the current display to capture key strokes from..
         static void SetActiveDisplay(void* display);
@@ -117,13 +124,19 @@ namespace PlatformBridge
         }
         static void initThread();
         static void captureKeyStroke();
-
+#ifdef _WIN32
+        static LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam);
+#endif
         static inline std::string _inputStringBuffer;
         //static inline int32_t _inputLanguage;
-        static inline uint64_t
+#ifdef __linux__
+        static inline uint64_t 
             _rootWindow { 0 },
             _currentWindow { 0 },
             _rawWindow { 0 };
+#elif _WIN32
+        static inline HWND _currentWindow { nullptr };
+#endif
         static inline uint32_t _lastKeySym { 0 };
         static inline void
             * _display { nullptr },
