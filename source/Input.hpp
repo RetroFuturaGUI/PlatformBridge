@@ -70,7 +70,7 @@ namespace PlatformBridge
     class Input
     {
     public:
-        /// @brief Refreshes the Keyboard module.
+        /// @brief Refreshes the Input module.
         static void Refresh();
 
         /// @brief Stops the key scan thread.
