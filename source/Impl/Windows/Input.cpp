@@ -99,9 +99,8 @@ LRESULT CALLBACK PlatformBridge::Input::KeyboardProc(const int nCode, const WPAR
     if (nCode >= 0)
     {
         const auto* keyboardHook = reinterpret_cast<const KBDLLHOOKSTRUCT*>(lParam);
-        auto& instance = GetInstance();
 
-        if (instance._currentWindow != nullptr && GetForegroundWindow() != instance._currentWindow)
+        if (_currentWindow != nullptr && GetForegroundWindow() != _currentWindow)
             return CallNextHookEx(nullptr, nCode, wParam, lParam);
 
         if (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN)
@@ -120,22 +119,26 @@ LRESULT CALLBACK PlatformBridge::Input::KeyboardProc(const int nCode, const WPAR
                     0,
                     layout);
 
-                if (charCount > 0)
                 {
-                    std::scoped_lock lock(instance._inputMutex);
-                    instance._inputStringBuffer = utf8FromWide(std::wstring(buffer, charCount));
-                    instance._keyboardUseState = (instance._lastKeySym == keyboardHook->vkCode)
+                    std::scoped_lock lock(_inputMutex);
+
+                    if (charCount > 0)
+                        _inputStringBuffer = utf8FromWide(std::wstring(buffer, charCount));
+                    else
+                        _inputStringBuffer.clear();
+                    
+                    _keyboardUseState = (_lastKeySym == keyboardHook->vkCode)
                         ? KeyboardUseState::SameKeyPressed
                         : KeyboardUseState::KeyPressed;
-                    instance._lastKeySym = static_cast<uint32_t>(keyboardHook->vkCode);
+                    _lastKeySym = static_cast<uint32_t>(keyboardHook->vkCode);
                 }
             }
         }
         else if (wParam == WM_KEYUP || wParam == WM_SYSKEYUP)
         {
-            std::scoped_lock lock(instance._inputMutex);
-            instance._keyboardUseState = KeyboardUseState::KeyReleased;
-            instance._lastKeySym = 0;
+            std::scoped_lock lock(_inputMutex);
+            _keyboardUseState = KeyboardUseState::KeyReleased;
+            _lastKeySym = 0;
         }
     }
 
