@@ -31,6 +31,13 @@ namespace PlatformBridge
         SameKeyPressed
     };
 
+    enum class MouseButton : uint32_t
+    {
+        Left = 1,
+        Right = 1 << 1,
+        Middle = 1 << 2
+    };
+
     /*enum class ModifierKey : uint32_t
     {
         Released = 0,
@@ -110,6 +117,21 @@ namespace PlatformBridge
         /// @return Returns the active window ID as a pointer-sized integer.
         static uint64_t GetActiveWindowID();
 
+        /// @brief Get whether the given mouse button is currently held down.
+        /// @return true if the button is currently pressed.
+        static bool IsMouseButtonDown(const MouseButton button);
+
+        /// @brief Get the mouse cursor position relative to the given native window's client area, in the native
+        /// windowing coordinate convention (origin top-left, Y increasing downward). Callers using a bottom-up
+        /// coordinate space (e.g. OpenGL) are responsible for flipping Y themselves - PlatformBridge stays
+        /// agnostic to whichever graphics API is consuming the coordinates.
+        /// @return false if the position could not be determined (e.g. an invalid window).
+#ifdef __linux__
+        static bool GetMouseWindowPosition(const uint64_t window, int32_t& x, int32_t& y);
+#elif _WIN32
+        static bool GetMouseWindowPosition(HWND window, int32_t& x, int32_t& y);
+#endif
+
     private:
         Input() = default;
         Input(const Input&) = delete;
@@ -125,7 +147,9 @@ namespace PlatformBridge
         static void initThread();
         static void captureKeyStroke();
 #ifdef _WIN32
+        static void captureMouseInput();
         static LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam);
+        static LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam);
 #endif
         static inline std::string _inputStringBuffer;
         //static inline int32_t _inputLanguage;
@@ -142,11 +166,18 @@ namespace PlatformBridge
             * _display { nullptr },
             * _rawDisplay { nullptr };
         static inline bool _ownsDisplay { false };
-        static inline std::thread _inputThread;
+        static inline std::thread _keyboardInputThread;
+#ifdef _WIN32
+        static inline std::thread _mouseInputThread;
+#endif
         static inline std::atomic<bool> _running { false };
         static inline std::mutex _inputMutex;
         static inline KeyPressState _commonKeyState;
         static inline KeyboardUseState _keyboardUseState;
         //static inline ModifierKey _modifierKeyState;
+        static inline int32_t
+            _mouseScreenX { 0 },
+            _mouseScreenY { 0 };
+        static inline uint32_t _mouseButtonStateMask { 0 };
     };
 }
