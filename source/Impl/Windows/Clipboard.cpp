@@ -92,6 +92,7 @@ PlatformBridge::Clipboard::ClipboardErrorCode PlatformBridge::Clipboard::CopyToC
                 std::copy(utf16.begin(), utf16.end(), pMem);
                 pMem[utf16.size()] = L'\0';
                 GlobalUnlock(hMem);
+                
                 if(SetClipboardData(CF_UNICODETEXT, hMem) == NULL)
                 {
                     GlobalFree(hMem);
@@ -109,4 +110,56 @@ PlatformBridge::Clipboard::ClipboardErrorCode PlatformBridge::Clipboard::CopyToC
 
     return ClipboardErrorCode::Success;
 }
+
+PlatformBridge::Clipboard::ClipboardErrorCode PlatformBridge::Clipboard::PasteFromClipboard(const ClipboardDatatype type, void*& dataOut, size_t* sizeOut)
+{
+    if (!OpenClipboard(nullptr))
+        return ClipboardErrorCode::OpenClipboardFailed;
+
+    switch(type)
+    {
+        case ClipboardDatatype::Text:
+        {
+            if (!IsClipboardFormatAvailable(CF_UNICODETEXT)) 
+            {
+                CloseClipboard();
+                return ClipboardErrorCode::NoMatchingRequestedDatatype;
+            }
+
+            HANDLE hData = GetClipboardData(CF_UNICODETEXT);
+            
+            if (!hData) 
+            {
+                CloseClipboard();
+                return ClipboardErrorCode::GetClipboardDataFailed;
+            }
+
+            wchar_t* text = static_cast<wchar_t*>(GlobalLock(hData));
+
+            if (!text) 
+            {
+                CloseClipboard();
+                return ClipboardErrorCode::ClipboardDataEmpty;
+            }
+
+            std::wstring_view textView(text);
+            std::u32string utf32 = utf16ToUtf32(textView);
+            _clipboardDataBuffer.assign(reinterpret_cast<const uint8_t*>(utf32.data()), reinterpret_cast<const uint8_t*>(utf32.data()) + utf32.size() * sizeof(char32_t));
+            GlobalUnlock(hData);
+            dataOut = _clipboardDataBuffer.data();
+            *sizeOut = _clipboardDataBuffer.size();
+        } break;
+        default:
+        [[unlikely]] return ClipboardErrorCode::UnsupportedDatatype;
+    }
+
+    if(CloseClipboard() == NULL)
+        return ClipboardErrorCode::CloseClipboardFailed;
+
+    return ClipboardErrorCode::Success;;
+}
+
+void PlatformBridge::Clipboard::ClearClipboardDataBuffer()
+{
+    _clipboardDataBuffer.clear();
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include <vector>
 
 namespace PlatformBridge
 {
@@ -31,6 +32,8 @@ namespace PlatformBridge
         ~Clipboard() = default;
         
         static ClipboardErrorCode CopyToClipboard(const ClipboardDatatype type, const void* dataIn, const size_t size);
+        static ClipboardErrorCode PasteFromClipboard(const ClipboardDatatype type, void*& dataOut, size_t* sizeOut);
+        static void ClearClipboardDataBuffer();
         
     private:
         Clipboard(const Clipboard&) = delete;
@@ -38,5 +41,6 @@ namespace PlatformBridge
         auto operator =(const Clipboard&) = delete;
         auto operator =(Clipboard&&) = delete;
         
+        static inline std::vector<uint8_t> _clipboardDataBuffer {};
     };
 }
