@@ -60,6 +60,7 @@ void PlatformBridge::Input::Stop()
     std::scoped_lock lock(_inputMutex);
     _keyboardUseState = KeyboardUseState::KeyReleased;
     _lastKeySym = 0;
+    _heldKeys.clear();
     _mouseButtonStateMask = 0;
 }
 
@@ -144,11 +145,15 @@ LRESULT CALLBACK PlatformBridge::Input::KeyboardProc(const int nCode, const WPAR
         if (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN)
         {
             BYTE keyboardState[256] = {};
+            wchar_t buffer[8] = {};
+            int charCount = 0;
+
+            //Text conversion is best-effort - if it fails, the key is still tracked as held below, it just
+            //won't contribute to _inputStringBuffer this frame.
             if (GetKeyboardState(keyboardState))
             {
-                wchar_t buffer[8] = {};
                 const HKL layout = GetKeyboardLayout(0);
-                const int charCount = ToUnicodeEx(
+                charCount = ToUnicodeEx(
                     keyboardHook->vkCode,
                     keyboardHook->scanCode,
                     keyboardState,
@@ -156,20 +161,21 @@ LRESULT CALLBACK PlatformBridge::Input::KeyboardProc(const int nCode, const WPAR
                     static_cast<int>(std::size(buffer)),
                     0,
                     layout);
+            }
 
-                {
-                    std::scoped_lock lock(_inputMutex);
+            {
+                std::scoped_lock lock(_inputMutex);
 
-                    if (charCount > 0)
-                        _inputStringBuffer = utf8FromWide(std::wstring(buffer, charCount));
-                    else
-                        _inputStringBuffer.clear();
-                    
-                    _keyboardUseState = (_lastKeySym == keyboardHook->vkCode)
-                        ? KeyboardUseState::SameKeyPressed
-                        : KeyboardUseState::KeyPressed;
-                    _lastKeySym = static_cast<uint32_t>(keyboardHook->vkCode);
-                }
+                if (charCount > 0)
+                    _inputStringBuffer = utf8FromWide(std::wstring(buffer, charCount));
+                else
+                    _inputStringBuffer.clear();
+
+                _keyboardUseState = (_lastKeySym == keyboardHook->vkCode)
+                    ? KeyboardUseState::SameKeyPressed
+                    : KeyboardUseState::KeyPressed;
+                _lastKeySym = static_cast<uint32_t>(keyboardHook->vkCode);
+                _heldKeys.insert(static_cast<uint32_t>(keyboardHook->vkCode));
             }
         }
         else if (wParam == WM_KEYUP || wParam == WM_SYSKEYUP)
@@ -177,6 +183,7 @@ LRESULT CALLBACK PlatformBridge::Input::KeyboardProc(const int nCode, const WPAR
             std::scoped_lock lock(_inputMutex);
             _keyboardUseState = KeyboardUseState::KeyReleased;
             _lastKeySym = 0;
+            _heldKeys.erase(static_cast<uint32_t>(keyboardHook->vkCode));
         }
     }
 
@@ -266,6 +273,12 @@ PlatformBridge::KeyPressState PlatformBridge::Input::GetKeyPressState(const uint
         return KeyPressState::Press;
 
     return KeyPressState::Release;
+}
+
+bool PlatformBridge::Input::IsKeyDown(const uint32_t key)
+{
+    std::scoped_lock lock(_inputMutex);
+    return _heldKeys.contains(key);
 }
 
 bool PlatformBridge::Input::IsMouseButtonDown(const MouseButton button)

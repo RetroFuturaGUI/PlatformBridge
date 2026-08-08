@@ -11,6 +11,7 @@
 #include <thread>
 #include <atomic>
 #include <mutex>
+#include <unordered_set>
 #ifdef _WIN32
     #include <Windows.h>
 #endif
@@ -105,6 +106,13 @@ namespace PlatformBridge
         /// @return Returns a KeyPressState (Release, Press, Repeat).
         static KeyPressState GetKeyPressState(const uint32_t key);
 
+        /// @brief Get whether the given key is currently held down, independent of whatever other key was
+        /// pressed most recently. Unlike GetKeyPressState (which only ever tracks a single "last" key and
+        /// so can't represent two keys held at once), this lets modifier + key combos (e.g. Ctrl+C) be
+        /// checked correctly.
+        /// @return true if the key is currently pressed.
+        static bool IsKeyDown(const uint32_t key);
+
         /// @brief Get KeyboardUseState.
         /// @return Returns a KeyboardUseState (KeyReleased, KeyPressed, KeyRepeated).
         static KeyboardUseState GetKeyboardUseState();
@@ -162,6 +170,7 @@ namespace PlatformBridge
         static inline HWND _currentWindow { nullptr };
 #endif
         static inline uint32_t _lastKeySym { 0 };
+        static inline std::unordered_set<uint32_t> _heldKeys;
         static inline void
             * _display { nullptr },
             * _rawDisplay { nullptr };
