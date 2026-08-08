@@ -3,7 +3,7 @@
 #ifdef _WIN32
 #include "Monitors.hpp" // implement for Linux once needed
 #endif
-
+#include "Clipboard.hpp"
 #include "Paths.hpp"
 #include "Fonts.hpp"
 #include "Input.hpp"
