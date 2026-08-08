@@ -13,10 +13,24 @@ namespace PlatformBridge
             Bitmap,
         };
 
+        enum ClipboardErrorCode : uint32_t
+        {
+            Success = 0,
+            OpenClipboardFailed,
+            EmptyClipboardFailed,
+            SetClipboardDataFailed,
+            GetClipboardDataFailed,
+            CloseClipboardFailed,
+            NoMatchingRequestedDatatype,
+            NoDataAvailable,
+            UnsupportedDatatype,
+            ClipboardDataEmpty
+        };
+
         Clipboard() = default;
         ~Clipboard() = default;
         
-        static void CopyToClipboard(const ClipboardDatatype type, const void* data, const size_t size);
+        static ClipboardErrorCode CopyToClipboard(const ClipboardDatatype type, const void* dataIn, const size_t size);
         
     private:
         Clipboard(const Clipboard&) = delete;

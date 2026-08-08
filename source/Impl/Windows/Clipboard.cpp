@@ -63,25 +63,26 @@ namespace
    }
 }
 
-void PlatformBridge::Clipboard::CopyToClipboard(const ClipboardDatatype type, const void* data, const size_t size)
+PlatformBridge::Clipboard::ClipboardErrorCode PlatformBridge::Clipboard::CopyToClipboard(const ClipboardDatatype type, const void* dataIn, const size_t size)
 {
     if (!OpenClipboard(nullptr))
-        return;
+        return ClipboardErrorCode::OpenClipboardFailed;
 
-    EmptyClipboard();
+    if(EmptyClipboard() == NULL)
+        return ClipboardErrorCode::EmptyClipboardFailed;
 
     switch(type)
     {
         case ClipboardDatatype::Text:
         {
-            std::u32string utf32(static_cast<const char32_t*>(data), size / sizeof(char32_t));
+            std::u32string utf32(static_cast<const char32_t*>(dataIn), size / sizeof(char32_t));
             std::wstring utf16 = utf32ToUtf16(utf32);
             HGLOBAL hMem = GlobalAlloc(GMEM_MOVEABLE, (utf16.size() + 1) * sizeof(wchar_t));
 
             if (!hMem)
             {
                 CloseClipboard();
-                return;
+                return ClipboardErrorCode::SetClipboardDataFailed;
             }
 
             wchar_t* pMem = static_cast<wchar_t*>(GlobalLock(hMem));
@@ -91,12 +92,21 @@ void PlatformBridge::Clipboard::CopyToClipboard(const ClipboardDatatype type, co
                 std::copy(utf16.begin(), utf16.end(), pMem);
                 pMem[utf16.size()] = L'\0';
                 GlobalUnlock(hMem);
-                SetClipboardData(CF_UNICODETEXT, hMem);
+                if(SetClipboardData(CF_UNICODETEXT, hMem) == NULL)
+                {
+                    GlobalFree(hMem);
+                    CloseClipboard();
+                    return ClipboardErrorCode::SetClipboardDataFailed;
+                }
             }
         } break;
         default:
-        [[unlikely]] return;
+        [[unlikely]] return ClipboardErrorCode::UnsupportedDatatype;
     }
 
-    CloseClipboard();
+    if(CloseClipboard() == NULL)
+        return ClipboardErrorCode::CloseClipboardFailed;
+
+    return ClipboardErrorCode::Success;
+}
 }
