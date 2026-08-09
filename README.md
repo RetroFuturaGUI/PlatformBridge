@@ -20,6 +20,35 @@ A cross-platform API wrapper to be compiled to static libraries
 
 - `PlatformBridge::Fonts::GetFontProperties()` — Returns the cached list of discovered font properties.
 
+### Clipboard
+#### Enums:
+ClipboardDatatype (int32_t):
+- Unknown
+- Text
+- Bitmap
+
+ClipboardErrorCode (uint32_t):
+- Success
+- OpenClipboardFailed
+- EmptyClipboardFailed
+- SetClipboardDataFailed
+- GetClipboardDataFailed
+- CloseClipboardFailed
+- NoMatchingRequestedDatatype
+- NoDataAvailable
+- UnsupportedDatatype
+- ClipboardDataEmpty
+
+Functions
+
+- `PlatformBridge::Clipboard` — Provides read/write access to the system clipboard.
+
+- `PlatformBridge::Clipboard::CopyToClipboard(const PlatformBridge::Clipboard::ClipboardDatatype type, const void* dataIn, const size_t size)` — Writes data of the given type to the system clipboard. **Parameters:** `type` is the datatype of `dataIn` (currently only `Text` is supported, expected as UTF-32/`char32_t`); `dataIn` is a pointer to the raw data; `size` is the size of `dataIn` in bytes. **Returns:** A `ClipboardErrorCode` (`Success` on success).
+
+- `PlatformBridge::Clipboard::PasteFromClipboard(const PlatformBridge::Clipboard::ClipboardDatatype type, void*& dataOut, size_t* sizeOut)` — Reads data of the given type from the system clipboard. **Parameters:** `type` is the requested datatype (currently only `Text` is supported, returned as UTF-32/`char32_t`); `dataOut` is set to point at the internal data buffer; `sizeOut` is set to the size of the returned data in bytes. **Notes:** `dataOut` remains valid until the next call on `PasteFromClipboard`, call on`ClearClipboardDataBuffer()`, or on termination of the your program. **Returns:** A `ClipboardErrorCode` (`Success` on success).
+
+- `PlatformBridge::Clipboard::ClearClipboardDataBuffer()` — Clears the internal buffer used to hold data retrieved via `PasteFromClipboard()`.
+
 ### Paths
 - `PlatformBridge::Paths` — Exposes the executable and working-directory locations in a cross-platform way.
 
@@ -46,6 +75,8 @@ KeyboardUseState (uint32_t):
 - KeyReleased,
 - KeyPressed,
 - SameKEyPressed
+
+Functions
 
 - `void PlatformBridge::Input::Refresh()` — Refreshes and restarts the input capture routine. This is only needed after a refresh; the initial setup is handled by `PlatformBridge::RefreshPlatformBridge()`.
 

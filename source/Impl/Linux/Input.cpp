@@ -44,22 +44,24 @@ void PlatformBridge::Input::Stop()
 {
     _running = false;
 
-    if(_inputThread.joinable())
-        _inputThread.join();
+    if(_keyboardInputThread.joinable())
+        _keyboardInputThread.join();
 
     std::scoped_lock lock(_inputMutex);
 
     if (_display && _currentWindow != 0)
         XSelectInput(static_cast<Display*>(_display), static_cast<Window>(_currentWindow), NoEventMask);
+
+    _heldKeys.clear();
 }
 
 void PlatformBridge::Input::initThread()
 {
-    if(_inputThread.get_id() != std::thread::id())
+    if(_keyboardInputThread.get_id() != std::thread::id())
         return;
 
     _running = true;
-    _inputThread = std::thread(captureKeyStroke);
+    _keyboardInputThread = std::thread(captureKeyStroke);
 }
 
 PlatformBridge::Input::~Input()
@@ -79,7 +81,7 @@ void PlatformBridge::Input::captureKeyStroke()
     XEvent event {};
     char buffer[64];
     void* display;
-    uint64_t currentWindow;
+    uint64_t currentWindow, rootWindow;
 
     while (_running)
     {
@@ -87,6 +89,32 @@ void PlatformBridge::Input::captureKeyStroke()
             std::scoped_lock lock(_inputMutex);
             display = _display;
             currentWindow = _currentWindow;
+            rootWindow = _rootWindow;
+        }
+
+        if (display && rootWindow != 0)
+        {
+            Window rootReturn, childReturn;
+            int rootX, rootY, windowX, windowY;
+            unsigned int maskReturn;
+
+            if (XQueryPointer(static_cast<Display*>(display), static_cast<Window>(rootWindow),
+                &rootReturn, &childReturn, &rootX, &rootY, &windowX, &windowY, &maskReturn))
+            {
+                std::scoped_lock lock(_inputMutex);
+                _mouseScreenX = rootX;
+                _mouseScreenY = rootY;
+                _mouseButtonStateMask = 0;
+
+                if (maskReturn & Button1Mask)
+                    _mouseButtonStateMask |= static_cast<uint32_t>(MouseButton::Left);
+
+                if (maskReturn & Button2Mask)
+                    _mouseButtonStateMask |= static_cast<uint32_t>(MouseButton::Middle);
+
+                if (maskReturn & Button3Mask)
+                    _mouseButtonStateMask |= static_cast<uint32_t>(MouseButton::Right);
+            }
         }
 
         if (!display || currentWindow == 0)
@@ -113,6 +141,8 @@ void PlatformBridge::Input::captureKeyStroke()
                 _inputStringBuffer = buffer;
                 std::println("Key pressed: {} (keysym=0x{:X})", _inputStringBuffer, static_cast<unsigned long>(keysym));
 
+                _heldKeys.insert(static_cast<uint32_t>(keysym));
+
                 if(_lastKeySym == keysym)
                 {
                     _keyboardUseState = KeyboardUseState::SameKeyPressed;
@@ -125,6 +155,12 @@ void PlatformBridge::Input::captureKeyStroke()
             {
                 _keyboardUseState = KeyboardUseState::KeyReleased;
                 _lastKeySym = 0;
+
+                //XLookupString isn't valid here (no key text on release) - XLookupKeysym gives us just enough
+                //to know which key this release belongs to, so it can be removed from _heldKeys.
+                const KeySym releasedKeysym = XLookupKeysym(&event.xkey, 0);
+                _heldKeys.erase(static_cast<uint32_t>(releasedKeysym));
+
                 std::println("Key released");
             } break;
             case ButtonPress:
@@ -242,6 +278,38 @@ PlatformBridge::KeyPressState PlatformBridge::Input::GetKeyPressState(const uint
 
     if(_lastKeySym == key)
         return KeyPressState::Press;
-        
+
     return KeyPressState::Release;
+}
+
+bool PlatformBridge::Input::IsKeyDown(const uint32_t key)
+{
+    std::scoped_lock lock(_inputMutex);
+    return _heldKeys.contains(key);
+}
+
+bool PlatformBridge::Input::IsMouseButtonDown(const MouseButton button)
+{
+    std::scoped_lock lock(_inputMutex);
+    return (_mouseButtonStateMask & static_cast<uint32_t>(button)) != 0;
+}
+
+bool PlatformBridge::Input::GetMouseWindowPosition(const uint64_t window, int32_t& x, int32_t& y)
+{
+    std::scoped_lock lock(_inputMutex);
+
+    if (!_display || window == 0)
+        return false;
+
+    Display* display = static_cast<Display*>(_display);
+    Window childReturn;
+    int relativeX = 0, relativeY = 0;
+
+    if (!XTranslateCoordinates(display, DefaultRootWindow(display), static_cast<Window>(window),
+        _mouseScreenX, _mouseScreenY, &relativeX, &relativeY, &childReturn))
+        return false;
+
+    x = relativeX;
+    y = relativeY;
+    return true;
 }
