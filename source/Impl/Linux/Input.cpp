@@ -53,6 +53,7 @@ void PlatformBridge::Input::Stop()
         XSelectInput(static_cast<Display*>(_display), static_cast<Window>(_currentWindow), NoEventMask);
 
     _heldKeys.clear();
+    _keyPressCounts.clear();
 }
 
 void PlatformBridge::Input::initThread()
@@ -140,6 +141,11 @@ void PlatformBridge::Input::captureKeyStroke()
                 XLookupString(&event.xkey, buffer, sizeof(buffer), &keysym, nullptr);
                 _inputStringBuffer = buffer;
                 std::println("Key pressed: {} (keysym=0x{:X})", _inputStringBuffer, static_cast<unsigned long>(keysym));
+
+                //Only a genuine released->pressed edge counts as a new press - X11 auto-repeat re-fires
+                //KeyPress for a key that's already held, and _heldKeys distinguishes the two.
+                if (!_heldKeys.contains(static_cast<uint32_t>(keysym)))
+                    ++_keyPressCounts[static_cast<uint32_t>(keysym)];
 
                 _heldKeys.insert(static_cast<uint32_t>(keysym));
 
@@ -280,6 +286,19 @@ PlatformBridge::KeyPressState PlatformBridge::Input::GetKeyPressState(const uint
         return KeyPressState::Press;
 
     return KeyPressState::Release;
+}
+
+uint32_t PlatformBridge::Input::GetLastKeySym()
+{
+    std::scoped_lock lock(_inputMutex);
+    return _lastKeySym;
+}
+
+uint32_t PlatformBridge::Input::GetKeyPressCount(const uint32_t key)
+{
+    std::scoped_lock lock(_inputMutex);
+    const auto it = _keyPressCounts.find(key);
+    return it != _keyPressCounts.end() ? it->second : 0;
 }
 
 bool PlatformBridge::Input::IsKeyDown(const uint32_t key)

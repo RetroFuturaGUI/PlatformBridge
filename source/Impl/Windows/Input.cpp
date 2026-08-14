@@ -61,6 +61,7 @@ void PlatformBridge::Input::Stop()
     _keyboardUseState = KeyboardUseState::KeyReleased;
     _lastKeySym = 0;
     _heldKeys.clear();
+    _keyPressCounts.clear();
     _mouseButtonStateMask = 0;
 }
 
@@ -148,9 +149,18 @@ LRESULT CALLBACK PlatformBridge::Input::KeyboardProc(const int nCode, const WPAR
             wchar_t buffer[8] = {};
             int charCount = 0;
 
-            //Text conversion is best-effort - if it fails, the key is still tracked as held below, it just
-            //won't contribute to _inputStringBuffer this frame.
-            if (GetKeyboardState(keyboardState))
+            //GetKeyboardState() reflects this thread's own synchronous input queue, which never receives
+            //real WM_KEYDOWN/WM_KEYUP messages (this thread only hosts the LL hook and has no window), so
+            //it always reports modifiers as up. Query the modifier/lock keys directly instead so Shift/Ctrl/
+            //Alt/CapsLock are reflected correctly when translating the key to text below.
+            keyboardState[VK_SHIFT] = keyboardState[VK_LSHIFT] = keyboardState[VK_RSHIFT] =
+                static_cast<BYTE>(((GetAsyncKeyState(VK_LSHIFT) & 0x8000) || (GetAsyncKeyState(VK_RSHIFT) & 0x8000)) ? 0x80 : 0);
+            keyboardState[VK_CONTROL] = keyboardState[VK_LCONTROL] = keyboardState[VK_RCONTROL] =
+                static_cast<BYTE>(((GetAsyncKeyState(VK_LCONTROL) & 0x8000) || (GetAsyncKeyState(VK_RCONTROL) & 0x8000)) ? 0x80 : 0);
+            keyboardState[VK_MENU] = keyboardState[VK_LMENU] = keyboardState[VK_RMENU] =
+                static_cast<BYTE>(((GetAsyncKeyState(VK_LMENU) & 0x8000) || (GetAsyncKeyState(VK_RMENU) & 0x8000)) ? 0x80 : 0);
+            keyboardState[VK_CAPITAL] = static_cast<BYTE>(GetKeyState(VK_CAPITAL) & 0x0001);
+
             {
                 const HKL layout = GetKeyboardLayout(0);
                 charCount = ToUnicodeEx(
@@ -175,6 +185,12 @@ LRESULT CALLBACK PlatformBridge::Input::KeyboardProc(const int nCode, const WPAR
                     ? KeyboardUseState::SameKeyPressed
                     : KeyboardUseState::KeyPressed;
                 _lastKeySym = static_cast<uint32_t>(keyboardHook->vkCode);
+
+                //Only a genuine released->pressed edge counts as a new press - OS auto-repeat re-fires
+                //WM_KEYDOWN for a key that's already held, and _heldKeys distinguishes the two.
+                if (!_heldKeys.contains(static_cast<uint32_t>(keyboardHook->vkCode)))
+                    ++_keyPressCounts[static_cast<uint32_t>(keyboardHook->vkCode)];
+
                 _heldKeys.insert(static_cast<uint32_t>(keyboardHook->vkCode));
             }
         }
@@ -273,6 +289,19 @@ PlatformBridge::KeyPressState PlatformBridge::Input::GetKeyPressState(const uint
         return KeyPressState::Press;
 
     return KeyPressState::Release;
+}
+
+uint32_t PlatformBridge::Input::GetLastKeySym()
+{
+    std::scoped_lock lock(_inputMutex);
+    return _lastKeySym;
+}
+
+uint32_t PlatformBridge::Input::GetKeyPressCount(const uint32_t key)
+{
+    std::scoped_lock lock(_inputMutex);
+    const auto it = _keyPressCounts.find(key);
+    return it != _keyPressCounts.end() ? it->second : 0;
 }
 
 bool PlatformBridge::Input::IsKeyDown(const uint32_t key)

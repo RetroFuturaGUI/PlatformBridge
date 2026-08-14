@@ -12,6 +12,7 @@
 #include <atomic>
 #include <mutex>
 #include <unordered_set>
+#include <unordered_map>
 #ifdef _WIN32
     #include <Windows.h>
 #endif
@@ -113,6 +114,20 @@ namespace PlatformBridge
         /// @return true if the key is currently pressed.
         static bool IsKeyDown(const uint32_t key);
 
+        /// @brief Get the virtual key symbol of whichever key most recently produced a KeyPressState/text
+        /// update (i.e. the key GetKeyPressState/GetInputString currently reflect).
+        /// @return The last key's symbol, or 0 if no key is currently tracked as "last".
+        static uint32_t GetLastKeySym();
+
+        /// @brief Get how many times the given key has transitioned from released to pressed since input
+        /// capture started. Unlike GetKeyPressState (a per-frame snapshot that stays "Press" for as long as
+        /// the key remains the most recently pressed one, and so can't distinguish "still holding" from "was
+        /// released and pressed again before this was polled"), this counter only advances on a genuine
+        /// release-to-press edge, so comparing it against a previously-seen value reliably detects every
+        /// distinct press even if polling is too infrequent to observe the release in between.
+        /// @return The number of press edges recorded for this key so far.
+        static uint32_t GetKeyPressCount(const uint32_t key);
+
         /// @brief Get KeyboardUseState.
         /// @return Returns a KeyboardUseState (KeyReleased, KeyPressed, KeyRepeated).
         static KeyboardUseState GetKeyboardUseState();
@@ -171,6 +186,7 @@ namespace PlatformBridge
 #endif
         static inline uint32_t _lastKeySym { 0 };
         static inline std::unordered_set<uint32_t> _heldKeys;
+        static inline std::unordered_map<uint32_t, uint32_t> _keyPressCounts;
         static inline void
             * _display { nullptr },
             * _rawDisplay { nullptr };
