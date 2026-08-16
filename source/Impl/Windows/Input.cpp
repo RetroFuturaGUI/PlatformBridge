@@ -1,18 +1,9 @@
 #include "Input.hpp"
 #include <Windows.h>
 #include <print>
-#include <thread>
 
 namespace
 {
-    HHOOK
-        _keyboardHook { nullptr },
-        _mouseHook { nullptr };
-
-    DWORD
-        _keyboardThreadId { 0 },
-        _mouseThreadId { 0 };
-
     std::string utf8FromWide(const std::wstring& text)
     {
         if (text.empty())
@@ -23,61 +14,48 @@ namespace
         WideCharToMultiByte(CP_UTF8, 0, text.data(), static_cast<int>(text.size()), result.data(), sizeNeeded, nullptr, nullptr);
         return result;
     }
+
+    //WM_KEYDOWN/WM_KEYUP report Ctrl/Shift/Alt as the generic VK_CONTROL/VK_SHIFT/VK_MENU, not the
+    //left/right-specific VK_LCONTROL/VK_RCONTROL/etc. that PB_KEY_CONTROL_L/R and friends map to - unlike
+    //WH_KEYBOARD_LL's KBDLLHOOKSTRUCT::vkCode, which already gave the specific side directly. Resolve it the
+    //same way the hook effectively did, from the message's scan code + extended-key bit.
+    uint32_t resolveExtendedVirtualKey(const WPARAM vk, const LPARAM lParam)
+    {
+        if (vk != VK_SHIFT && vk != VK_CONTROL && vk != VK_MENU)
+            return static_cast<uint32_t>(vk);
+
+        UINT scanCode = static_cast<UINT>((lParam >> 16) & 0xFF);
+
+        if (lParam & 0x01000000) //extended-key bit
+            scanCode |= 0xE000;
+
+        const UINT mappedVk = MapVirtualKeyW(scanCode, MAPVK_VSC_TO_VK_EX);
+        return mappedVk != 0 ? static_cast<uint32_t>(mappedVk) : static_cast<uint32_t>(vk);
+    }
 }
 
 void PlatformBridge::Input::Refresh()
 {
     _inputStringBuffer.reserve(64);
 
-    {
-        std::scoped_lock lock(_inputMutex);
-        _currentWindow = GetForegroundWindow();
-        _display = nullptr;
-        _rawDisplay = nullptr;
-        _ownsDisplay = false;
-        _keyboardUseState = KeyboardUseState::KeyReleased;
-    }
-
-    initThread();
+    std::scoped_lock lock(_inputMutex);
+    removeSubclass();
+    _currentWindow = nullptr;
+    _display = nullptr;
+    _rawDisplay = nullptr;
+    _ownsDisplay = false;
+    _keyboardUseState = KeyboardUseState::KeyReleased;
 }
 
 void PlatformBridge::Input::Stop()
 {
-    _running = false;
-
-    if (_keyboardThreadId != 0)
-        PostThreadMessageW(_keyboardThreadId, WM_QUIT, 0, 0);
-
-    if (_mouseThreadId != 0)
-        PostThreadMessageW(_mouseThreadId, WM_QUIT, 0, 0);
-
-    if (_keyboardInputThread.joinable())
-        _keyboardInputThread.join();
-
-    if (_mouseInputThread.joinable())
-        _mouseInputThread.join();
-
     std::scoped_lock lock(_inputMutex);
+    removeSubclass();
+    _currentWindow = nullptr;
     _keyboardUseState = KeyboardUseState::KeyReleased;
     _lastKeySym = 0;
     _heldKeys.clear();
     _keyPressCounts.clear();
-    _mouseButtonStateMask = 0;
-}
-
-void PlatformBridge::Input::initThread()
-{
-    if (_keyboardInputThread.get_id() == std::thread::id())
-    {
-        _running = true;
-        _keyboardInputThread = std::thread(captureKeyStroke);
-    }
-
-    if (_mouseInputThread.get_id() == std::thread::id())
-    {
-        _running = true;
-        _mouseInputThread = std::thread(captureMouseInput);
-    }
 }
 
 PlatformBridge::Input::~Input()
@@ -85,165 +63,68 @@ PlatformBridge::Input::~Input()
     Stop();
 }
 
-void PlatformBridge::Input::captureKeyStroke()
+void PlatformBridge::Input::installSubclass(HWND window)
 {
-    _keyboardThreadId = GetCurrentThreadId();
-    _keyboardHook = SetWindowsHookExW(WH_KEYBOARD_LL, KeyboardProc, GetModuleHandleW(nullptr), 0);
-
-    if (_keyboardHook == nullptr)
-    {
-        std::println("ERROR::INPUT: Failed to install keyboard hook. Error={}", GetLastError());
-        return;
-    }
-
-    MSG msg;
-
-    while (GetMessageW(&msg, nullptr, 0, 0) > 0)
-    {
-        TranslateMessage(&msg);
-        DispatchMessageW(&msg);
-
-        std::scoped_lock lock(_inputMutex);
-        if (_currentWindow == nullptr)
-            _currentWindow = GetForegroundWindow();
-    }
-
-    UnhookWindowsHookEx(_keyboardHook);
-    _keyboardHook = nullptr;
+    _originalWndProc = reinterpret_cast<WNDPROC>(SetWindowLongPtrW(window, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(SubclassProc)));
+    _subclassedWindow = window;
 }
 
-void PlatformBridge::Input::captureMouseInput()
+void PlatformBridge::Input::removeSubclass()
 {
-    _mouseThreadId = GetCurrentThreadId();
-    _mouseHook = SetWindowsHookExW(WH_MOUSE_LL, MouseProc, GetModuleHandleW(nullptr), 0);
+    if (_subclassedWindow != nullptr && _originalWndProc != nullptr)
+        SetWindowLongPtrW(_subclassedWindow, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(_originalWndProc));
 
-    if (_mouseHook == nullptr)
-    {
-        std::println("ERROR::INPUT: Failed to install mouse hook. Error={}", GetLastError());
-        return;
-    }
-
-    MSG msg;
-    while (GetMessageW(&msg, nullptr, 0, 0) > 0)
-    {
-        TranslateMessage(&msg);
-        DispatchMessageW(&msg);
-    }
-
-    UnhookWindowsHookEx(_mouseHook);
-    _mouseHook = nullptr;
+    _subclassedWindow = nullptr;
+    _originalWndProc = nullptr;
 }
 
-LRESULT CALLBACK PlatformBridge::Input::KeyboardProc(const int nCode, const WPARAM wParam, const LPARAM lParam)
+LRESULT CALLBACK PlatformBridge::Input::SubclassProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    if (nCode >= 0)
+    switch (msg)
     {
-        const auto* keyboardHook = reinterpret_cast<const KBDLLHOOKSTRUCT*>(lParam);
-
-        if (_currentWindow != nullptr && GetForegroundWindow() != _currentWindow)
-            return CallNextHookEx(nullptr, nCode, wParam, lParam);
-
-        if (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN)
+        case WM_KEYDOWN:
+        case WM_SYSKEYDOWN:
         {
-            BYTE keyboardState[256] = {};
-            wchar_t buffer[8] = {};
-            int charCount = 0;
+            const uint32_t vkCode = resolveExtendedVirtualKey(wParam, lParam);
+            std::scoped_lock lock(_inputMutex);
 
-            //GetKeyboardState() reflects this thread's own synchronous input queue, which never receives
-            //real WM_KEYDOWN/WM_KEYUP messages (this thread only hosts the LL hook and has no window), so
-            //it always reports modifiers as up. Query the modifier/lock keys directly instead so Shift/Ctrl/
-            //Alt/CapsLock are reflected correctly when translating the key to text below.
-            keyboardState[VK_SHIFT] = keyboardState[VK_LSHIFT] = keyboardState[VK_RSHIFT] =
-                static_cast<BYTE>(((GetAsyncKeyState(VK_LSHIFT) & 0x8000) || (GetAsyncKeyState(VK_RSHIFT) & 0x8000)) ? 0x80 : 0);
-            keyboardState[VK_CONTROL] = keyboardState[VK_LCONTROL] = keyboardState[VK_RCONTROL] =
-                static_cast<BYTE>(((GetAsyncKeyState(VK_LCONTROL) & 0x8000) || (GetAsyncKeyState(VK_RCONTROL) & 0x8000)) ? 0x80 : 0);
-            keyboardState[VK_MENU] = keyboardState[VK_LMENU] = keyboardState[VK_RMENU] =
-                static_cast<BYTE>(((GetAsyncKeyState(VK_LMENU) & 0x8000) || (GetAsyncKeyState(VK_RMENU) & 0x8000)) ? 0x80 : 0);
-            keyboardState[VK_CAPITAL] = static_cast<BYTE>(GetKeyState(VK_CAPITAL) & 0x0001);
+            //WM_CHAR (if this keystroke produces one) is dispatched separately, right after this message -
+            //clear first so keys that produce no text (arrows, F-keys, ...) don't leave stale text behind
+            //for a later WM_CHAR-less frame to re-consume via GetInputString().
+            _inputStringBuffer.clear();
 
-            {
-                const HKL layout = GetKeyboardLayout(0);
-                charCount = ToUnicodeEx(
-                    keyboardHook->vkCode,
-                    keyboardHook->scanCode,
-                    keyboardState,
-                    buffer,
-                    static_cast<int>(std::size(buffer)),
-                    0,
-                    layout);
-            }
+            _keyboardUseState = (_lastKeySym == vkCode)
+                ? KeyboardUseState::SameKeyPressed
+                : KeyboardUseState::KeyPressed;
+            _lastKeySym = vkCode;
 
-            {
-                std::scoped_lock lock(_inputMutex);
+            //Only a genuine released->pressed edge counts as a new press - OS auto-repeat re-fires
+            //WM_KEYDOWN for a key that's already held, and _heldKeys distinguishes the two.
+            if (!_heldKeys.contains(vkCode))
+                ++_keyPressCounts[vkCode];
 
-                if (charCount > 0)
-                    _inputStringBuffer = utf8FromWide(std::wstring(buffer, charCount));
-                else
-                    _inputStringBuffer.clear();
-
-                _keyboardUseState = (_lastKeySym == keyboardHook->vkCode)
-                    ? KeyboardUseState::SameKeyPressed
-                    : KeyboardUseState::KeyPressed;
-                _lastKeySym = static_cast<uint32_t>(keyboardHook->vkCode);
-
-                //Only a genuine released->pressed edge counts as a new press - OS auto-repeat re-fires
-                //WM_KEYDOWN for a key that's already held, and _heldKeys distinguishes the two.
-                if (!_heldKeys.contains(static_cast<uint32_t>(keyboardHook->vkCode)))
-                    ++_keyPressCounts[static_cast<uint32_t>(keyboardHook->vkCode)];
-
-                _heldKeys.insert(static_cast<uint32_t>(keyboardHook->vkCode));
-            }
-        }
-        else if (wParam == WM_KEYUP || wParam == WM_SYSKEYUP)
+            _heldKeys.insert(vkCode);
+        } break;
+        case WM_KEYUP:
+        case WM_SYSKEYUP:
         {
+            const uint32_t vkCode = resolveExtendedVirtualKey(wParam, lParam);
             std::scoped_lock lock(_inputMutex);
             _keyboardUseState = KeyboardUseState::KeyReleased;
             _lastKeySym = 0;
-            _heldKeys.erase(static_cast<uint32_t>(keyboardHook->vkCode));
-        }
-    }
-
-    return CallNextHookEx(nullptr, nCode, wParam, lParam);
-}
-
-LRESULT CALLBACK PlatformBridge::Input::MouseProc(const int nCode, const WPARAM wParam, const LPARAM lParam)
-{
-    if (nCode >= 0)
-    {
-        const auto* mouseHook = reinterpret_cast<const MSLLHOOKSTRUCT*>(lParam);
-        std::scoped_lock lock(_inputMutex);
-
-        switch (wParam)
+            _heldKeys.erase(vkCode);
+        } break;
+        case WM_CHAR:
+        case WM_SYSCHAR:
         {
-            case WM_MOUSEMOVE:
-                _mouseScreenX = mouseHook->pt.x;
-                _mouseScreenY = mouseHook->pt.y;
-                break;
-            case WM_LBUTTONDOWN:
-                _mouseButtonStateMask |= static_cast<uint32_t>(MouseButton::Left);
-                break;
-            case WM_LBUTTONUP:
-                _mouseButtonStateMask &= ~static_cast<uint32_t>(MouseButton::Left);
-                break;
-            case WM_RBUTTONDOWN:
-                _mouseButtonStateMask |= static_cast<uint32_t>(MouseButton::Right);
-                break;
-            case WM_RBUTTONUP:
-                _mouseButtonStateMask &= ~static_cast<uint32_t>(MouseButton::Right);
-                break;
-            case WM_MBUTTONDOWN:
-                _mouseButtonStateMask |= static_cast<uint32_t>(MouseButton::Middle);
-                break;
-            case WM_MBUTTONUP:
-                _mouseButtonStateMask &= ~static_cast<uint32_t>(MouseButton::Middle);
-                break;
-            default:
-                [[unlikely]];
-                break;
-        }
+            std::scoped_lock lock(_inputMutex);
+            _inputStringBuffer = utf8FromWide(std::wstring(1, static_cast<wchar_t>(wParam)));
+        } break;
+        default:
+            break;
     }
 
-    return CallNextHookEx(nullptr, nCode, wParam, lParam);
+    return CallWindowProcW(_originalWndProc, hwnd, msg, wParam, lParam);
 }
 
 PlatformBridge::KeyboardUseState PlatformBridge::Input::GetKeyboardUseState()
@@ -259,6 +140,17 @@ const std::string& PlatformBridge::Input::GetInputString()
 void PlatformBridge::Input::SetActiveWindow(HWND window)
 {
     std::scoped_lock lock(_inputMutex);
+
+    //The subclass is a capture mechanism, not a focus indicator - it stays installed on whichever window last
+    //had it regardless of window being 0 here, so held-key/text tracking stays accurate no matter how often
+    //SetActiveWindow(0) is called (e.g. every frame the mouse isn't hovering a given TextBox). _currentWindow
+    //is the separate, freely-toggled "active window" id exposed via GetActiveWindowID().
+    if (window != nullptr && window != _subclassedWindow)
+    {
+        removeSubclass();
+        installSubclass(window);
+    }
+
     _currentWindow = window;
 }
 
@@ -312,8 +204,17 @@ bool PlatformBridge::Input::IsKeyDown(const uint32_t key)
 
 bool PlatformBridge::Input::IsMouseButtonDown(const MouseButton button)
 {
-    std::scoped_lock lock(_inputMutex);
-    return (_mouseButtonStateMask & static_cast<uint32_t>(button)) != 0;
+    switch (button)
+    {
+        case MouseButton::Left:
+            return (GetAsyncKeyState(VK_LBUTTON) & 0x8000) != 0;
+        case MouseButton::Right:
+            return (GetAsyncKeyState(VK_RBUTTON) & 0x8000) != 0;
+        case MouseButton::Middle:
+            return (GetAsyncKeyState(VK_MBUTTON) & 0x8000) != 0;
+        default:
+            return false;
+    }
 }
 
 bool PlatformBridge::Input::GetMouseWindowPosition(HWND window, int32_t& x, int32_t& y)
@@ -323,11 +224,8 @@ bool PlatformBridge::Input::GetMouseWindowPosition(HWND window, int32_t& x, int3
 
     POINT point;
 
-    {
-        std::scoped_lock lock(_inputMutex);
-        point.x = _mouseScreenX;
-        point.y = _mouseScreenY;
-    }
+    if (!GetCursorPos(&point))
+        return false;
 
     if (!ScreenToClient(window, &point))
         return false;

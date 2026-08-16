@@ -167,22 +167,25 @@ namespace PlatformBridge
             static Input Instance;
             return Instance;
         }
+#ifdef __linux__
         static void initThread();
         static void captureKeyStroke();
-#ifdef _WIN32
-        static void captureMouseInput();
-        static LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam);
-        static LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam);
+#elif _WIN32
+        static void installSubclass(HWND window);
+        static void removeSubclass();
+        static LRESULT CALLBACK SubclassProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 #endif
         static inline std::string _inputStringBuffer;
         //static inline int32_t _inputLanguage;
 #ifdef __linux__
-        static inline uint64_t 
+        static inline uint64_t
             _rootWindow { 0 },
             _currentWindow { 0 },
             _rawWindow { 0 };
 #elif _WIN32
         static inline HWND _currentWindow { nullptr };
+        static inline HWND _subclassedWindow { nullptr };
+        static inline WNDPROC _originalWndProc { nullptr };
 #endif
         static inline uint32_t _lastKeySym { 0 };
         static inline std::unordered_set<uint32_t> _heldKeys;
@@ -191,18 +194,19 @@ namespace PlatformBridge
             * _display { nullptr },
             * _rawDisplay { nullptr };
         static inline bool _ownsDisplay { false };
+#ifdef __linux__
         static inline std::thread _keyboardInputThread;
-#ifdef _WIN32
-        static inline std::thread _mouseInputThread;
-#endif
         static inline std::atomic<bool> _running { false };
+#endif
         static inline std::mutex _inputMutex;
         static inline KeyPressState _commonKeyState;
         static inline KeyboardUseState _keyboardUseState;
         //static inline ModifierKey _modifierKeyState;
+#ifdef __linux__
         static inline int32_t
             _mouseScreenX { 0 },
             _mouseScreenY { 0 };
         static inline uint32_t _mouseButtonStateMask { 0 };
+#endif
     };
 }
