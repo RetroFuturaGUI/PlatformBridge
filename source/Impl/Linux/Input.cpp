@@ -313,6 +313,24 @@ bool PlatformBridge::Input::IsMouseButtonDown(const MouseButton button)
     return (_mouseButtonStateMask & static_cast<uint32_t>(button)) != 0;
 }
 
+PlatformBridge::MousePressState PlatformBridge::Input::GetMousePressState(const MouseButton button)
+{
+    std::scoped_lock lock(_inputMutex);
+
+    const uint32_t mask = static_cast<uint32_t>(button);
+    const bool isDown = (_mouseButtonStateMask & mask) != 0;
+    const bool wasDown = (static_cast<uint32_t>(_previousMouseButtons) & mask) != 0;
+
+    _previousMouseButtons = isDown
+        ? static_cast<MouseButton>(static_cast<uint32_t>(_previousMouseButtons) | mask)
+        : static_cast<MouseButton>(static_cast<uint32_t>(_previousMouseButtons) & ~mask);
+
+    if (!isDown)
+        return MousePressState::Release;
+
+    return wasDown ? MousePressState::Repeat : MousePressState::Press;
+}
+
 bool PlatformBridge::Input::GetMouseWindowPosition(const uint64_t window, int32_t& x, int32_t& y)
 {
     std::scoped_lock lock(_inputMutex);

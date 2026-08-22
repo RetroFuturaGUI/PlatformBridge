@@ -35,9 +35,17 @@ namespace PlatformBridge
 
     enum class MouseButton : uint32_t
     {
+        None = 0,
         Left = 1,
         Right = 1 << 1,
         Middle = 1 << 2
+    };
+
+    enum class MousePressState :uint32_t
+    {
+        Release,
+        Press,
+        Repeat
     };
 
     /*enum class ModifierKey : uint32_t
@@ -144,6 +152,15 @@ namespace PlatformBridge
         /// @return true if the button is currently pressed.
         static bool IsMouseButtonDown(const MouseButton button);
 
+        /// @brief Get the edge-detected press state of the given mouse button, advanced once per call. The
+        /// first call observed after the button goes down returns Press; every subsequent call while it's
+        /// still held returns Repeat; once the button is up it returns Release. Intended to be polled once
+        /// per frame per button (mirroring how GetKeyPressState is driven by real repeat events for the
+        /// keyboard) - polling the same button multiple times within one frame will consume the Press edge
+        /// on the first call and report Repeat to the rest.
+        /// @return A MousePressState (Release, Press, Repeat).
+        static MousePressState GetMousePressState(const MouseButton button);
+
         /// @brief Get the mouse cursor position relative to the given native window's client area, in the native
         /// windowing coordinate convention (origin top-left, Y increasing downward). Callers using a bottom-up
         /// coordinate space (e.g. OpenGL) are responsible for flipping Y themselves - PlatformBridge stays
@@ -201,6 +218,7 @@ namespace PlatformBridge
         static inline std::mutex _inputMutex;
         static inline KeyPressState _commonKeyState;
         static inline KeyboardUseState _keyboardUseState;
+        static inline MouseButton _previousMouseButtons { MouseButton::None };
         //static inline ModifierKey _modifierKeyState;
 #ifdef __linux__
         static inline int32_t

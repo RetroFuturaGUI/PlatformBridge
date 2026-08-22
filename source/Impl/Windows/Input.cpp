@@ -56,6 +56,7 @@ void PlatformBridge::Input::Stop()
     _lastKeySym = 0;
     _heldKeys.clear();
     _keyPressCounts.clear();
+    _previousMouseButtons = MouseButton::None;
 }
 
 PlatformBridge::Input::~Input()
@@ -233,4 +234,22 @@ bool PlatformBridge::Input::GetMouseWindowPosition(HWND window, int32_t& x, int3
     x = point.x;
     y = point.y;
     return true;
+}
+
+PlatformBridge::MousePressState PlatformBridge::Input::GetMousePressState(const MouseButton button)
+{
+    std::scoped_lock lock(_inputMutex);
+
+    const uint32_t mask = static_cast<uint32_t>(button);
+    const bool isDown = IsMouseButtonDown(button);
+    const bool wasDown = (static_cast<uint32_t>(_previousMouseButtons) & mask) != 0;
+
+    _previousMouseButtons = isDown
+        ? static_cast<MouseButton>(static_cast<uint32_t>(_previousMouseButtons) | mask)
+        : static_cast<MouseButton>(static_cast<uint32_t>(_previousMouseButtons) & ~mask);
+
+    if (!isDown)
+        return MousePressState::Release;
+
+    return wasDown ? MousePressState::Repeat : MousePressState::Press;
 }
