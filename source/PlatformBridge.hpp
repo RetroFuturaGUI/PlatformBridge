@@ -7,6 +7,7 @@
 #include "Paths.hpp"
 #include "Fonts.hpp"
 #include "Input.hpp"
+#include "NativeWindow.hpp"
 
 namespace PlatformBridge
 {
