@@ -350,3 +350,39 @@ bool PlatformBridge::Input::GetMouseWindowPosition(const uint64_t window, int32_
     y = relativeY;
     return true;
 }
+
+bool PlatformBridge::Input::IsWindowUnderMouse(const uint64_t window)
+{
+    std::scoped_lock lock(_inputMutex);
+
+    if (!_display || 0 == window)
+        return false;
+
+    Display* display = static_cast<Display*>(_display);
+
+    //From the root down through the windows under the pointer, a window manager's frame included: the window is the one under the mouse when it lies on that path
+    Window current = DefaultRootWindow(display);
+
+    while (0 != current)
+    {
+        if (static_cast<Window>(window) == current)
+            return true;
+
+        Window
+            rootReturn = 0,
+            childReturn = 0;
+        int
+            rootX = 0,
+            rootY = 0,
+            windowX = 0,
+            windowY = 0;
+        unsigned int mask = 0;
+
+        if (!XQueryPointer(display, current, &rootReturn, &childReturn, &rootX, &rootY, &windowX, &windowY, &mask))
+            return false;
+
+        current = childReturn;
+    }
+
+    return false;
+}
