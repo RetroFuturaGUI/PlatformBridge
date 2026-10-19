@@ -236,6 +236,24 @@ bool PlatformBridge::Input::GetMouseWindowPosition(HWND window, int32_t& x, int3
     return true;
 }
 
+bool PlatformBridge::Input::IsWindowUnderMouse(HWND window)
+{
+    if (!window)
+        return false;
+
+    POINT point;
+
+    if (!GetCursorPos(&point))
+        return false;
+
+    const HWND underMouse { WindowFromPoint(point) }; //the window a click at the cursor would reach. Hidden windows are skipped
+
+    if (!underMouse)
+        return false;
+
+    return GetAncestor(underMouse, GA_ROOT) == window; //that can be a child window, so its top-level window is compared
+}
+
 PlatformBridge::MousePressState PlatformBridge::Input::GetMousePressState(const MouseButton button)
 {
     std::scoped_lock lock(_inputMutex);

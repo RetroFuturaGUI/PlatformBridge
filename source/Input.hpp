@@ -172,6 +172,15 @@ namespace PlatformBridge
         static bool GetMouseWindowPosition(HWND window, int32_t& x, int32_t& y);
 #endif
 
+        /// @brief Get whether the given native window is the topmost one under the mouse cursor, the window a click there reaches.
+        /// Windows of every application count, so any window lying over the given one at the cursor hides it.
+        /// @return false when the cursor is outside the window, or another window lies over it there.
+#ifdef __linux__
+        static bool IsWindowUnderMouse(const uint64_t window);
+#elif _WIN32
+        static bool IsWindowUnderMouse(HWND window);
+#endif
+
     private:
         Input() = default;
         Input(const Input&) = delete;
