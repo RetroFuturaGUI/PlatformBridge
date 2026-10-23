@@ -79,6 +79,17 @@ void PlatformBridge::Input::removeSubclass()
     _originalWndProc = nullptr;
 }
 
+void PlatformBridge::Input::forgetReleasedKeys()
+{
+    std::erase_if(_heldKeys, [](const uint32_t vkCode) { return 0 == (GetAsyncKeyState(static_cast<int>(vkCode)) & 0x8000); });
+
+    if (_heldKeys.contains(_lastKeySym))
+        return;
+
+    _lastKeySym = 0;
+    _keyboardUseState = KeyboardUseState::KeyReleased;
+}
+
 LRESULT CALLBACK PlatformBridge::Input::SubclassProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     switch (msg)
@@ -121,6 +132,12 @@ LRESULT CALLBACK PlatformBridge::Input::SubclassProc(HWND hwnd, UINT msg, WPARAM
             std::scoped_lock lock(_inputMutex);
             _inputStringBuffer = utf8FromWide(std::wstring(1, static_cast<wchar_t>(wParam)));
         } break;
+        case WM_SETFOCUS:
+        {
+            //The window took the keys before Windows gave it the focus, so a key let go in between sent its key-up elsewhere
+            std::scoped_lock lock(_inputMutex);
+            forgetReleasedKeys();
+        } break;
         default:
             break;
     }
@@ -150,6 +167,7 @@ void PlatformBridge::Input::SetActiveWindow(HWND window)
     {
         removeSubclass();
         installSubclass(window);
+        forgetReleasedKeys(); //key-ups that went to the window before
     }
 
     _currentWindow = window;
@@ -203,6 +221,11 @@ bool PlatformBridge::Input::IsKeyDown(const uint32_t key)
     return _heldKeys.contains(key);
 }
 
+bool PlatformBridge::Input::IsKeyPhysicallyDown(const uint32_t key)
+{
+    return 0 != (GetAsyncKeyState(static_cast<int>(key)) & 0x8000);
+}
+
 bool PlatformBridge::Input::IsMouseButtonDown(const MouseButton button)
 {
     switch (button)
@@ -252,6 +275,11 @@ bool PlatformBridge::Input::IsWindowUnderMouse(HWND window)
         return false;
 
     return GetAncestor(underMouse, GA_ROOT) == window; //that can be a child window, so its top-level window is compared
+}
+
+std::chrono::milliseconds PlatformBridge::Input::GetDoubleClickTime()
+{
+    return std::chrono::milliseconds(::GetDoubleClickTime()); //the Win32 function, not this one
 }
 
 PlatformBridge::MousePressState PlatformBridge::Input::GetMousePressState(const MouseButton button)

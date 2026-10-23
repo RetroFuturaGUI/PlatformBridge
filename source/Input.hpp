@@ -5,6 +5,7 @@
 
 */
 #pragma once
+#include <chrono>
 #include <string>
 #include <string_view>
 #include <cstdint>
@@ -122,6 +123,12 @@ namespace PlatformBridge
         /// @return true if the key is currently pressed.
         static bool IsKeyDown(const uint32_t key);
 
+        /// @brief Asks the system whether a key is down right now, whichever window or program has the keys. IsKeyDown only
+        /// knows the keys that reached the app's key window; this one is for moments it can't see them, like a drop from
+        /// another program.
+        /// @return true if the key is currently pressed.
+        static bool IsKeyPhysicallyDown(const uint32_t key);
+
         /// @brief Get the virtual key symbol of whichever key most recently produced a KeyPressState/text
         /// update (i.e. the key GetKeyPressState/GetInputString currently reflect).
         /// @return The last key's symbol, or 0 if no key is currently tracked as "last".
@@ -181,6 +188,9 @@ namespace PlatformBridge
         static bool IsWindowUnderMouse(HWND window);
 #endif
 
+        /// @brief Get the longest time between two presses of a double-click: the system setting on Windows, 400 ms on Linux.
+        static std::chrono::milliseconds GetDoubleClickTime();
+
     private:
         Input() = default;
         Input(const Input&) = delete;
@@ -199,6 +209,10 @@ namespace PlatformBridge
 #elif _WIN32
         static void installSubclass(HWND window);
         static void removeSubclass();
+
+        /// @brief Drops the held keys Windows reports as up. A key let go while another window had the keys sent its key-up
+        ///        there, so without this it would stay held. Call with _inputMutex locked.
+        static void forgetReleasedKeys();
         static LRESULT CALLBACK SubclassProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 #endif
         static inline std::string _inputStringBuffer;

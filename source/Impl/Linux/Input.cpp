@@ -307,6 +307,25 @@ bool PlatformBridge::Input::IsKeyDown(const uint32_t key)
     return _heldKeys.contains(key);
 }
 
+bool PlatformBridge::Input::IsKeyPhysicallyDown(const uint32_t key)
+{
+    std::scoped_lock lock(_inputMutex);
+
+    if (!_display)
+        return false;
+
+    Display* display { static_cast<Display*>(_display) };
+    const KeyCode code { XKeysymToKeycode(display, static_cast<KeySym>(key)) };
+
+    if (0 == code)
+        return false;
+
+    //One bit per key code, as the server sees the keyboard now
+    char keys[32] {};
+    XQueryKeymap(display, keys);
+    return 0 != (keys[code / 8] & (1 << (code % 8)));
+}
+
 bool PlatformBridge::Input::IsMouseButtonDown(const MouseButton button)
 {
     std::scoped_lock lock(_inputMutex);
@@ -385,4 +404,9 @@ bool PlatformBridge::Input::IsWindowUnderMouse(const uint64_t window)
     }
 
     return false;
+}
+
+std::chrono::milliseconds PlatformBridge::Input::GetDoubleClickTime()
+{
+    return std::chrono::milliseconds(400); //X11 has no system setting; desktops default to about this
 }
