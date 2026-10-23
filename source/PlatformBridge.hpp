@@ -4,6 +4,7 @@
 #include "Monitors.hpp" // implement for Linux once needed
 #endif
 #include "Clipboard.hpp"
+#include "FileSystem.hpp"
 #include "Paths.hpp"
 #include "Fonts.hpp"
 #include "Input.hpp"
@@ -19,6 +20,7 @@ namespace PlatformBridge
     #endif
         PlatformBridge::Input::Refresh();
         PlatformBridge::Paths::Refresh();
+        PlatformBridge::FileSystem::Refresh();
         PlatformBridge::Fonts::Refresh();
     }
 }
