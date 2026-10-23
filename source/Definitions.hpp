@@ -2403,6 +2403,8 @@
     #define PB_KEY_SPACE VK_SPACE
     #define PB_KEY_PAGEUP VK_PRIOR
     #define PB_KEY_PAGEDOWN VK_NEXT
+    #define PB_KEY_PAGE_UP VK_PRIOR //the Linux spelling, so code using it builds on both
+    #define PB_KEY_PAGE_DOWN VK_NEXT
     #define PB_KEY_END VK_END
     #define PB_KEY_HOME VK_HOME
     #define PB_KEY_LEFT VK_LEFT
@@ -2547,6 +2549,8 @@
     #endif // _WIN32_WINNT >= 0x0500
     #define PB_KEY_LMENU VK_LMENU
     #define PB_KEY_RMENU VK_RMENU
+    #define PB_KEY_ALT_L VK_LMENU //the Linux spelling; the window subclass reports Alt by side, as it does Ctrl and Shift
+    #define PB_KEY_ALT_R VK_RMENU
     #define PB_KEY_OEM_NEC_EQUAL VK_OEM_NEC_EQUAL
     #define PB_KEY_OEM_FJ_JISHO VK_OEM_FJ_JISHO
     #define PB_KEY_OEM_FJ_MASSHOU VK_OEM_FJ_MASSHOU
