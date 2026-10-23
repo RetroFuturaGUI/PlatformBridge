@@ -27,6 +27,8 @@ if(TARGET_TYPE STREQUAL "executable")
     message(STATUS "-- PlatformBridge: Building as an executable")
     add_executable("PlatformBridge"
         "${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}/Clipboard.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}/DragDrop.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}/FileSystem.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}/Fonts.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}/Input.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}/Monitors.cpp"
@@ -43,6 +45,8 @@ elseif(TARGET_TYPE STREQUAL "static")
     message(STATUS "-- PlatformBridge: Building as a static library")
     add_library("PlatformBridge" STATIC
         "${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}/Clipboard.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}/DragDrop.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}/FileSystem.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}/Fonts.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}/Input.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}/Monitors.cpp"
@@ -72,6 +76,8 @@ elseif(TARGET_TYPE STREQUAL "dynamic")
     message(STATUS "-- PlatformBridge: Building as a dynamic library")
     add_library("PlatformBridge" SHARED
         "${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}/Clipboard.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}/DragDrop.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}/FileSystem.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}/Fonts.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}/Input.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/source/Impl/${CMAKE_SYSTEM_NAME}/Monitors.cpp"

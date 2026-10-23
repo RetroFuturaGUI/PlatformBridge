@@ -4,6 +4,7 @@
 #include "Monitors.hpp" // implement for Linux once needed
 #endif
 #include "Clipboard.hpp"
+#include "DragDrop.hpp"
 #include "FileSystem.hpp"
 #include "Paths.hpp"
 #include "Fonts.hpp"
