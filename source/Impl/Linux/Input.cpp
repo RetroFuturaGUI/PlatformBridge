@@ -11,10 +11,10 @@
 
 void PlatformBridge::Input::Refresh()
 {
-    _inputStringBuffer.reserve(64);
-
     {
         std::scoped_lock lock(_inputMutex);
+        _inputStringBuffer.reserve(64);
+
         if (!_display)
         {
             _display = XOpenDisplay(nullptr);
@@ -138,8 +138,8 @@ void PlatformBridge::Input::captureKeyStroke()
             {
                 _keyboardUseState = KeyboardUseState::KeyPressed;
                 KeySym keysym;
-                XLookupString(&event.xkey, buffer, sizeof(buffer), &keysym, nullptr);
-                _inputStringBuffer = buffer;
+                const int length { XLookupString(&event.xkey, buffer, sizeof(buffer), &keysym, nullptr) }; //0 for keys without text
+                _inputStringBuffer.assign(buffer, length); //buffer isn't null-terminated
                 std::println("Key pressed: {} (keysym=0x{:X})", _inputStringBuffer, static_cast<unsigned long>(keysym));
 
                 //Only a genuine released->pressed edge counts as a new press - X11 auto-repeat re-fires

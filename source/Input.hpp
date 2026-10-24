@@ -1,9 +1,3 @@
-/* ToDo:
-- ensure _inputStringBuffer is never reallocated
-
-
-
-*/
 #pragma once
 #include <chrono>
 #include <string>
@@ -48,42 +42,6 @@ namespace PlatformBridge
         Press,
         Repeat
     };
-
-    /*enum class ModifierKey : uint32_t
-    {
-        Released = 0,
-        LeftCRTL = 1,
-        RightCTRL = 1 << 1,
-        LeftShift = 1 << 2,
-        RightShift = 1 << 3,
-        CapsLock = 1 << 4,
-        Alt = 1 << 5,
-        AltGr = 1 << 6,
-        Tab = 1 << 7,
-        Enter = 1 << 8,
-        Backspace = 1 << 9,
-        ArrowLeft = 1 << 10,
-        ArrowRight = 1 << 11,
-        ArrowUp = 1 << 12,
-        ArrowDown = 1 << 13,
-        Escape = 1 << 14,
-        Delete = 1 << 15,
-        Insert = 1 << 16,
-        F1 = 1 << 17,
-        F2 = 1 << 18,
-        F3 = 1 << 19,
-        F4 = 1 << 18,
-        F5 = 1 << 19,
-        F6 = 1 << 20,
-        F7 = 1 << 21,
-        F8 = 1 << 22,
-        F9 = 1 << 21,
-        F10 = 1 << 22,
-        F11 = 1 << 23,
-        F12 = 1 << 24,
-        Super = 1 << 25,
-        NumpadEnter = 1 << 26
-    };*/
 
     class Input
     {
@@ -226,6 +184,7 @@ namespace PlatformBridge
         static inline HWND _currentWindow { nullptr };
         static inline HWND _subclassedWindow { nullptr };
         static inline WNDPROC _originalWndProc { nullptr };
+        static inline wchar_t _pendingHighSurrogate { 0 };
 #endif
         static inline uint32_t _lastKeySym { 0 };
         static inline std::unordered_set<uint32_t> _heldKeys;

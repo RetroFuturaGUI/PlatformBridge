@@ -124,7 +124,7 @@ Functions
 
 - `PlatformBridge::FileSystem` — Lists folders and finds the places browsing starts from: drives or mounted volumes, and the user's known folders; moves items to the recycle bin and back.
 
-- `PlatformBridge::FileSystem::Entry` — One file or folder in a listed folder: its path, kind, size, last write time and whether it is hidden (the hidden attribute on Windows, a leading `.` on Linux).
+- `PlatformBridge::FileSystem::Entry` — One file or folder in a listed folder: its path, kind, size, last write time and whether it is hidden (the hidden attribute on Windows, a leading `.` on Linux). `_IsOnlineOnly` marks a cloud file whose content isn't on this computer - a Cloud Files placeholder of OneDrive or kDrive, or a file moved to slow storage (`FILE_ATTRIBUTE_RECALL_ON_DATA_ACCESS`, `RECALL_ON_OPEN`, `OFFLINE`) - which downloads in full once read, so a thumbnail had better not read it. Always false on Linux.
 
 - `PlatformBridge::FileSystem::Root` — A drive on Windows (`C:\`), or on Linux the file system root and the volumes mounted under `/media`, `/run/media` and `/mnt`, plus network shares. **Notes:** On Windows only fixed drives get a label, because asking an empty card reader or disc drive errors and a network drive can stall.
 
@@ -179,6 +179,10 @@ Functions
 - `KeyPressState PlatformBridge::Input::GetKeyPressState()` — Returns the current keyboard press state.
 
 - `KeyboardUseState PlatformBridge::Input::GetKeyboardUseState()` — Returns the current keyboard usage state.
+
+- `bool PlatformBridge::Input::IsKeyDown(const uint32_t key)` — Returns whether a key is held, of all the keys held at once, not only the last one pressed, so modifier combinations like Ctrl+C can be checked. Knows the keys that reached the app's key window.
+
+- `uint32_t PlatformBridge::Input::GetKeyPressCount(const uint32_t key)` — Returns how many times a key went from up to down since input capture started. Comparing it with the count seen before tells every separate press apart, even when it's polled too rarely to see the release in between; a held key's repeats don't count.
 
 - `bool PlatformBridge::Input::IsKeyPhysicallyDown(const uint32_t key)` — Asks the system whether a key is down right now, whichever window or program has the keys (`GetAsyncKeyState` on Windows, `XQueryKeymap` on Linux, untested). The held keys PlatformBridge tracks only include those that reached the app's key window; this is for moments they can't, like a drop from another program. When the keys move to another of the app's windows, or it gets the focus, held keys the system reports up are let go, so a key released in between doesn't stay held.
 

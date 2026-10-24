@@ -4,17 +4,6 @@
 
 namespace
 {
-    std::string utf8FromWide(const std::wstring& text)
-    {
-        if (text.empty())
-            return {};
-
-        const int sizeNeeded = WideCharToMultiByte(CP_UTF8, 0, text.data(), static_cast<int>(text.size()), nullptr, 0, nullptr, nullptr);
-        std::string result(sizeNeeded, '\0');
-        WideCharToMultiByte(CP_UTF8, 0, text.data(), static_cast<int>(text.size()), result.data(), sizeNeeded, nullptr, nullptr);
-        return result;
-    }
-
     //WM_KEYDOWN/WM_KEYUP report Ctrl/Shift/Alt as the generic VK_CONTROL/VK_SHIFT/VK_MENU, not the
     //left/right-specific VK_LCONTROL/VK_RCONTROL/etc. that PB_KEY_CONTROL_L/R and friends map to - unlike
     //WH_KEYBOARD_LL's KBDLLHOOKSTRUCT::vkCode, which already gave the specific side directly. Resolve it the
@@ -36,9 +25,8 @@ namespace
 
 void PlatformBridge::Input::Refresh()
 {
-    _inputStringBuffer.reserve(64);
-
     std::scoped_lock lock(_inputMutex);
+    _inputStringBuffer.reserve(64);
     removeSubclass();
     _currentWindow = nullptr;
     _display = nullptr;
@@ -54,6 +42,7 @@ void PlatformBridge::Input::Stop()
     _currentWindow = nullptr;
     _keyboardUseState = KeyboardUseState::KeyReleased;
     _lastKeySym = 0;
+    _pendingHighSurrogate = 0;
     _heldKeys.clear();
     _keyPressCounts.clear();
     _previousMouseButtons = MouseButton::None;
@@ -129,8 +118,23 @@ LRESULT CALLBACK PlatformBridge::Input::SubclassProc(HWND hwnd, UINT msg, WPARAM
         case WM_CHAR:
         case WM_SYSCHAR:
         {
+            const wchar_t character { static_cast<wchar_t>(wParam) };
             std::scoped_lock lock(_inputMutex);
-            _inputStringBuffer = utf8FromWide(std::wstring(1, static_cast<wchar_t>(wParam)));
+
+            //characters past U+FFFF (emoji and other stuff) come as two WM_CHARs. Each half alone converts to U+FFFD, so the first half requires second.
+            if (IS_HIGH_SURROGATE(character))
+            {
+                _pendingHighSurrogate = character;
+                break;
+            }
+
+            const wchar_t pair[2] { _pendingHighSurrogate, character };
+            const bool isPair { 0 != _pendingHighSurrogate && IS_LOW_SURROGATE(character) };
+            _pendingHighSurrogate = 0;
+
+            char utf8[4];
+            const int length { WideCharToMultiByte(CP_UTF8, 0, isPair ? pair : &character, isPair ? 2 : 1, utf8, static_cast<int>(sizeof(utf8)), nullptr, nullptr) };
+            _inputStringBuffer.assign(utf8, length); //copies into the buffer's storage to prevent unnecessary copying
         } break;
         case WM_SETFOCUS:
         {
