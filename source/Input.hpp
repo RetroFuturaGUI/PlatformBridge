@@ -171,7 +171,7 @@ namespace PlatformBridge
         /// @brief Drops the held keys Windows reports as up. A key let go while another window had the keys sent its key-up
         ///        there, so without this it would stay held. Call with _inputMutex locked.
         static void forgetReleasedKeys();
-        static LRESULT CALLBACK SubclassProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+        static LRESULT CALLBACK SubclassProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, UINT_PTR subclassID, DWORD_PTR referenceData);
 #endif
         static inline std::string _inputStringBuffer;
         //static inline int32_t _inputLanguage;
@@ -183,7 +183,6 @@ namespace PlatformBridge
 #elif _WIN32
         static inline HWND _currentWindow { nullptr };
         static inline HWND _subclassedWindow { nullptr };
-        static inline WNDPROC _originalWndProc { nullptr };
         static inline wchar_t _pendingHighSurrogate { 0 };
 #endif
         static inline uint32_t _lastKeySym { 0 };

@@ -1,6 +1,9 @@
 #include "Input.hpp"
 #include <Windows.h>
+#include <CommCtrl.h>
 #include <print>
+
+#pragma comment(lib, "comctl32.lib")
 
 namespace
 {
@@ -55,17 +58,18 @@ PlatformBridge::Input::~Input()
 
 void PlatformBridge::Input::installSubclass(HWND window)
 {
-    _originalWndProc = reinterpret_cast<WNDPROC>(SetWindowLongPtrW(window, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(SubclassProc)));
+    //The window's messages pass through SubclassProc(edure) before they reach GLFW. Windows keeps each subclass of a window apart, so Cursor's subclass shares the window
+    SetWindowSubclass(window, SubclassProc, 0, 0);
     _subclassedWindow = window;
 }
 
 void PlatformBridge::Input::removeSubclass()
 {
-    if (_subclassedWindow != nullptr && _originalWndProc != nullptr)
-        SetWindowLongPtrW(_subclassedWindow, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(_originalWndProc));
+    if (!_subclassedWindow)
+        return;
 
+    RemoveWindowSubclass(_subclassedWindow, SubclassProc, 0);
     _subclassedWindow = nullptr;
-    _originalWndProc = nullptr;
 }
 
 void PlatformBridge::Input::forgetReleasedKeys()
@@ -79,7 +83,7 @@ void PlatformBridge::Input::forgetReleasedKeys()
     _keyboardUseState = KeyboardUseState::KeyReleased;
 }
 
-LRESULT CALLBACK PlatformBridge::Input::SubclassProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK PlatformBridge::Input::SubclassProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, UINT_PTR subclassID, DWORD_PTR)
 {
     switch (msg)
     {
@@ -142,11 +146,17 @@ LRESULT CALLBACK PlatformBridge::Input::SubclassProc(HWND hwnd, UINT msg, WPARAM
             std::scoped_lock lock(_inputMutex);
             forgetReleasedKeys();
         } break;
+        case WM_NCDESTROY:
+        {
+            std::scoped_lock lock(_inputMutex);
+            RemoveWindowSubclass(hwnd, SubclassProc, subclassID);
+            _subclassedWindow = nullptr; //the window is gone, so a later removeSubclass has nothing to take out
+        } break;
         default:
             break;
     }
 
-    return CallWindowProcW(_originalWndProc, hwnd, msg, wParam, lParam);
+    return DefSubclassProc(hwnd, msg, wParam, lParam);
 }
 
 PlatformBridge::KeyboardUseState PlatformBridge::Input::GetKeyboardUseState()

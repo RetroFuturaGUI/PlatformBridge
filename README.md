@@ -188,5 +188,26 @@ Functions
 
 - `std::chrono::milliseconds PlatformBridge::Input::GetDoubleClickTime()` — Returns the longest time between the two presses of a double-click: the system setting on Windows, 400 ms on Linux.
 
+### Cursor
+#### Enums:
+CursorIcon (uint32_t), in CursorIcon.hpp, which leaves out windows.h so widget headers can name an icon:
+- Arrow
+- Text
+- Hand
+- Crosshair
+- ResizeHorizontal
+- ResizeVertical
+- ResizeTopLeftBottomRight
+- ResizeTopRightBottomLeft
+- Move
+- NotAllowed
+- Wait
+
+Functions
+
+- Windows: `void PlatformBridge::Cursor::SetIcon(HWND window, const CursorIcon icon)` — Shows the icon whenever the mouse is over the window, until another icon is set for it; call it when the icon changes. **Notes:** Uses the system's shared cursors. The window gets a subclass (`SetWindowSubclass`) that answers `WM_SETCURSOR`, since GLFW answers it too and would put its own cursor back on every mouse move; the subclass removes itself when the window is destroyed. If the mouse is already over the window, the icon changes at once.
+
+- Linux: `void PlatformBridge::Cursor::SetIcon(void* display, const uint64_t window, const CursorIcon icon)` — The same for an X11 window (`XDefineCursor`). **Parameters:** `display` is the display connection the window was made on (GLFW's `glfwGetX11Display()`). **Notes:** Takes the icon from the desktop's cursor theme through Xcursor, falling back to X11's own cursors, which lack the diagonal resize arrows and use corner arrows instead. Untested.
+
 
 ToDo: Window: get active window HWND
