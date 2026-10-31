@@ -6,8 +6,11 @@
 #include <X11/keysym.h>
 #include <print>
 #include <chrono>
+#include <cmath>
 #include <thread>
 #include <format>
+#include <string_view>
+#include <utility>
 
 void PlatformBridge::Input::Refresh()
 {
@@ -54,6 +57,26 @@ void PlatformBridge::Input::Stop()
 
     _heldKeys.clear();
     _keyPressCounts.clear();
+    _inputStringBuffer.clear();
+    _pendingInputString.clear();
+    _keyStrokeCounts.clear();
+    _pendingKeyStrokeCounts.clear();
+    _wheelDelta = WheelDelta {};
+    _pendingWheelDelta = WheelDelta {};
+    _pinchScale = 1.0f;
+    _pendingPinchScale = 1.0f;
+}
+
+void PlatformBridge::Input::NewFrame()
+{
+    //The key thread keeps writing the pending values; the frame's values are the GUI thread's alone, so GetInputString can hand out its buffer
+    std::scoped_lock lock(_inputMutex);
+    _inputStringBuffer.swap(_pendingInputString);
+    _pendingInputString.clear();
+    _keyStrokeCounts.swap(_pendingKeyStrokeCounts);
+    _pendingKeyStrokeCounts.clear();
+    _wheelDelta = std::exchange(_pendingWheelDelta, WheelDelta {});
+    _pinchScale = std::exchange(_pendingPinchScale, 1.0f);
 }
 
 void PlatformBridge::Input::initThread()
@@ -132,46 +155,72 @@ void PlatformBridge::Input::captureKeyStroke()
 
         XNextEvent(static_cast<Display*>(display), &event);
 
+        //The GUI thread reads all of this, so every write below is locked
+        std::scoped_lock lock(_inputMutex);
+
         switch(event.type)
         {
             case KeyPress:
             {
-                _keyboardUseState = KeyboardUseState::KeyPressed;
                 KeySym keysym;
-                const int length { XLookupString(&event.xkey, buffer, sizeof(buffer), &keysym, nullptr) }; //0 for keys without text
-                _inputStringBuffer.assign(buffer, length); //buffer isn't null-terminated
-                std::println("Key pressed: {} (keysym=0x{:X})", _inputStringBuffer, static_cast<unsigned long>(keysym));
+                const int length { XLookupString(&event.xkey, buffer, sizeof(buffer), &keysym, nullptr) }; //0 for keys without text; \b and \r for Backspace and Enter
+                _pendingInputString.append(buffer, length); //buffer isn't null-terminated
+                std::println("Key pressed: {} (keysym=0x{:X})", std::string_view(buffer, length), static_cast<unsigned long>(keysym));
 
                 //Only a genuine released->pressed edge counts as a new press - X11 auto-repeat re-fires
                 //KeyPress for a key that's already held, and _heldKeys distinguishes the two.
                 if (!_heldKeys.contains(static_cast<uint32_t>(keysym)))
                     ++_keyPressCounts[static_cast<uint32_t>(keysym)];
 
+                ++_pendingKeyStrokeCounts[static_cast<uint32_t>(keysym)]; //repeats included
                 _heldKeys.insert(static_cast<uint32_t>(keysym));
-
-                if(_lastKeySym == keysym)
-                {
-                    _keyboardUseState = KeyboardUseState::SameKeyPressed;
-                    continue;
-                }
-
+                _keyboardUseState = _lastKeySym == keysym ? KeyboardUseState::SameKeyPressed : KeyboardUseState::KeyPressed;
                 _lastKeySym = keysym;
             } break;
             case KeyRelease:
             {
-                _keyboardUseState = KeyboardUseState::KeyReleased;
-                _lastKeySym = 0;
-
                 //XLookupString isn't valid here (no key text on release) - XLookupKeysym gives us just enough
                 //to know which key this release belongs to, so it can be removed from _heldKeys.
                 const KeySym releasedKeysym = XLookupKeysym(&event.xkey, 0);
                 _heldKeys.erase(static_cast<uint32_t>(releasedKeysym));
 
+                // releasing another key, like Shift, leaves the last one pressed alone, which may still be held and repeating
+                if (_lastKeySym == releasedKeysym)
+                    _lastKeySym = 0;
+
+                if (_heldKeys.empty())
+                    _keyboardUseState = KeyboardUseState::KeyReleased;
+
                 std::println("Key released");
             } break;
             case ButtonPress:
             {
-                std::println("Mouse button press: {}", event.xbutton.button);
+                //The wheel comes as buttons: 4 and 5 turn it up and down, 6 and 7 tilt it left and right, one notch per press
+                switch (event.xbutton.button)
+                {
+                    case 4:
+                    case 5:
+                    {
+                        const float notches { 4 == event.xbutton.button ? 1.0f : -1.0f };
+
+                        //Ctrl makes it a pinch and Shift turns it sideways, as on Windows
+                        if (0 != (event.xbutton.state & ControlMask))
+                            _pendingPinchScale *= std::pow(_pinchScalePerNotch, notches);
+                        else if (0 != (event.xbutton.state & ShiftMask))
+                            _pendingWheelDelta._X -= notches;
+                        else
+                            _pendingWheelDelta._Y += notches;
+                    } break;
+                    case 6:
+                        _pendingWheelDelta._X -= 1.0f;
+                        break;
+                    case 7:
+                        _pendingWheelDelta._X += 1.0f;
+                        break;
+                    default:
+                        std::println("Mouse button press: {}", event.xbutton.button);
+                        break;
+                }
             } break;
             case ButtonRelease:
             {
@@ -195,7 +244,31 @@ PlatformBridge::KeyboardUseState PlatformBridge::Input::GetKeyboardUseState()
 
 const std::string& PlatformBridge::Input::GetInputString()
 {
-    return _inputStringBuffer;
+    return _inputStringBuffer; //only NewFrame writes it, on the same thread as the readers
+}
+
+PlatformBridge::WheelDelta PlatformBridge::Input::GetWheelDelta()
+{
+    std::scoped_lock lock(_inputMutex);
+    return _wheelDelta;
+}
+
+float PlatformBridge::Input::GetPinchScale()
+{
+    std::scoped_lock lock(_inputMutex);
+    return _pinchScale;
+}
+
+uint32_t PlatformBridge::Input::GetWheelScrollLines()
+{
+    return 3; //X11 has no system setting, so desktops default it is
+}
+
+uint32_t PlatformBridge::Input::GetKeyStrokeCount(const uint32_t key)
+{
+    std::scoped_lock lock(_inputMutex);
+    const auto it = _keyStrokeCounts.find(key);
+    return it != _keyStrokeCounts.end() ? it->second : 0;
 }
 
 void PlatformBridge::Input::SetActiveWindow(const uint64_t window, const uint64_t rawWindow)

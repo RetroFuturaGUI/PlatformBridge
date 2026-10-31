@@ -164,7 +164,21 @@ Functions
 
 - `void PlatformBridge::Input::Stop()` — Stops the input capture routine. This is recommended when PlatformBridge is no longer needed.
 
-- `const std::string& PlatformBridge::Input::GetInputString()` — Returns the UTF-8 encoded input string.
+- `void PlatformBridge::Input::NewFrame()` — Hands over what arrived since the last call: the typed text, the wheel, the pinch and the key strokes. **Notes:** Call it once per frame on the windows' thread, before anything reads them; until the next call every read returns the same values. On Windows the first call installs a message hook (`WH_GETMESSAGE`) on the calling thread, which sees the wheel and touch gestures of all its windows, so no window needs registering. On Linux the key thread collects into pending values under the lock and this copies them over (untested).
+
+- `const std::string& PlatformBridge::Input::GetInputString()` — Returns the text typed during the last frame, in UTF-8, with the system's repeats of held keys. Backspace and Enter are in it as `\b` and `\r`, in the order they were typed. **Notes:** Every character typed between two `NewFrame` calls is kept, however many there are. Only `NewFrame` writes the buffer, on the readers' thread, so the reference is safe to hold until the next call.
+
+WheelDelta, the wheel's turn during a frame in notches (1 per detent, fractions from touchpads and free-spinning wheels):
+- `float _X` — to the right: tilting wheels, two-finger swipes, and a vertical wheel turned with Shift held (toward the user scrolls right, as in most programs)
+- `float _Y` — away from the user, which scrolls up
+
+- `WheelDelta PlatformBridge::Input::GetWheelDelta()` — Returns how far the wheel turned during the last frame, over any of the app's windows. **Notes:** A wheel turned with Ctrl held counts as a pinch instead. Windows: `WM_MOUSEWHEEL` and `WM_MOUSEHWHEEL`, which go to the window under the mouse, or to the focused one when "Scroll inactive windows" is off. Linux: buttons 4 to 7 of the window keys go to (untested).
+
+- `float PlatformBridge::Input::GetPinchScale()` — Returns the factor two fingers spread apart by during the last frame: above 1 apart, below 1 together, 1 for none. **Notes:** On Windows, a touchscreen's pinch (`WM_GESTURE` zoom, from the distance between the fingers), a precision touchpad's (which Windows sends as Ctrl+wheel), and a mouse wheel turned with Ctrl, as browsers zoom with it; a Ctrl+wheel notch is a factor of 1.2. On Linux only Ctrl+wheel; touchpad and touchscreen gestures need XInput 2.4.
+
+- `uint32_t PlatformBridge::Input::GetWheelScrollLines()` — Returns how many lines one notch of the wheel scrolls, as the system is set: 3 unless changed, 0 when it scrolls a page per notch. Always 3 on Linux.
+
+- `uint32_t PlatformBridge::Input::GetKeyStrokeCount(const uint32_t key)` — Returns how often a key went down during the last frame, the system's repeats while it is held included, so a held arrow key moves as fast as the user's keyboard settings say, whatever the frame rate. **Notes:** Every system supported so far repeats held keys itself; one that doesn't would need the repeats made in PlatformBridge, from the frames or the time since the key went down.
 
 - Linux: `void SetActiveWindow(const uint64_t window)` — Sets the active window to capture input from. **Parameters:** `window` is the X11 window ID.
 
@@ -178,7 +192,7 @@ Functions
 
 - `KeyPressState PlatformBridge::Input::GetKeyPressState()` — Returns the current keyboard press state.
 
-- `KeyboardUseState PlatformBridge::Input::GetKeyboardUseState()` — Returns the current keyboard usage state.
+- `KeyboardUseState PlatformBridge::Input::GetKeyboardUseState()` — Returns the current keyboard usage state. **Notes:** KeyReleased only once no key is held. Letting go of the last key pressed clears the last key (`GetLastKeySym`); letting go of another one, like Shift, leaves it alone.
 
 - `bool PlatformBridge::Input::IsKeyDown(const uint32_t key)` — Returns whether a key is held, of all the keys held at once, not only the last one pressed, so modifier combinations like Ctrl+C can be checked. Knows the keys that reached the app's key window.
 

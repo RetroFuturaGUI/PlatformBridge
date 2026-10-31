@@ -1,7 +1,9 @@
 #include "Input.hpp"
 #include <Windows.h>
 #include <CommCtrl.h>
+#include <cmath>
 #include <print>
+#include <utility>
 
 #pragma comment(lib, "comctl32.lib")
 
@@ -49,6 +51,122 @@ void PlatformBridge::Input::Stop()
     _heldKeys.clear();
     _keyPressCounts.clear();
     _previousMouseButtons = MouseButton::None;
+    _inputStringBuffer.clear();
+    _pendingInputString.clear();
+    _keyStrokeCounts.clear();
+    _pendingKeyStrokeCounts.clear();
+    _wheelDelta = WheelDelta {};
+    _pendingWheelDelta = WheelDelta {};
+    _pinchScale = 1.0f;
+    _pendingPinchScale = 1.0f;
+    _gestureDistance = 0;
+
+    if (!_messageHook)
+        return;
+
+    UnhookWindowsHookEx(_messageHook);
+    _messageHook = nullptr;
+}
+
+void PlatformBridge::Input::NewFrame()
+{
+    installMessageHook();
+
+    std::scoped_lock lock(_inputMutex);
+    _inputStringBuffer.swap(_pendingInputString);
+    _pendingInputString.clear();
+    _keyStrokeCounts.swap(_pendingKeyStrokeCounts);
+    _pendingKeyStrokeCounts.clear();
+    _wheelDelta = std::exchange(_pendingWheelDelta, WheelDelta {});
+    _pinchScale = std::exchange(_pendingPinchScale, 1.0f);
+}
+
+void PlatformBridge::Input::installMessageHook()
+{
+    if (_messageHook)
+        return;
+
+    //One hook for the thread that calls NewFrame, which made the windows: the wheel goes to whichever of them lies under the
+    //mouse (or has the focus), so none of them needs registering
+    _messageHook = SetWindowsHookExW(WH_GETMESSAGE, messageHookProc, nullptr, GetCurrentThreadId());
+}
+
+LRESULT CALLBACK PlatformBridge::Input::messageHookProc(int code, WPARAM wParam, LPARAM lParam)
+{
+    //Only messages taken off the queue: a peek that leaves one there would count it twice
+    if (HC_ACTION == code && PM_REMOVE == wParam)
+    {
+        const MSG& message { *reinterpret_cast<const MSG*>(lParam) };
+
+        switch (message.message)
+        {
+            case WM_MOUSEWHEEL:
+            case WM_MOUSEHWHEEL:
+                readWheel(message);
+                break;
+            case WM_GESTURE:
+                readGesture(message);
+                break;
+            default:
+                break;
+        }
+    }
+
+    return CallNextHookEx(nullptr, code, wParam, lParam);
+}
+
+void PlatformBridge::Input::readWheel(const MSG& message)
+{
+    const float notches { static_cast<float>(GET_WHEEL_DELTA_WPARAM(message.wParam)) / static_cast<float>(WHEEL_DELTA) };
+    const WORD keys { GET_KEYSTATE_WPARAM(message.wParam) }; //as they were when the wheel turned
+    std::scoped_lock lock(_inputMutex);
+
+    if (WM_MOUSEHWHEEL == message.message)
+    {
+        _pendingWheelDelta._X += notches;
+        return;
+    }
+
+    //A precision touchpad sends its pinch as Ctrl+wheel, and a wheel turned with Ctrl zooms the same way, as in browsers
+    if (0 != (keys & MK_CONTROL))
+    {
+        _pendingPinchScale *= std::pow(_pinchScalePerNotch, notches);
+        return;
+    }
+
+    //Shift turns the wheel sideways, as in most programs: turning it toward the user scrolls right
+    if (0 != (keys & MK_SHIFT))
+    {
+        _pendingWheelDelta._X -= notches;
+        return;
+    }
+
+    _pendingWheelDelta._Y += notches;
+}
+
+void PlatformBridge::Input::readGesture(const MSG& message)
+{
+    GESTUREINFO gesture {};
+    gesture.cbSize = sizeof(GESTUREINFO);
+
+    //The handle stays open: the window procedure the message goes on to closes it
+    if (!GetGestureInfo(reinterpret_cast<HGESTUREINFO>(message.lParam), &gesture))
+        return;
+
+    if (GID_ZOOM != gesture.dwID)
+        return;
+
+    const uint64_t distance { gesture.ullArguments }; //between the two fingers, in pixels
+    std::scoped_lock lock(_inputMutex);
+
+    if (0 != (gesture.dwFlags & GF_BEGIN) || 0 == _gestureDistance || 0 == distance)
+    {
+        _gestureDistance = distance;
+        return;
+    }
+
+    _pendingPinchScale *= static_cast<float>(distance) / static_cast<float>(_gestureDistance);
+    _gestureDistance = distance;
 }
 
 PlatformBridge::Input::~Input()
@@ -93,11 +211,6 @@ LRESULT CALLBACK PlatformBridge::Input::SubclassProc(HWND hwnd, UINT msg, WPARAM
             const uint32_t vkCode = resolveExtendedVirtualKey(wParam, lParam);
             std::scoped_lock lock(_inputMutex);
 
-            //WM_CHAR (if this keystroke produces one) is dispatched separately, right after this message -
-            //clear first so keys that produce no text (arrows, F-keys, ...) don't leave stale text behind
-            //for a later WM_CHAR-less frame to re-consume via GetInputString().
-            _inputStringBuffer.clear();
-
             _keyboardUseState = (_lastKeySym == vkCode)
                 ? KeyboardUseState::SameKeyPressed
                 : KeyboardUseState::KeyPressed;
@@ -108,6 +221,7 @@ LRESULT CALLBACK PlatformBridge::Input::SubclassProc(HWND hwnd, UINT msg, WPARAM
             if (!_heldKeys.contains(vkCode))
                 ++_keyPressCounts[vkCode];
 
+            ++_pendingKeyStrokeCounts[vkCode]; //repeats included
             _heldKeys.insert(vkCode);
         } break;
         case WM_KEYUP:
@@ -115,9 +229,14 @@ LRESULT CALLBACK PlatformBridge::Input::SubclassProc(HWND hwnd, UINT msg, WPARAM
         {
             const uint32_t vkCode = resolveExtendedVirtualKey(wParam, lParam);
             std::scoped_lock lock(_inputMutex);
-            _keyboardUseState = KeyboardUseState::KeyReleased;
-            _lastKeySym = 0;
             _heldKeys.erase(vkCode);
+
+            //Letting go of another key, like Shift, leaves the last one pressed alone, which may still be held and repeating
+            if (_lastKeySym == vkCode)
+                _lastKeySym = 0;
+
+            if (_heldKeys.empty())
+                _keyboardUseState = KeyboardUseState::KeyReleased;
         } break;
         case WM_CHAR:
         case WM_SYSCHAR:
@@ -138,7 +257,7 @@ LRESULT CALLBACK PlatformBridge::Input::SubclassProc(HWND hwnd, UINT msg, WPARAM
 
             char utf8[4];
             const int length { WideCharToMultiByte(CP_UTF8, 0, isPair ? pair : &character, isPair ? 2 : 1, utf8, static_cast<int>(sizeof(utf8)), nullptr, nullptr) };
-            _inputStringBuffer.assign(utf8, length); //copies into the buffer's storage to prevent unnecessary copying
+            _pendingInputString.append(utf8, length); //everything typed until the next NewFrame
         } break;
         case WM_SETFOCUS:
         {
@@ -166,7 +285,39 @@ PlatformBridge::KeyboardUseState PlatformBridge::Input::GetKeyboardUseState()
 
 const std::string& PlatformBridge::Input::GetInputString()
 {
-    return _inputStringBuffer;
+    return _inputStringBuffer; //only NewFrame writes it, on the same thread as the readers
+}
+
+PlatformBridge::WheelDelta PlatformBridge::Input::GetWheelDelta()
+{
+    std::scoped_lock lock(_inputMutex);
+    return _wheelDelta;
+}
+
+float PlatformBridge::Input::GetPinchScale()
+{
+    std::scoped_lock lock(_inputMutex);
+    return _pinchScale;
+}
+
+uint32_t PlatformBridge::Input::GetWheelScrollLines()
+{
+    UINT lines { 3 };
+
+    if (!SystemParametersInfoW(SPI_GETWHEELSCROLLLINES, 0, &lines, 0))
+        return 3;
+
+    if (WHEEL_PAGESCROLL == lines)
+        return 0;
+
+    return static_cast<uint32_t>(lines);
+}
+
+uint32_t PlatformBridge::Input::GetKeyStrokeCount(const uint32_t key)
+{
+    std::scoped_lock lock(_inputMutex);
+    const auto it = _keyStrokeCounts.find(key);
+    return it != _keyStrokeCounts.end() ? it->second : 0;
 }
 
 void PlatformBridge::Input::SetActiveWindow(HWND window)
