@@ -121,14 +121,14 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     if(TARGET_TYPE STREQUAL "executable")
         target_link_libraries("PlatformBridge" PRIVATE
             Fontconfig::Fontconfig
-            ${X11_LIBRARIES} Xtst Xi Xcursor)
+            ${X11_LIBRARIES} Xtst Xi Xcursor Xrandr)
 
 
             target_include_directories("PlatformBridge" PRIVATE ${X11_INCLUDE_DIR})
     else()
         target_link_libraries("PlatformBridge" INTERFACE
             Fontconfig::Fontconfig
-            ${X11_LIBRARIES} Xtst Xi Xcursor)
+            ${X11_LIBRARIES} Xtst Xi Xcursor Xrandr)
 
         target_include_directories("PlatformBridge" INTERFACE ${X11_INCLUDE_DIR})
     endif()

@@ -9,7 +9,13 @@ A cross-platform API wrapper to be compiled to static libraries
   **Notes:** Must be called before using the module.
 
 ### Monitors
-- `std::vector<MonitorInfo>& PlatformBridge::Monitors::GetMonitors()` — Returns a vector containing information about all connected monitors.
+- `PlatformBridge::MonitorInfo` — One connected monitor in desktop coordinates (pixels, the origin at the primary monitor's top-left, y running down): `_Name` (the system's name, such as `\\.\DISPLAY1` on Windows or `DP-1` on X11), `_X`, `_Y`, `_Width`, `_Height`, the work area without taskbars and panels (`_WorkX`, `_WorkY`, `_WorkWidth`, `_WorkHeight`), `_ScalingFactor`, `_RefreshRate` (Hz, 0 when unknown) and `_IsPrimary`.
+
+- `PlatformBridge::Monitors::Refresh()` — Reads the connected monitors anew; call it after one was added, removed or rearranged.
+
+- `const std::vector<MonitorInfo>& PlatformBridge::Monitors::GetMonitors()` — Returns the connected monitors, reading them the first time.
+
+- `const MonitorInfo* PlatformBridge::Monitors::GetPrimaryMonitor()` — Returns the primary monitor, or the first one when none is marked primary; `nullptr` when none was found. **Notes:** On Linux the monitors come from XRandR (`XRRGetMonitors`, refresh rates from each monitor's current mode), the work area from the window manager's `_NET_WORKAREA` clipped to each monitor, and the scaling from `Xft.dpi`; PlatformBridge links libXrandr there. Never compiled here.
 
 ### Fonts
 - `PlatformBridge::Fonts` — Provides access to installed font metadata such as family name, style, weight, slant, path, and Unicode coverage.
