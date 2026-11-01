@@ -40,6 +40,7 @@ namespace PlatformBridge
             Weight _Weight { Weight::Normal };
             Slant _Slant { Slant::Roman };
             std::vector<std::pair<uint32_t, uint32_t>> _UnicodeRanges {};
+            uint32_t _FaceIndex { 0 }; //which face of a collection file (.ttc) this is; 0 for a file with one face
         };
 
         /// @brief Refreshes all data of installed fonts.
