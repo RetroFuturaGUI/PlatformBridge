@@ -14,6 +14,7 @@ void PlatformBridge::Fonts::setFontsInformation()
         FC_WEIGHT,
         FC_STYLE,
         FC_CHARSET,
+        FC_INDEX,
         //FC_FULLNAME,
         //FC_FONT_VARIATIONS,
         //FC_FONT_WRAPPER,
@@ -38,8 +39,9 @@ void PlatformBridge::Fonts::setFontsInformation()
             //*postscriptname;
         FcCharSet* fcCharset { nullptr };
         int32_t
-            slant { 0 }, 
-            weight { 0 };
+            slant { 0 },
+            weight { 0 },
+            faceIndex { 0 };
 
         if(FcPatternGetString(font, FC_FILE, 0, &file) != FcResultMatch)
             continue;
@@ -82,6 +84,8 @@ void PlatformBridge::Fonts::setFontsInformation()
         if (FcPatternGetCharSet(font, FC_CHARSET, 0, &fcCharset) != FcResultMatch)
             continue;
 
+        FcPatternGetInteger(font, FC_INDEX, 0, &faceIndex); //stays 0 for a file with one face
+
         _fontProperties.emplace_back(FontProperty
         {
             ._Name = std::string((char*)family),
@@ -89,7 +93,8 @@ void PlatformBridge::Fonts::setFontsInformation()
             ._Style = std::string((char*)style),
             ._Weight = getCssWeightValue(weight),
             ._Slant = getSlantValue(slant),
-            ._UnicodeRanges = getUnicodeRanges(fcCharset)
+            ._UnicodeRanges = getUnicodeRanges(fcCharset),
+            ._FaceIndex = static_cast<uint32_t>(0 > faceIndex ? 0 : faceIndex)
         });
             
     }
@@ -103,11 +108,8 @@ void PlatformBridge::Fonts::setFontsInformation()
     if (objectSet) 
         FcObjectSetDestroy(objectSet);
 
-    if (fcConfig) 
-        FcConfigDestroy(fcConfig);
-
-    if (fcCharset) 
-        FcCharSetDestroy(fcCharset);
+    if (fcConfig)
+        FcConfigDestroy(fcConfig); //the character sets belong to the font list's patterns, so they went with it
 
     FcFini();
 }
