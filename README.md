@@ -98,6 +98,27 @@ Functions
 
 - `PlatformBridge::Paths::SetWorkingDir()` — Updates the working directory used by the application.
 
+### ChildProcess
+- `PlatformBridge::ChildProcess` — A program started with pipes to its standard input and output. With every restriction it's for work kept out of this process, so a crash or a malicious file there leaves this process running; with none it runs with this process's own rights, administrator rights included when this process has them.
+
+#### Enums:
+`ChildProcess::ChildProcessFlags` (a mask; `ChildProcess::HasFlag` tests it):
+- None — this process's own rights
+- LowIntegrity — low integrity, with the Administrators group only denying and every privilege removed: it reads files but can't change the user's, also when this process runs elevated
+- NoChildProcesses — it can't start programs of its own
+- MemoryLimit — 1 GB of memory at most
+- EndsWithThisProcess — it ends with this process, however that ends, and with the ChildProcess object; without it, it may outlive both
+- Sandboxed — all four
+
+#### Methods:
+- `bool Start(const std::filesystem::path& program, ChildProcessFlags flags, const Arguments&... arguments)` — Starts the program with any number of arguments that convert to `std::string_view` (UTF-8), without a window, its error output going nowhere. The arguments reach it exactly as given and no shell sees them, but other processes can read a command line, so secrets go through `Write`. A restriction Windows refuses is left out rather than failing the start.
+- `void Stop()` — Ends the program at once.
+- `bool IsRunning() const`
+- `bool Write(std::span<const std::uint8_t> data)` — Writes all of it to the program's standard input; false once the program ended.
+- `bool Read(std::span<std::uint8_t> data, std::chrono::milliseconds timeout)` — Reads exactly that many bytes from its standard output; false when it ended first, or after the timeout, when it's stopped since it hangs.
+
+**Notes:** The restrictions are Windows' (a restricted low-integrity token, and a job object for the rest). On Linux the program is started with `posix_spawn` and only kept apart; that side has never been compiled.
+
 ### FileSystem
 #### Enums:
 EntryKind (uint32_t):
