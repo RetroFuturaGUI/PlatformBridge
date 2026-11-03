@@ -1,5 +1,6 @@
 #include "Paths.hpp"
 #include "LinuxHeaders.hpp"
+#include <dlfcn.h>
 
 void PlatformBridge::Paths::Refresh()
 {
@@ -15,6 +16,17 @@ std::string PlatformBridge::Paths::GetExecutablePath()
 const std::filesystem::path PlatformBridge::Paths::GetExecutablePathFSPath()
 {
     return _exePath;
+}
+
+std::filesystem::path PlatformBridge::Paths::GetModuleFolder()
+{
+    // The shared object holding this very function: the program, or the library PlatformBridge is linked into
+    Dl_info info {};
+
+    if(0 == dladdr(reinterpret_cast<void*>(&PlatformBridge::Paths::GetModuleFolder), &info) || !info.dli_fname)
+        return GetExecutablePathFSPath().parent_path();
+
+    return std::filesystem::path(info.dli_fname).parent_path();
 }
 
 std::string PlatformBridge::Paths::GetWorkingDir()

@@ -17,6 +17,9 @@ namespace PlatformBridge
         /// @return An std::filesystem::path representing the executable path.
         static const std::filesystem::path GetExecutablePathFSPath();
 
+        /// @brief Returns the folder of the program or library PlatformBridge is built into
+        static std::filesystem::path GetModuleFolder();
+
         /// @brief Returns the working directory
         /// @return An std::string representing the working directory.
         static std::string GetWorkingDir();

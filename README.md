@@ -92,6 +92,8 @@ Functions
 
 - `PlatformBridge::Paths::GetExecutablePathFSPath()` — Returns the executable path as a filesystem path object.
 
+- `std::filesystem::path PlatformBridge::Paths::GetModuleFolder()` — Returns the folder of the program or library PlatformBridge is built into: a library's own folder, not the one of the program that loaded it. Helper programs shipped beside it lie there.
+
 - `PlatformBridge::Paths::GetWorkingDir()` — Returns the current working directory as a string.
 
 - `PlatformBridge::Paths::GetWorkingDirCstr()` — Returns the current working directory as a C-string.

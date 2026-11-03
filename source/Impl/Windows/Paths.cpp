@@ -23,6 +23,35 @@ const std::filesystem::path PlatformBridge::Paths::GetExecutablePathFSPath()
     return _exePath;
 }
 
+std::filesystem::path PlatformBridge::Paths::GetModuleFolder()
+{
+    // The module holding this very function: the program, or the library PlatformBridge is linked into
+    HMODULE module { nullptr };
+
+    if(!GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, reinterpret_cast<LPCWSTR>(&PlatformBridge::Paths::GetModuleFolder), &module))
+        return GetExecutablePathFSPath().parent_path();
+
+    std::wstring path(MAX_PATH, L'\0');
+
+    while(true)
+    {
+        const DWORD length { GetModuleFileNameW(module, path.data(), static_cast<DWORD>(path.size())) };
+
+        if(0 == length)
+            return GetExecutablePathFSPath().parent_path();
+
+        if(length < path.size())
+        {
+            path.resize(length);
+            break;
+        }
+
+        path.resize(path.size() * 2); //a long path doesn't fit MAX_PATH
+    }
+
+    return std::filesystem::path(path).parent_path();
+}
+
 std::string PlatformBridge::Paths::GetWorkingDir()
 {
     return _workingDir;
