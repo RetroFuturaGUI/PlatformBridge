@@ -18,8 +18,8 @@ static std::wstring toWide(std::string_view text)
     return wide;
 }
 
-//One argument appended so the program's CommandLineToArgvW gets it back as it was: quoted when it holds blanks or quotes or
-//is empty, inner quotes escaped, and the backslashes before a quote - the closing one included - doubled
+//One argument appended so the program's CommandLineToArgvW gets it back as it was. Quoted when it holds blanks or quotes or
+//is empty, inner quotes escaped, and the backslashes before a quote. The closing one included doubled
 static void appendArgument(std::wstring& commandLine, std::wstring_view argument)
 {
     commandLine.push_back(L' ');
@@ -68,7 +68,7 @@ bool PlatformBridge::ChildProcess::start(const std::filesystem::path& program, c
     Stop();
 
     // The program's standard output comes back through a named pipe opened for overlapped reads, so a read can wait with a
-    // timeout; anonymous pipes can't. Its name only has to be unique within this process's life.
+    // timeout; anonymous pipes can't. Its name only has to be unique within this process's life
     static std::atomic<std::uint32_t> pipeCount { 0 };
     const std::wstring pipeName { std::format(L"\\\\.\\pipe\\RetroFuturaGUI-{}-{}", GetCurrentProcessId(), ++pipeCount) };
     constexpr DWORD pipeBufferSize { 1024 * 1024 };
@@ -129,7 +129,7 @@ bool PlatformBridge::ChildProcess::start(const std::filesystem::path& program, c
     startup.StartupInfo.hStdError = nothing;
     startup.lpAttributeList = attributes;
 
-    // The program's own path quoted as it is - CommandLineToArgvW reads the first one differently - then the arguments
+    // The program's own path quoted as it is. CommandLineToArgvW reads the first one differently, then the arguments
     std::wstring arguedLine { L"\"" + program.wstring() + L"\"" };
 
     for(const std::string_view argument : arguments)
@@ -140,8 +140,8 @@ bool PlatformBridge::ChildProcess::start(const std::filesystem::path& program, c
     constexpr DWORD creationFlags { CREATE_NO_WINDOW | CREATE_SUSPENDED | EXTENDED_STARTUPINFO_PRESENT | CREATE_UNICODE_ENVIRONMENT };
     bool isStarted { false };
 
-    // Low integrity from a restricted copy of this process's own token: Administrators only ever denies, every privilege but the
-    // one to traverse folders goes, and the level drops to low - so an elevated parent's child is as limited as a standard one's
+    // Low integrity from a restricted copy of this process's own token. Administrators only ever denies, every privilege but the
+    // one to traverse folders goes, and the level drops to low, so an elevated parent's child is as limited as a standard one's
     if(HasFlag(flags, ChildProcessFlags::LowIntegrity))
     {
         HANDLE ownToken { nullptr }, restrictedToken { nullptr };
@@ -174,7 +174,7 @@ bool PlatformBridge::ChildProcess::start(const std::filesystem::path& program, c
             CloseHandle(ownToken);
     }
 
-    // Without LowIntegrity, or where Windows refused it: this process's own token, administrator rights included when it has them
+    // Without LowIntegrity, or where Windows refused it. This process's own token, administrator rights included when it has them
     if(!isStarted)
     {
         commandLine = arguedLine;

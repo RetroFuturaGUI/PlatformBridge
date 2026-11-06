@@ -8,7 +8,7 @@
 
 namespace PlatformBridge
 {
-    /// @brief One connected monitor, in desktop coordinates: pixels, the origin at the primary monitor's top-left, y running down.
+    /// @brief One connected monitor, in desktop coordinates (pixels). The origin at the primary monitor is the top-left
     struct MonitorInfo
     {
         std::string _Name {}; //the system's name for it, such as \\.\DISPLAY1 on Windows or DP-1 on X11
@@ -17,7 +17,7 @@ namespace PlatformBridge
             _Y { 0 },
             _Width { 0 },
             _Height { 0 },
-            _WorkX { 0 }, //the work area: the monitor without the taskbar or panels
+            _WorkX { 0 }, //the work area (monitor without the taskbar or panels)
             _WorkY { 0 },
             _WorkWidth { 0 },
             _WorkHeight { 0 };
@@ -30,13 +30,13 @@ namespace PlatformBridge
     class Monitors
     {
     public:
-        /// @brief Reads the connected monitors anew. Call it after one was added, removed or rearranged.
+        /// @brief Reads the connected monitors anew. Call it after one was added, removed or rearranged
         static void Refresh();
 
-        /// @brief Returns the connected monitors, reading them the first time.
+        /// @brief Returns the connected monitors, reading them the first time
         static const std::vector<MonitorInfo>& GetMonitors();
 
-        /// @brief Returns the primary monitor, or the first one when none is marked primary. nullptr when no monitor was found.
+        /// @brief Returns the primary monitor, or the first one when none is marked primary. nullptr when no monitor was found
         static const MonitorInfo* GetPrimaryMonitor();
 
     private:

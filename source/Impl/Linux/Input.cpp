@@ -25,8 +25,8 @@ void PlatformBridge::Input::Refresh()
             _ownsDisplay = (_display != nullptr);
         }
 
-        _currentWindow = 0;
-        _rawWindow = 0;
+        _currentWindow { 0 };
+        _rawWindow { 0 };
     }
 
     if (!_display)
@@ -119,8 +119,8 @@ void PlatformBridge::Input::captureKeyStroke()
         if (display && rootWindow != 0)
         {
             Window rootReturn, childReturn;
-            int rootX, rootY, windowX, windowY;
-            unsigned int maskReturn;
+            int32_t rootX, rootY, windowX, windowY;
+            uint32_t maskReturn { 0 };
 
             if (XQueryPointer(static_cast<Display*>(display), static_cast<Window>(rootWindow),
                 &rootReturn, &childReturn, &rootX, &rootY, &windowX, &windowY, &maskReturn))
@@ -163,12 +163,12 @@ void PlatformBridge::Input::captureKeyStroke()
             case KeyPress:
             {
                 KeySym keysym;
-                const int length { XLookupString(&event.xkey, buffer, sizeof(buffer), &keysym, nullptr) }; //0 for keys without text; \b and \r for Backspace and Enter
+                const int32_t length { XLookupString(&event.xkey, buffer, sizeof(buffer), &keysym, nullptr) }; //0 for keys without text; \b and \r for Backspace and Enter
                 _pendingInputString.append(buffer, length); //buffer isn't null-terminated
                 std::println("Key pressed: {} (keysym=0x{:X})", std::string_view(buffer, length), static_cast<unsigned long>(keysym));
 
-                //Only a genuine released->pressed edge counts as a new press - X11 auto-repeat re-fires
-                //KeyPress for a key that's already held, and _heldKeys distinguishes the two.
+                //Only a genuine released->pressed edge counts as a new press! X11 auto-repeat re-fires
+                //KeyPress for a key that's already held, and _heldKeys distinguishes the two
                 if (!_heldKeys.contains(static_cast<uint32_t>(keysym)))
                     ++_keyPressCounts[static_cast<uint32_t>(keysym)];
 
@@ -179,8 +179,8 @@ void PlatformBridge::Input::captureKeyStroke()
             } break;
             case KeyRelease:
             {
-                //XLookupString isn't valid here (no key text on release) - XLookupKeysym gives us just enough
-                //to know which key this release belongs to, so it can be removed from _heldKeys.
+                //XLookupString isn't valid here (no key text on release). XLookupKeysym gives us just enough
+                //to know which key this release belongs to, so it can be removed from _heldKeys
                 const KeySym releasedKeysym = XLookupKeysym(&event.xkey, 0);
                 _heldKeys.erase(static_cast<uint32_t>(releasedKeysym));
 
@@ -235,7 +235,6 @@ void PlatformBridge::Input::captureKeyStroke()
         }
     }
 }
-
 
 PlatformBridge::KeyboardUseState PlatformBridge::Input::GetKeyboardUseState()
 {
@@ -432,7 +431,7 @@ bool PlatformBridge::Input::GetMouseWindowPosition(const uint64_t window, int32_
 
     Display* display = static_cast<Display*>(_display);
     Window childReturn;
-    int relativeX = 0, relativeY = 0;
+    int32_t relativeX = 0, relativeY { 0 };
 
     if (!XTranslateCoordinates(display, DefaultRootWindow(display), static_cast<Window>(window),
         _mouseScreenX, _mouseScreenY, &relativeX, &relativeY, &childReturn))
@@ -452,7 +451,7 @@ bool PlatformBridge::Input::IsWindowUnderMouse(const uint64_t window)
 
     Display* display = static_cast<Display*>(_display);
 
-    //From the root down through the windows under the pointer, a window manager's frame included: the window is the one under the mouse when it lies on that path
+    //From the root down through the windows under the pointer, a window manager's frame included. The window is the one under the mouse when it lies on that path
     Window current = DefaultRootWindow(display);
 
     while (0 != current)
@@ -461,14 +460,14 @@ bool PlatformBridge::Input::IsWindowUnderMouse(const uint64_t window)
             return true;
 
         Window
-            rootReturn = 0,
-            childReturn = 0;
-        int
-            rootX = 0,
-            rootY = 0,
-            windowX = 0,
-            windowY = 0;
-        unsigned int mask = 0;
+            rootReturn { 0 },
+            childReturn { 0 };
+        int32_t
+            rootX { 0 },
+            rootY { 0 },
+            windowX { 0 },
+            windowY { 0 };
+        uint32_t mask { 0 };
 
         if (!XQueryPointer(display, current, &rootReturn, &childReturn, &rootX, &rootY, &windowX, &windowY, &mask))
             return false;

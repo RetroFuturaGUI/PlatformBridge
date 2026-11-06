@@ -13,13 +13,13 @@ PlatformBridge::DragDrop::DropEffect PlatformBridge::DragDrop::DragFilesOut(cons
     if(paths.empty())
         return DropEffect::None;
 
-    //OLE on the windows' thread, once: dragging needs it, and it stays until the thread ends
+    //Object linking and embedding (OLE) on the windows' thread once. Dragging needs it, and it stays until the thread ends
     thread_local const HRESULT oleInitialized { OleInitialize(nullptr) };
 
     if(FAILED(oleInitialized))
         return DropEffect::None;
 
-    //As Shell items, whose data object carries every format a drop target may ask for: file names, item lists, contents
+    //As Shell items whose data object carries every format a drop target may ask for (file names, item lists, contents)
     std::vector<PIDLIST_ABSOLUTE> itemLists {};
     itemLists.reserve(paths.size());
 

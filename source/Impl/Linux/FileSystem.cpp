@@ -105,7 +105,7 @@ void PlatformBridge::FileSystem::refreshRoots()
 
         std::string mountPoint {};
 
-        for(size_t index = 0; index < escapedMountPoint.size(); ++index)
+        for(size_t index { 0 }; index < escapedMountPoint.size(); ++index)
         {
             const bool isEscape { '\\' == escapedMountPoint[index] && index + 3 < escapedMountPoint.size() };
 
@@ -139,11 +139,11 @@ void PlatformBridge::FileSystem::refreshRoots()
         const std::u8string label { path.filename().u8string() };
 
         _roots.push_back(Root
-            {
-                ._Path = path,
-                ._Label = std::string(label.begin(), label.end()),
-                ._Kind = kind
-            });
+        {
+            ._Path = path,
+            ._Label = std::string(label.begin(), label.end()),
+            ._Kind = kind
+        });
     }
 }
 
@@ -196,14 +196,14 @@ void PlatformBridge::FileSystem::refreshKnownFolders()
 
         const std::filesystem::path folder { value.starts_with("$HOME/") ? homePath / value.substr(6) : std::filesystem::path(value) };
 
-        for(size_t index = 1; index < _knownFolderCount; ++index)
+        for(size_t index { 1 }; index < _knownFolderCount; ++index)
         {
             if(folderKeys[index].first == key)
                 _knownFolders[index] = folder;
         }
     }
 
-    for(size_t index = 1; index < _knownFolderCount; ++index)
+    for(size_t index { 1 }; index < _knownFolderCount; ++index)
     {
         if(!_knownFolders[index].empty())
             continue;
@@ -226,7 +226,7 @@ bool PlatformBridge::FileSystem::DirectoryWatcher::Watch(const std::filesystem::
     Stop();
     errorOut.clear();
 
-    const int inotify { inotify_init1(IN_NONBLOCK | IN_CLOEXEC) };
+    const int32_t inotify { inotify_init1(IN_NONBLOCK | IN_CLOEXEC) };
 
     if(0 > inotify)
     {
@@ -235,7 +235,7 @@ bool PlatformBridge::FileSystem::DirectoryWatcher::Watch(const std::filesystem::
     }
 
     //IN_DELETE_SELF and IN_MOVE_SELF tell of the folder itself going away
-    const int watch { inotify_add_watch(inotify, directory.c_str(), IN_CREATE | IN_DELETE | IN_MOVED_FROM | IN_MOVED_TO | IN_MODIFY
+    const int32_t watch { inotify_add_watch(inotify, directory.c_str(), IN_CREATE | IN_DELETE | IN_MOVED_FROM | IN_MOVED_TO | IN_MODIFY
         | IN_ATTRIB | IN_CLOSE_WRITE | IN_DELETE_SELF | IN_MOVE_SELF | IN_ONLYDIR) };
 
     if(0 > watch)
@@ -269,7 +269,7 @@ bool PlatformBridge::FileSystem::DirectoryWatcher::HasChanged()
     bool isFolderGone { false };
     alignas(inotify_event) char buffer[4096];
 
-    //Every previous event is read, so the next call reports only later ones. Non-blocking: read fails with EAGAIN once empty.
+    //Every previous event is read, so the next call reports only later ones. Non-blocking: read fails with EAGAIN once empty
     for(ssize_t length { read(_inotify, buffer, sizeof(buffer)) }; 0 < length; length = read(_inotify, buffer, sizeof(buffer)))
     {
         hasChanged = true;
@@ -375,7 +375,7 @@ PlatformBridge::FileSystem::TrashResult PlatformBridge::FileSystem::MoveToTrash(
     constexpr uint32_t freeNameLimit { 10000 };
     const std::string name { fullPath.filename().string() };
     std::string trashName {};
-    int infoFile { -1 };
+    int32_t infoFile { -1 };
 
     for(uint32_t number = 1; freeNameLimit > number && 0 > infoFile; ++number)
     {
@@ -409,7 +409,7 @@ PlatformBridge::FileSystem::TrashResult PlatformBridge::FileSystem::MoveToTrash(
 
     if(!isWritten || 0 != rename(fullPath.c_str(), (filesDirectory / trashName).c_str()))
     {
-        const int error { isWritten ? errno : EIO };
+        const int32_t error { isWritten ? errno : EIO };
         unlink(infoPath.c_str()); //the item stays, so its info goes
 
         if(EXDEV == error)
@@ -439,9 +439,9 @@ std::string PlatformBridge::FileSystem::decodeTrashPath(std::string_view text)
     std::string decoded {};
     decoded.reserve(text.size());
 
-    for(size_t index = 0; index < text.size(); ++index)
+    for(size_t index { 0 }; index < text.size(); ++index)
     {
-        unsigned int byte { 0 };
+        uint32_t byte { 0 };
         const bool isEscape { '%' == text[index] && index + 2 < text.size()
             && std::errc {} == std::from_chars(text.data() + index + 1, text.data() + index + 3, byte, 16).ec };
 

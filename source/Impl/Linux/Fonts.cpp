@@ -26,7 +26,7 @@ void PlatformBridge::Fonts::setFontsInformation()
     FcFontSet* fcFontList { FcFontList(fcConfig, fcPattern, objectSet) };
     //FcLangSet* langs = FcLangSetCreate();
 
-    for (int i = 0; fcFontList && i < fcFontList->nfont; ++i)
+    for (int i { 0 }; fcFontList && i < fcFontList->nfont; ++i)
     {
         FcPattern* font { fcFontList->fonts[i] };
         FcChar8* file { nullptr }, 

@@ -27,7 +27,7 @@ bool PlatformBridge::ChildProcess::start(const std::filesystem::path& program, c
 {
     Stop();
 
-    int toChild[2] { -1, -1 }, fromChild[2] { -1, -1 };
+    int32_t toChild[2] { -1, -1 }, fromChild[2] { -1, -1 };
 
     if(0 != pipe2(toChild, O_CLOEXEC))
         return false;
@@ -56,7 +56,7 @@ bool PlatformBridge::ChildProcess::start(const std::filesystem::path& program, c
 
     argumentVector.push_back(nullptr);
     pid_t pid { -1 };
-    const int result { posix_spawn(&pid, path.c_str(), &actions, nullptr, argumentVector.data(), environ) };
+    const int32_t result { posix_spawn(&pid, path.c_str(), &actions, nullptr, argumentVector.data(), environ) };
     posix_spawn_file_actions_destroy(&actions);
     close(toChild[0]);
     close(fromChild[1]);
@@ -142,7 +142,7 @@ bool PlatformBridge::ChildProcess::Read(std::span<std::uint8_t> data, const std:
     {
         const std::chrono::milliseconds left { std::chrono::duration_cast<std::chrono::milliseconds>(deadline - std::chrono::steady_clock::now()) };
         pollfd waitFor { .fd = static_cast<int>(_output), .events = POLLIN, .revents = 0 };
-        const int ready { poll(&waitFor, 1, static_cast<int>(std::max<std::int64_t>(left.count(), 0))) };
+        const int32_t ready { poll(&waitFor, 1, static_cast<int>(std::max<std::int64_t>(left.count(), 0))) };
 
         if(0 > ready && EINTR == errno)
             continue;

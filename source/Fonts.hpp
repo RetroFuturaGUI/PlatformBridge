@@ -43,13 +43,13 @@ namespace PlatformBridge
             uint32_t _FaceIndex { 0 }; //which face of a collection file (.ttc) this is; 0 for a file with one face
         };
 
-        /// @brief Refreshes all data of installed fonts.
+        /// @brief Refreshes all data of installed fonts
         static void Refresh()
         {
             setFontsInformation();
         }
 
-        /// @brief Refreshes all data of installed fonts.
+        /// @brief Refreshes all data of installed fonts
         /// @return Returns an std::vector<FontProperty> containing information of all installed fonts 
         static const std::vector<FontProperty>& GetFontProperties()
         {

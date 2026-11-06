@@ -8,7 +8,7 @@ namespace
     //A monitor's device name, from the UTF-16 the system gives
     std::string toUtf8(const wchar_t* text)
     {
-        const int length { WideCharToMultiByte(CP_UTF8, 0, text, -1, nullptr, 0, nullptr, nullptr) };
+        const int32_t length { WideCharToMultiByte(CP_UTF8, 0, text, -1, nullptr, 0, nullptr, nullptr) };
 
         if(1 >= length)
             return {};

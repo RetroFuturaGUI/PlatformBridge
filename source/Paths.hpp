@@ -6,26 +6,26 @@ namespace PlatformBridge
     class Paths
     {
     public:
-        /// @brief Refreshes all paths.
+        /// @brief Refreshes all paths
         static void Refresh();
 
-        /// @brief Returns the path of the executable.
-        /// @return An std::string representing the executable path.
+        /// @brief Returns the path of the executable
+        /// @return An std::string representing the executable path
         static std::string GetExecutablePath();
 
-        /// @brief Returns all path data of the executable.
-        /// @return An std::filesystem::path representing the executable path.
+        /// @brief Returns all path data of the executable
+        /// @return An std::filesystem::path representing the executable path
         static const std::filesystem::path GetExecutablePathFSPath();
 
         /// @brief Returns the folder of the program or library PlatformBridge is built into
         static std::filesystem::path GetModuleFolder();
 
         /// @brief Returns the working directory
-        /// @return An std::string representing the working directory.
+        /// @return An std::string representing the working directory
         static std::string GetWorkingDir();
 
         /// @brief Returns the working directory as C-String
-        /// @return A char* representing the working directory.
+        /// @return A char* representing the working directory
         static const char* GetWorkingDirCstr();
 
         /// @brief Sets the Working Directory

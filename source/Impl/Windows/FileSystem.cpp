@@ -185,7 +185,7 @@ void PlatformBridge::FileSystem::refreshKnownFolders()
         FOLDERID_Videos
     };
 
-    for(size_t index = 0; index < _knownFolderCount; ++index)
+    for(size_t index { 0 }; index < _knownFolderCount; ++index)
     {
         _knownFolders[index].clear();
         PWSTR folder { nullptr };
@@ -237,7 +237,7 @@ bool PlatformBridge::FileSystem::DirectoryWatcher::HasChanged()
     if(WAIT_OBJECT_0 != WaitForSingleObject(static_cast<HANDLE>(_handle), 0))
         return false;
 
-    //Armed again for the changes after the ones the caller lists now. It can't be once the folder is gone.
+    //Armed again for the changes after the ones the caller lists now. It can't be once the folder is gone
     if(!FindNextChangeNotification(static_cast<HANDLE>(_handle)))
         Stop();
 
@@ -597,7 +597,7 @@ bool PlatformBridge::FileSystem::RestoreFromTrash(const std::filesystem::path& o
         }
         else
         {
-            //A name taken meanwhile gets a free one the way the rest of the library names them; the Shell's would be "Name - Copy"
+            //A name taken meanwhile gets a free one the way the rest of the library names them. The Shell's would be "Name - Copy"
             SFGAOF attributes { 0 };
             newest->GetAttributes(SFGAO_FOLDER, &attributes);
             const std::filesystem::path target { FreeName(fullPath, 0 != (attributes & SFGAO_FOLDER)) };

@@ -12,7 +12,7 @@
 
 namespace PlatformBridge
 {
-    /// @brief Refreshes all platform bridge components.
+    /// @brief Refreshes all platform bridge components
     static inline void RefreshPlatformBridge()
     {
         PlatformBridge::Monitors::Refresh();

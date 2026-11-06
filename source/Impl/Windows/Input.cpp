@@ -12,7 +12,7 @@ namespace
     //WM_KEYDOWN/WM_KEYUP report Ctrl/Shift/Alt as the generic VK_CONTROL/VK_SHIFT/VK_MENU, not the
     //left/right-specific VK_LCONTROL/VK_RCONTROL/etc. that PB_KEY_CONTROL_L/R and friends map to - unlike
     //WH_KEYBOARD_LL's KBDLLHOOKSTRUCT::vkCode, which already gave the specific side directly. Resolve it the
-    //same way the hook effectively did, from the message's scan code + extended-key bit.
+    //same way the hook effectively did, from the message's scan code + extended-key bit
     uint32_t resolveExtendedVirtualKey(const WPARAM vk, const LPARAM lParam)
     {
         if (vk != VK_SHIFT && vk != VK_CONTROL && vk != VK_MENU)
@@ -134,7 +134,7 @@ void PlatformBridge::Input::readWheel(const MSG& message)
         return;
     }
 
-    //Shift turns the wheel sideways, as in most programs: turning it toward the user scrolls right
+    //Shift turns the wheel sideways, as in most programs. Turning it toward the user scrolls right
     if (0 != (keys & MK_SHIFT))
     {
         _pendingWheelDelta._X -= notches;
@@ -156,7 +156,7 @@ void PlatformBridge::Input::readGesture(const MSG& message)
     if (GID_ZOOM != gesture.dwID)
         return;
 
-    const uint64_t distance { gesture.ullArguments }; //between the two fingers, in pixels
+    const uint64_t distance { gesture.ullArguments }; //between the two fingers (pixels)
     std::scoped_lock lock(_inputMutex);
 
     if (0 != (gesture.dwFlags & GF_BEGIN) || 0 == _gestureDistance || 0 == distance)
@@ -244,7 +244,7 @@ LRESULT CALLBACK PlatformBridge::Input::SubclassProc(HWND hwnd, UINT msg, WPARAM
             const wchar_t character { static_cast<wchar_t>(wParam) };
             std::scoped_lock lock(_inputMutex);
 
-            //characters past U+FFFF (emoji and other stuff) come as two WM_CHARs. Each half alone converts to U+FFFD, so the first half requires second.
+            //characters past U+FFFF (emoji and other stuff) come as two WM_CHARs. Each half alone converts to U+FFFD, so the first half requires second
             if (IS_HIGH_SURROGATE(character))
             {
                 _pendingHighSurrogate = character;
@@ -256,7 +256,7 @@ LRESULT CALLBACK PlatformBridge::Input::SubclassProc(HWND hwnd, UINT msg, WPARAM
             _pendingHighSurrogate = 0;
 
             char utf8[4];
-            const int length { WideCharToMultiByte(CP_UTF8, 0, isPair ? pair : &character, isPair ? 2 : 1, utf8, static_cast<int>(sizeof(utf8)), nullptr, nullptr) };
+            const int32_t length { WideCharToMultiByte(CP_UTF8, 0, isPair ? pair : &character, isPair ? 2 : 1, utf8, static_cast<int>(sizeof(utf8)), nullptr, nullptr) };
             _pendingInputString.append(utf8, length); //everything typed until the next NewFrame
         } break;
         case WM_SETFOCUS:
@@ -324,10 +324,10 @@ void PlatformBridge::Input::SetActiveWindow(HWND window)
 {
     std::scoped_lock lock(_inputMutex);
 
-    //The subclass is a capture mechanism, not a focus indicator - it stays installed on whichever window last
-    //had it regardless of window being 0 here, so held-key/text tracking stays accurate no matter how often
+    //The subclass is a capture mechanism (not a focus indicator). It stays installed on whichever window last
+    //had it regardless of the window being 0 here, so held-key/text tracking stays accurate no matter how often
     //SetActiveWindow(0) is called (e.g. every frame the mouse isn't hovering a given TextBox). _currentWindow
-    //is the separate, freely-toggled "active window" id exposed via GetActiveWindowID().
+    //is the separate, freely toggled "active window" ID exposed via GetActiveWindowID()
     if (window != nullptr && window != _subclassedWindow)
     {
         removeSubclass();

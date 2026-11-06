@@ -11,7 +11,7 @@ namespace PlatformBridge
     {
     public:
         /// @brief Makes owner the owner of window. The window then stays above its owner and minimizes with it. On Windows it
-        ///        also loses its taskbar button, and on Linux most window managers leave it out of the taskbar.
+        ///        also loses its taskbar button, and on Linux most window managers leave it out of the taskbar
 #ifdef __linux__
         static void SetOwner(void* display, const uint64_t window, const uint64_t owner);
 #elif _WIN32

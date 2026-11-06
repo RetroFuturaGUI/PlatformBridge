@@ -30,7 +30,7 @@ namespace
         const Atom currentDesktopAtom { XInternAtom(display, "_NET_CURRENT_DESKTOP", True) };
         long desktop { 0 };
         Atom type { None };
-        int format { 0 };
+        int32_t format { 0 };
         unsigned long
             itemCount { 0 },
             bytesAfter { 0 };
@@ -116,7 +116,7 @@ namespace
 
         float refreshRate { 0.0f };
 
-        for(int modeIndex = 0; modeIndex < resources->nmode; ++modeIndex)
+        for(size_t modeIndex { 0 }; modeIndex < resources->nmode; ++modeIndex)
         {
             const XRRModeInfo& mode { resources->modes[modeIndex] };
 
@@ -146,10 +146,10 @@ void PlatformBridge::Monitors::Refresh()
     const WorkArea workArea { readWorkArea(display, root) };
     const float scalingFactor { readScalingFactor(display) };
     XRRScreenResources* resources { XRRGetScreenResourcesCurrent(display, root) };
-    int monitorCount { 0 };
+    int32_t monitorCount { 0 };
     XRRMonitorInfo* monitors { XRRGetMonitors(display, root, True, &monitorCount) };
 
-    for(int monitorIndex = 0; monitors && monitorIndex < monitorCount; ++monitorIndex)
+    for(int monitorIndex { 0 }; monitors && monitorIndex < monitorCount; ++monitorIndex)
     {
         const XRRMonitorInfo& monitor { monitors[monitorIndex] };
         char* name { XGetAtomName(display, monitor.name) };

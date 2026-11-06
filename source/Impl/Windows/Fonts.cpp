@@ -65,10 +65,10 @@ namespace
         std::wstring wide {};
         wide.reserve(length / 2);
 
-        for (size_t i = 0; i + 1 < length; i += 2)
+        for (size_t i { 0 }; i + 1 < length; i += 2)
             wide.push_back(static_cast<wchar_t>((bytes[offset + i] << 8) | bytes[offset + i + 1]));
 
-        const int utf8Length { WideCharToMultiByte(CP_UTF8, 0, wide.data(), static_cast<int>(wide.size()), nullptr, 0, nullptr, nullptr) };
+        const int32_t utf8Length { WideCharToMultiByte(CP_UTF8, 0, wide.data(), static_cast<int>(wide.size()), nullptr, 0, nullptr, nullptr) };
 
         if (0 >= utf8Length)
             return {};
@@ -89,7 +89,7 @@ namespace
             otherWindows {},
             mac {};
 
-        for (size_t recordIndex = 0; recordIndex < count; ++recordIndex)
+        for (size_t recordIndex { 0 }; recordIndex < count; ++recordIndex)
         {
             const size_t recordOffset { 6 + recordIndex * 12 };
             const uint16_t
@@ -210,7 +210,7 @@ namespace
 
             const uint32_t groupCount { readU32Be(cmapTableBytes, dataOffset + 12) };
 
-            for (size_t groupIndex = 0; groupIndex < groupCount; ++groupIndex)
+            for (size_t groupIndex { 0 }; groupIndex < groupCount; ++groupIndex)
             {
                 const size_t groupOffset { dataOffset + 16 + groupIndex * 12 };
                 ranges.emplace_back(readU32Be(cmapTableBytes, groupOffset), readU32Be(cmapTableBytes, groupOffset + 4));
@@ -236,7 +236,7 @@ namespace
                 endCodeOffset { dataOffset + 14 },
                 startCodeOffset { endCodeOffset + segCount * 2 + 2 };
 
-            for (size_t segIndex = 0; segIndex < segCount; ++segIndex)
+            for (size_t segIndex { 0 }; segIndex < segCount; ++segIndex)
             {
                 const uint16_t
                     endCode { readU16Be(cmapTableBytes, endCodeOffset + segIndex * 2) },
@@ -358,13 +358,13 @@ namespace
 
             faceOffsets.resize(faceCount);
 
-            for (uint32_t faceIndex = 0; faceIndex < faceCount; ++faceIndex)
+            for (uint32_t faceIndex { 0 }; faceIndex < faceCount; ++faceIndex)
                 faceOffsets[faceIndex] = readU32Be(*offsets, faceIndex * 4);
         }
 
         std::vector<FontFace> faces {};
 
-        for (uint32_t faceIndex = 0; faceIndex < faceOffsets.size(); ++faceIndex)
+        for (uint32_t faceIndex { 0 }; faceIndex < faceOffsets.size(); ++faceIndex)
         {
             std::optional<FontFace> face { readFontFace(input, faceOffsets[faceIndex], faceIndex) };
 

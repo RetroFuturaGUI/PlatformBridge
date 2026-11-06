@@ -9,13 +9,13 @@
 
 namespace
 {
-    //A pair of surrogates becomes one code point; a surrogate without its partner becomes U+FFFD
+    //A pair of surrogates becomes one code point. A surrogate without its partner becomes U+FFFD
     std::u32string utf16ToUtf32(std::wstring_view input)
     {
         std::u32string utf32 {};
         utf32.reserve(input.size());
 
-        for(size_t index = 0; index < input.size(); ++index)
+        for(size_t index { 0 }; index < input.size(); ++index)
         {
             const char32_t unit { input[index] };
             const bool
@@ -40,7 +40,7 @@ namespace
         return utf32;
     }
 
-    //A code point past the first 65536 becomes a pair of surrogates; one that can't be written becomes U+FFFD
+    //A code point past the first 65536 becomes a pair of surrogates. One that can't be written becomes U+FFFD
     std::wstring utf32ToUtf16(std::u32string_view input)
     {
         std::wstring utf16 {};
@@ -275,7 +275,7 @@ PlatformBridge::Clipboard::ClipboardErrorCode PlatformBridge::Clipboard::PasteFi
 
     const UINT fileCount { DragQueryFileW(drop, 0xFFFFFFFF, nullptr, 0) };
 
-    for(UINT index = 0; index < fileCount; ++index)
+    for(UINT index { 0 }; index < fileCount; ++index)
     {
         const UINT length { DragQueryFileW(drop, index, nullptr, 0) };
         std::wstring path(length, L'\0');
