@@ -5,8 +5,12 @@
 #include <sherrors.h>
 #include <wrl/client.h>
 #include <KnownFolders.h>
+#include <cfapi.h>
 #include <cwchar>
 #include <string_view>
+#include <vector>
+
+#pragma comment(lib, "cldapi.lib")
 
 void PlatformBridge::FileSystem::Refresh()
 {
@@ -660,4 +664,17 @@ bool PlatformBridge::FileSystem::RestoreFromTrash(const std::filesystem::path& o
         CoUninitialize();
 
     return isRestored;
+}
+
+PlatformBridge::FileSystem::CloudHydration PlatformBridge::FileSystem::GetCloudHydration(const std::filesystem::path& path)
+{
+    //The sync root's registration carries the provider's policy; the name it was registered under follows the info
+    std::vector<unsigned char> info(sizeof(CF_SYNC_ROOT_STANDARD_INFO) + 1024);
+    DWORD infoLength { 0 };
+
+    if(FAILED(CfGetSyncRootInfoByPath(path.c_str(), CF_SYNC_ROOT_INFO_STANDARD, info.data(), static_cast<DWORD>(info.size()), &infoLength)))
+        return CloudHydration::Full;
+
+    const CF_HYDRATION_POLICY_PRIMARY primary { reinterpret_cast<const CF_SYNC_ROOT_STANDARD_INFO*>(info.data())->HydrationPolicy.Primary };
+    return CF_HYDRATION_POLICY_PARTIAL == primary || CF_HYDRATION_POLICY_PROGRESSIVE == primary ? CloudHydration::Partial : CloudHydration::Full;
 }

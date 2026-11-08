@@ -527,3 +527,8 @@ bool PlatformBridge::FileSystem::RestoreFromTrash(const std::filesystem::path& o
     restoredPathOut = target;
     return true;
 }
+
+PlatformBridge::FileSystem::CloudHydration PlatformBridge::FileSystem::GetCloudHydration(const std::filesystem::path&)
+{
+    return CloudHydration::Full;
+}

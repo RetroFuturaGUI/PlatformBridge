@@ -39,6 +39,13 @@ namespace PlatformBridge
             Videos
         };
 
+        /// @brief How a cloud provider fetches a file whose content isn't on this disk when it is read
+        enum class CloudHydration : uint32_t
+        {
+            Partial, //only the ranges read are downloaded, so a preview fetches its headers and a picture
+            Full //any read downloads the whole file
+        };
+
         /// @brief What MoveToTrash did with an item
         enum class TrashResult : uint32_t
         {
@@ -125,6 +132,11 @@ namespace PlatformBridge
         ///        a while, so call it off the main thread. Windows initializes COM on the calling thread for the call
         /// @param errorOut Set when it fails: the item is gone, in use, or access is denied
         static TrashResult MoveToTrash(const std::filesystem::path& path, std::error_code& errorOut);
+
+        /// @brief How reading a file whose content isn't on this disk (Entry::_IsOnlineOnly) would download it, as its sync
+        ///        provider is registered (Windows' Cloud Files API). Full when that can't be told, the safe assumption; always
+        ///        Full on Linux, where no file is online-only
+        static CloudHydration GetCloudHydration(const std::filesystem::path& path);
 
         /// @brief Puts back the item most recently moved to the recycle bin (Windows) or the trash (Linux) from this path. A name
         ///        taken there meanwhile gets a free one, "Name (2)"; a folder it was in that went too is made again. Blocks

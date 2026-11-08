@@ -20,7 +20,7 @@ const std::filesystem::path PlatformBridge::Paths::GetExecutablePathFSPath()
 
 std::filesystem::path PlatformBridge::Paths::GetModuleFolder()
 {
-    // The shared object holding this very function: the program, or the library PlatformBridge is linked into
+    // The shared object holding this very function. The program, or the library PlatformBridge is linked into
     Dl_info info {};
 
     if(0 == dladdr(reinterpret_cast<void*>(&PlatformBridge::Paths::GetModuleFolder), &info) || !info.dli_fname)
