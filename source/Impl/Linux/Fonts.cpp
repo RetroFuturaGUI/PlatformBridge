@@ -5,6 +5,11 @@ void PlatformBridge::Fonts::setFontsInformation()
 {
     _fontProperties.clear();
 
+    {
+        const std::lock_guard lock { _unicodeRangesMutex };
+        _unicodeRanges.clear(); //the fonts may have changed
+    }
+
     FcInit();
     FcConfig* fcConfig { FcInitLoadConfigAndFonts() };
     FcPattern* fcPattern { FcPatternCreate() };
@@ -93,9 +98,13 @@ void PlatformBridge::Fonts::setFontsInformation()
             ._Style = std::string((char*)style),
             ._Weight = getCssWeightValue(weight),
             ._Slant = getSlantValue(slant),
-            ._UnicodeRanges = getUnicodeRanges(fcCharset),
             ._FaceIndex = static_cast<uint32_t>(0 > faceIndex ? 0 : faceIndex)
         });
+
+        {
+            const std::lock_guard lock { _unicodeRangesMutex };
+            _unicodeRanges[{ _fontProperties.back()._Path, _fontProperties.back()._FaceIndex }] = getUnicodeRanges(fcCharset);
+        }
             
     }
     
@@ -219,3 +228,15 @@ void PlatformBridge::Fonts::setFontsInformation()
     pclose(pipe);
 }
 */
+
+const std::vector<std::pair<uint32_t, uint32_t>>& PlatformBridge::Fonts::GetUnicodeRanges(const FontProperty& font)
+{
+    static const std::vector<std::pair<uint32_t, uint32_t>> none {};
+    const std::lock_guard lock { _unicodeRangesMutex };
+    const auto found { _unicodeRanges.find({ font._Path, font._FaceIndex }) };
+
+    if (_unicodeRanges.end() == found)
+        return none;
+
+    return found->second;
+}

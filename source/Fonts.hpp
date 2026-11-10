@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 #include <filesystem>
+#include <map>
+#include <mutex>
 #include <utility>
 #include <print>
 #include <vector>
@@ -39,7 +41,6 @@ namespace PlatformBridge
                 _Style {};
             Weight _Weight { Weight::Normal };
             Slant _Slant { Slant::Roman };
-            std::vector<std::pair<uint32_t, uint32_t>> _UnicodeRanges {};
             uint32_t _FaceIndex { 0 }; //which face of a collection file (.ttc) this is; 0 for a file with one face
         };
 
@@ -59,6 +60,11 @@ namespace PlatformBridge
             return _fontProperties;
         }
 
+        /// @brief Returns the code-points the font covers, as ranges of first and last code-point. Read from its file the first
+        ///        time they are asked for, since few programs need them and reading them for every installed font is slow. Kept
+        ///        until the next Refresh, which the returned reference doesn't outlive. Empty when the font has no Unicode character map
+        static const std::vector<std::pair<uint32_t, uint32_t>>& GetUnicodeRanges(const FontProperty& font);
+
     private:
         Fonts() = default;
         ~Fonts() = default;
@@ -73,6 +79,8 @@ namespace PlatformBridge
         }
 
         static inline std::vector<FontProperty> _fontProperties {}; 
+        static inline std::map<std::pair<std::string, uint32_t>, std::vector<std::pair<uint32_t, uint32_t>>> _unicodeRanges {}; //by path and face index, filled as they are asked for
+        static inline std::mutex _unicodeRangesMutex {};
 
         static void setFontsInformation();
         static Slant getSlantValue(const int32_t slant);

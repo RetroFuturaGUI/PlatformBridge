@@ -70,7 +70,7 @@ bool PlatformBridge::ChildProcess::start(const std::filesystem::path& program, c
     // The program's standard output comes back through a named pipe opened for overlapped reads, so a read can wait with a
     // timeout; anonymous pipes can't. Its name only has to be unique within this process's life
     static std::atomic<std::uint32_t> pipeCount { 0 };
-    const std::wstring pipeName { std::format(L"\\\\.\\pipe\\RetroFuturaGUI-{}-{}", GetCurrentProcessId(), ++pipeCount) };
+    const std::wstring pipeName { std::format(L"\\\\.\\pipe\\PlatformBridge-{}-{}", GetCurrentProcessId(), ++pipeCount) };
     constexpr DWORD pipeBufferSize { 1024 * 1024 };
     SECURITY_ATTRIBUTES inheritable { .nLength = sizeof(SECURITY_ATTRIBUTES), .lpSecurityDescriptor = nullptr, .bInheritHandle = TRUE };
 

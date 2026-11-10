@@ -15,7 +15,7 @@ int main()
             font._Name, font._Path, font._Style, static_cast<int32_t>(font._Weight), static_cast<int32_t>(font._Slant));
 
         std::println("    Unicode Ranges:");
-        for(const auto& range : font._UnicodeRanges)
+        for(const auto& range : PlatformBridge::Fonts::GetUnicodeRanges(font))
         {
             std::println("        U+{:06X} - U+{:06X}", range.first, range.second);
         }
@@ -28,7 +28,7 @@ int main()
             font._Name, font._Path, font._Style, static_cast<int32_t>(font._Weight), static_cast<int32_t>(font._Slant));
 
             std::println("    Unicode Ranges:");
-            for(const auto& range : font._UnicodeRanges)
+            for(const auto& range : PlatformBridge::Fonts::GetUnicodeRanges(font))
             {
                 std::println("        U+{:06X} - U+{:06X}", range.first, range.second);
             }

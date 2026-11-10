@@ -1,12 +1,14 @@
 #include "Fonts.hpp"
 #include <Windows.h>
 #include <algorithm>
+#include <atomic>
 #include <cctype>
 #include <cstdint>
 #include <cstring>
 #include <fstream>
 #include <optional>
 #include <string_view>
+#include <thread>
 #include <vector>
 
 namespace
@@ -20,7 +22,6 @@ namespace
         PlatformBridge::Fonts::Slant slant { PlatformBridge::Fonts::Slant::Roman };
         PlatformBridge::Fonts::Weight weight { PlatformBridge::Fonts::Weight::Normal };
         uint32_t faceIndex { 0 };
-        std::vector<std::pair<uint32_t, uint32_t>> unicodeRanges {};
     };
 
     std::string toLowerAscii(std::string_view text)
@@ -209,11 +210,22 @@ namespace
                 continue;
 
             const uint32_t groupCount { readU32Be(cmapTableBytes, dataOffset + 12) };
+            ranges.reserve(std::min<size_t>(groupCount, cmapTableBytes.size() / 12));
 
             for (size_t groupIndex { 0 }; groupIndex < groupCount; ++groupIndex)
             {
                 const size_t groupOffset { dataOffset + 16 + groupIndex * 12 };
-                ranges.emplace_back(readU32Be(cmapTableBytes, groupOffset), readU32Be(cmapTableBytes, groupOffset + 4));
+                const uint32_t
+                    first { readU32Be(cmapTableBytes, groupOffset) },
+                    last { readU32Be(cmapTableBytes, groupOffset + 4) };
+
+                if (!ranges.empty() && ranges.back().second + 1 == first)
+                {
+                    ranges.back().second = last; //continues the previous group: the glyphs are only numbered apart
+                    continue;
+                }
+
+                ranges.emplace_back(first, last);
             }
 
             return ranges;
@@ -245,6 +257,12 @@ namespace
                 if (endCode == 0xFFFF || startCode == 0)
                     continue;
 
+                if (!ranges.empty() && ranges.back().second + 1 == startCode)
+                {
+                    ranges.back().second = endCode;
+                    continue;
+                }
+
                 ranges.emplace_back(startCode, endCode);
             }
 
@@ -254,7 +272,7 @@ namespace
         return {};
     }
 
-    //One face of a font file, from its table directory at faceOffset: names, style and covered code points
+    //One face of a font file, from its table directory at faceOffset: its names and style
     std::optional<FontFace> readFontFace(std::ifstream& input, const uint32_t faceOffset, const uint32_t faceIndex)
     {
         const std::optional<std::vector<uint8_t>> header { readTableBytes(input, faceOffset, 12) };
@@ -270,7 +288,6 @@ namespace
 
         std::optional<std::vector<uint8_t>>
             nameTableBytes {},
-            cmapTableBytes {},
             os2TableBytes {};
 
         for (size_t tableIndex { 0 }; tableIndex < numTables; ++tableIndex)
@@ -283,8 +300,6 @@ namespace
 
             if (tag == "name")
                 nameTableBytes = readTableBytes(input, tableOffset, tableLength);
-            else if (tag == "cmap")
-                cmapTableBytes = readTableBytes(input, tableOffset, tableLength);
             else if (tag == "OS/2")
                 os2TableBytes = readTableBytes(input, tableOffset, tableLength);
         }
@@ -325,8 +340,71 @@ namespace
                 face.slant = PlatformBridge::Fonts::Slant::Italic;
         }
 
-        face.unicodeRanges = cmapTableBytes ? getCodepointCoverage(*cmapTableBytes) : std::vector<std::pair<uint32_t, uint32_t>> {};
         return face;
+    }
+
+    //Where the face's table directory starts: 0 for a file with one face, its entry in a collection's (.ttc) header otherwise
+    std::optional<uint32_t> getFaceOffset(std::ifstream& input, const uint32_t faceIndex)
+    {
+        const std::optional<std::vector<uint8_t>> header { readTableBytes(input, 0, 12) };
+
+        if (!header)
+            return std::nullopt;
+
+        if (0 != std::memcmp(header->data(), "ttcf", 4))
+            return 0 == faceIndex ? std::optional<uint32_t> { 0 } : std::nullopt;
+
+        if (faceIndex >= readU32Be(*header, 8))
+            return std::nullopt;
+
+        const std::optional<std::vector<uint8_t>> offset { readTableBytes(input, 12 + faceIndex * 4, 4) };
+
+        if (!offset)
+            return std::nullopt;
+
+        return readU32Be(*offset, 0);
+    }
+
+    //The code-points one face of a font file covers, from its character map
+    std::vector<std::pair<uint32_t, uint32_t>> readUnicodeRanges(const std::filesystem::path& fontPath, const uint32_t faceIndex)
+    {
+        std::ifstream input(fontPath, std::ios::binary);
+
+        if (!input)
+            return {};
+
+        const std::optional<uint32_t> faceOffset { getFaceOffset(input, faceIndex) };
+
+        if (!faceOffset)
+            return {};
+
+        const std::optional<std::vector<uint8_t>> header { readTableBytes(input, *faceOffset, 12) };
+
+        if (!header)
+            return {};
+
+        const size_t numTables { readU16Be(*header, 4) };
+        const std::optional<std::vector<uint8_t>> tableDirectoryBytes { readTableBytes(input, *faceOffset + 12, static_cast<uint32_t>(numTables * 16)) };
+
+        if (!tableDirectoryBytes)
+            return {};
+
+        for (size_t tableIndex { 0 }; tableIndex < numTables; ++tableIndex)
+        {
+            const size_t tableEntryOffset { tableIndex * 16 };
+
+            if (0 != std::memcmp(tableDirectoryBytes->data() + tableEntryOffset, "cmap", 4))
+                continue;
+
+            const std::optional<std::vector<uint8_t>> cmapTableBytes { readTableBytes(input, readU32Be(*tableDirectoryBytes, tableEntryOffset + 8), readU32Be(*tableDirectoryBytes, tableEntryOffset + 12)) };
+
+            if (!cmapTableBytes)
+                return {};
+
+            return getCodepointCoverage(*cmapTableBytes);
+        }
+
+        return {};
     }
 
     //Every face of a font file: one, or several in a collection (.ttc)
@@ -410,11 +488,46 @@ namespace
         RegCloseKey(key);
         return files;
     }
+
+    //Every file's faces, read on a few threads at once. Each file's faces land in its own slot, so they keep the registry's order
+    std::vector<std::vector<FontFace>> getAllFontFaces(const std::vector<std::filesystem::path>& files)
+    {
+        std::vector<std::vector<FontFace>> faces(files.size());
+        std::atomic<size_t> nextFile { 0 };
+        const size_t workerCount { std::clamp<size_t>(std::thread::hardware_concurrency(), 1, 8) }; //more only queue up for the disk
+        std::vector<std::jthread> workers {};
+        workers.reserve(workerCount);
+
+        for (size_t worker { 0 }; worker < workerCount; ++worker)
+        {
+            workers.emplace_back([&files, &faces, &nextFile]()
+            {
+                for (size_t fileIndex { nextFile++ }; fileIndex < files.size(); fileIndex = nextFile++)
+                {
+                    std::error_code error {};
+
+                    if (!std::filesystem::exists(files[fileIndex], error))
+                        continue;
+
+                    faces[fileIndex] = getFontFaces(files[fileIndex]);
+                }
+            });
+        }
+
+        workers.clear(); //joins them
+        return faces;
+    }
 }
 
 void PlatformBridge::Fonts::setFontsInformation()
 {
     _fontProperties.clear();
+
+    {
+        const std::lock_guard lock { _unicodeRangesMutex };
+        _unicodeRanges.clear(); //the fonts may have changed
+    }
+
     wchar_t windowsFolder[MAX_PATH] {};
 
     if (0 == GetWindowsDirectoryW(windowsFolder, MAX_PATH))
@@ -428,14 +541,13 @@ void PlatformBridge::Fonts::setFontsInformation()
     const std::vector<std::filesystem::path> userFiles { getRegisteredFontFiles(HKEY_CURRENT_USER, fontFolder) }; //installed for this user only
     files.insert(files.end(), userFiles.begin(), userFiles.end());
 
-    for (const std::filesystem::path& file : files)
+    std::vector<std::vector<FontFace>> faces { getAllFontFaces(files) };
+
+    for (size_t fileIndex { 0 }; fileIndex < files.size(); ++fileIndex)
     {
-        std::error_code error {};
+        const std::filesystem::path& file { files[fileIndex] };
 
-        if (!std::filesystem::exists(file, error))
-            continue;
-
-        for (FontFace& face : getFontFaces(file))
+        for (FontFace& face : faces[fileIndex])
         {
             FontProperty property
             {
@@ -444,7 +556,6 @@ void PlatformBridge::Fonts::setFontsInformation()
                 ._Style = face.subfamily,
                 ._Weight = face.weight,
                 ._Slant = face.slant,
-                ._UnicodeRanges = std::move(face.unicodeRanges),
                 ._FaceIndex = face.faceIndex
             };
 
@@ -458,4 +569,16 @@ void PlatformBridge::Fonts::setFontsInformation()
             _fontProperties.push_back(std::move(property));
         }
     }
+}
+
+const std::vector<std::pair<uint32_t, uint32_t>>& PlatformBridge::Fonts::GetUnicodeRanges(const FontProperty& font)
+{
+    const std::lock_guard lock { _unicodeRangesMutex };
+    const std::pair<std::string, uint32_t> key { font._Path, font._FaceIndex };
+    const auto found { _unicodeRanges.find(key) };
+
+    if (_unicodeRanges.end() != found)
+        return found->second;
+
+    return _unicodeRanges.emplace(key, readUnicodeRanges(std::filesystem::path(font._Path), font._FaceIndex)).first->second;
 }
