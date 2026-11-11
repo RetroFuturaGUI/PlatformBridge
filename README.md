@@ -17,6 +17,11 @@ A cross-platform API wrapper to be compiled to static libraries
 
 - `const MonitorInfo* PlatformBridge::Monitors::GetPrimaryMonitor()` — Returns the primary monitor, or the first one when none is marked primary; `nullptr` when none was found. **Notes:** On Linux the monitors come from XRandR (`XRRGetMonitors`, refresh rates from each monitor's current mode), the work area from the window manager's `_NET_WORKAREA` clipped to each monitor, and the scaling from `Xft.dpi`; PlatformBridge links libXrandr there. Never compiled here.
 
+### NativeWindow
+- `PlatformBridge::NativeWindow::SetOwner(window, owner)` — Makes `owner` the owner of `window`, which then stays above it and minimizes with it; on Windows it also loses its taskbar button. Linux: `SetOwner(display, window, owner)` through `XSetTransientForHint`.
+
+- `PlatformBridge::NativeWindow::ShowInTaskbar(window, show)` — Gives a window a taskbar button or takes it away (on Windows a tool window, so it also stays out of Alt+Tab). Set it before the window first shows; on Windows a shown window is hidden and shown again around the change. **Notes:** On Linux `ShowInTaskbar(display, window, show)` sets `_NET_WM_STATE_SKIP_TASKBAR`, in the window's own state list before it is mapped and through the window manager after. Never compiled here.
+
 ### Fonts
 - `PlatformBridge::Fonts` — Provides access to installed font metadata such as family name, style, weight, slant, path, and Unicode coverage.
 

@@ -18,6 +18,14 @@ namespace PlatformBridge
         static void SetOwner(HWND window, HWND owner);
 #endif
 
+        /// @brief Gives the window a taskbar button, or takes it away (it then stays out of Alt+Tab on Windows too). Set before
+        ///        the window first shows. On Windows a shown window is hidden and shown again around the change
+#ifdef __linux__
+        static void ShowInTaskbar(void* display, const uint64_t window, const bool show);
+#elif _WIN32
+        static void ShowInTaskbar(HWND window, const bool show);
+#endif
+
     private:
         NativeWindow() = delete;
         NativeWindow(const NativeWindow&) = delete;
