@@ -4,7 +4,9 @@
 #include <filesystem>
 #include <string>
 #include <string_view>
+#include <stop_token>
 #include <system_error>
+#include <thread>
 #include <vector>
 
 namespace PlatformBridge
@@ -122,9 +124,17 @@ namespace PlatformBridge
 
         /// @brief Lists the files and folders in a folder, without "." and "..". Never throws
         /// @param entriesOut Cleared, then filled in the order the platform returns them
-        /// @param errorOut Set when the folder can't be listed: access denied, drive not ready, network path gone
-        /// @return false when the folder can't be listed
-        static bool ListDirectory(const std::filesystem::path& directory, std::vector<Entry>& entriesOut, std::error_code& errorOut);
+        /// @param errorOut Set when the folder can't be listed: access denied, drive not ready, network path gone; operation_canceled once stopped.
+        /// @param stop Checked between entries, so a stop ends a long listing early. A call the system is blocked in ends only
+        ///        once it returns, or with CancelThreadIo
+        /// @return false when the folder can't be listed or the listing was stopped.
+        static bool ListDirectory(const std::filesystem::path& directory, std::vector<Entry>& entriesOut, std::error_code& errorOut, std::stop_token stop);
+
+        /// @brief Ends the file system call another thread is blocked in, such as a listing of a network share that stopped
+        ///        answering, which then fails with operation_canceled. Windows only, and only where the driver supports it. A
+        ///        thread in no such call goes on unaffected. Elsewhere it does nothing
+        /// @param thread The thread's native handle: std::thread::native_handle()
+        static void CancelThreadIo(std::thread::native_handle_type thread);
 
         /// @brief Moves a file or folder to the recycle bin on Windows/to the trash in the home folder on Linux. Never shows a
         ///        dialog and never deletes for good. An item the bin can't take is left alone, so the caller can ask first. On

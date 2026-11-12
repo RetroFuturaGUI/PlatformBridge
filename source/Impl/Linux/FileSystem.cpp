@@ -35,7 +35,7 @@ const std::filesystem::path& PlatformBridge::FileSystem::GetKnownFolder(const Kn
     return _knownFolders[index];
 }
 
-bool PlatformBridge::FileSystem::ListDirectory(const std::filesystem::path& directory, std::vector<Entry>& entriesOut, std::error_code& errorOut)
+bool PlatformBridge::FileSystem::ListDirectory(const std::filesystem::path& directory, std::vector<Entry>& entriesOut, std::error_code& errorOut, std::stop_token stop)
 {
     entriesOut.clear();
     errorOut.clear();
@@ -48,6 +48,13 @@ bool PlatformBridge::FileSystem::ListDirectory(const std::filesystem::path& dire
     //A failed step ends the iterator and sets errorOut, which quits the loop
     for(const std::filesystem::directory_iterator end {}; iterator != end; iterator.increment(errorOut))
     {
+        if(stop.stop_requested())
+        {
+            entriesOut.clear();
+            errorOut = std::make_error_code(std::errc::operation_canceled);
+            return false;
+        }
+
         const std::filesystem::directory_entry& found { *iterator };
         std::error_code entryError {};
         EntryKind kind { EntryKind::Other };
@@ -76,6 +83,11 @@ bool PlatformBridge::FileSystem::ListDirectory(const std::filesystem::path& dire
     }
 
     return !errorOut;
+}
+
+void PlatformBridge::FileSystem::CancelThreadIo(std::thread::native_handle_type)
+{
+    //Linux has no way to end another thread's blocked call short of a signal, so a stuck listing runs on
 }
 
 void PlatformBridge::FileSystem::refreshRoots()

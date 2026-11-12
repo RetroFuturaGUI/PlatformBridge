@@ -34,7 +34,7 @@ const std::filesystem::path& PlatformBridge::FileSystem::GetKnownFolder(const Kn
     return _knownFolders[index];
 }
 
-bool PlatformBridge::FileSystem::ListDirectory(const std::filesystem::path& directory, std::vector<Entry>& entriesOut, std::error_code& errorOut)
+bool PlatformBridge::FileSystem::ListDirectory(const std::filesystem::path& directory, std::vector<Entry>& entriesOut, std::error_code& errorOut, std::stop_token stop)
 {
     entriesOut.clear();
     errorOut.clear();
@@ -69,6 +69,15 @@ bool PlatformBridge::FileSystem::ListDirectory(const std::filesystem::path& dire
 
     do
     {
+        if(stop.stop_requested())
+        {
+            FindClose(find);
+            SetThreadErrorMode(previousErrorMode, nullptr);
+            entriesOut.clear();
+            errorOut = std::make_error_code(std::errc::operation_canceled);
+            return false;
+        }
+
         const std::wstring_view name { data.cFileName };
 
         if(name == L"." || name == L"..")
@@ -107,8 +116,24 @@ bool PlatformBridge::FileSystem::ListDirectory(const std::filesystem::path& dire
     if(ERROR_NO_MORE_FILES == error)
         return true;
 
+    //Ended by CancelThreadIo
+    if(ERROR_OPERATION_ABORTED == error)
+    {
+        entriesOut.clear();
+        errorOut = std::make_error_code(std::errc::operation_canceled);
+        return false;
+    }
+
     errorOut = std::error_code(static_cast<int>(error), std::system_category());
     return false;
+}
+
+void PlatformBridge::FileSystem::CancelThreadIo(std::thread::native_handle_type thread)
+{
+    if(!thread)
+        return;
+
+    CancelSynchronousIo(static_cast<HANDLE>(thread)); //ERROR_NOT_FOUND when it waits on nothing, which is fine.
 }
 
 void PlatformBridge::FileSystem::refreshRoots()
