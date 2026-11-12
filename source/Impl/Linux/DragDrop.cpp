@@ -11,3 +11,19 @@ PlatformBridge::DragDrop::DropEffect PlatformBridge::DragDrop::DragFilesOut(cons
 {
     return DropEffect::None;
 }
+
+//Taking drops while they hover needs the X drag-and-drop protocol too. Until then GLFW hands over finished drops
+
+bool PlatformBridge::DragDrop::CanTakeDrops()
+{
+    return false;
+}
+
+bool PlatformBridge::DragDrop::RegisterDropTarget(void*, DropTargetEvents)
+{
+    return false;
+}
+
+void PlatformBridge::DragDrop::RevokeDropTarget(void*)
+{
+}
